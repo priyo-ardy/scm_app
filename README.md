@@ -76,17 +76,38 @@ Filament applications require a linked local storage directory to handle file up
 php artisan storage:link
 ```
 
-### 6. Database Migration and Seeding
+### 6. Database Migration
 
-Run the database migrations and seeders. This step is critical to generate the required database tables, initialize default roles and permissions, and create the initial administrator account:
+Run the database migrations to generate the required database tables:
 
 ```bash
-php artisan migrate --seed
+php artisan migrate
 ```
 
-*(Note: If configuring roles manually, you may run `php artisan shield:generate --all` followed by `php artisan make:filament-user` to set up the initial super admin account).*
+### 7. Initial Admin User & Permissions (Filament Shield)
 
-### 7. Run the Application Server
+To access the admin panel with full permissions, you need to set up **Filament Shield**. Follow these steps:
+
+#### A. Generate Shield Permissions
+Before creating a user, generate permissions for all existing resources (such as `SupplierResource`):
+
+```bash
+php artisan shield:generate --all
+```
+
+#### B. Create Super Admin User (Recommended)
+This command will create a new user and automatically assign the **super_admin** role, which has full access to all resources:
+
+```bash
+php artisan shield:super-admin
+```
+
+#### C. Manual Registration (If using existing user)
+If you already created a user using `php artisan make:filament-user` and want to register it with Shield:
+1. Run `php artisan shield:install` (if not already done).
+2. Assign the **super_admin** role to your user via the **User Management** menu in the Admin Panel once logged in.
+
+### 8. Run the Application Server
 
 Start Laravel's built-in development server:
 

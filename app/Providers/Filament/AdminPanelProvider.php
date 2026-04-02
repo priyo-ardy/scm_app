@@ -90,6 +90,10 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotificationsPolling('30s')
             ->navigationGroups([
                 NavigationGroup::make()
+                    ->label('Master Data')
+                    ->icon(null)
+                    ->collapsed(),
+                NavigationGroup::make()
                     ->label('User Management')
                     ->icon(null)
                     ->collapsed()
