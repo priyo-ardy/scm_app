@@ -14,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 class Supplier extends Authenticatable
 {
     use SoftDeletes, HasFactory, HasRoles, HasCodeGenerator;
-    use LogsAllActivities;
+    // use LogsAllActivities;
 
     protected $fillable = [
         'code',

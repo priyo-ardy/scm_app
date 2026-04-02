@@ -16,7 +16,6 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Tables\Actions\Action as TableAction;
 
 class SuppliersTable
@@ -128,13 +127,12 @@ class SuppliersTable
                     })
             ])
             ->filtersFormColumns(2)
-            ->filtersTriggerAction(
-                fn (TableAction $action) => $action
-                    ->button()
-                    ->label('Filter'),
-            )
+            // ->filtersTriggerAction(
+            //     fn(TableAction $action) => $action
+            //         ->button()
+            //         ->label('Filter'),
+            // )
             ->persistFiltersInSession()
-            ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -150,8 +148,8 @@ class SuppliersTable
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
                     ->action(fn() => null),
-                \pxlrbt\FilamentExcel\Actions\Tables\ExportAction::make()
-                    ->label('Export')
+                ExportAction::make()
+                    ->exporter(SupplierExporter::class)
                     ->icon('heroicon-o-arrow-down-tray')
             ]);
     }
