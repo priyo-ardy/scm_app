@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 use App\Models\User;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -103,12 +104,16 @@ class UsersTable
                                 'false' => 'Unlocked',
                             ])
                             ->native(),
-                        TextInput::make('created_at')
-                            ->label('Created At')
-                            ->placeholder('Search with created at ...')
-                            ->autocomplete(false)
-                            ->autofocus(false)
-                            ->type('date')
+                        Grid::make(2)
+                            ->schema([
+                                DatePicker::make('created_from')
+                                    ->label('Created From')
+                                    ->placeholder('Dari Tanggal'),
+
+                                DatePicker::make('created_until')
+                                    ->label('Created Until')
+                                    ->placeholder('Sampai Tanggal'),
+                            ])->columnSpan(3)
                     ])->columns(3)
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -131,6 +136,14 @@ class UsersTable
                             ->when(
                                 $data['role'],
                                 fn(Builder $query, $role): Builder => $query->where('role', $role),
+                            )
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
