@@ -46,4 +46,9 @@ Buatkan fitur baru untuk Management Supplier dengan spesifikasi teknis berikut:
    - Gunakan FileUpload untuk field 'avatar' dengan direktori simpan 'suppliers'.
    - Pastikan field 'name' required.
 
+8. ADDITIONAL REFINEMENTS:
+   - Jalankan `php artisan storage:link` agar file avatar bisa diakses.
+   - Pada Tabel: Jadikan field 'code' dan 'name' sebagai `searchable()` dan `sortable()`.
+   - Pada Form: Jangan tampilkan field code, karena ini akan dieksekusi secara otomatis
+
 Tolong eksekusi migrasi setelah file selesai dibuat.
