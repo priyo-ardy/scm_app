@@ -1,0 +1,49 @@
+# TASK: CREATE FILAMENT SUPPLIER RESOURCE
+
+Buatkan fitur baru untuk Management Supplier dengan spesifikasi teknis berikut:
+
+1. FILAMENT RESOURCE:
+   - Buat SupplierResource.
+   - Masukkan ke dalam Navigation Group "Master Data" (buat group jika belum ada).
+   - Gunakan icon heroicon-o-ticket
+
+2. DATABASE & MIGRATION:
+   - Schema:
+     - id (Primary Key)
+     - code (varchar 20, unique)
+     - name (varchar 255)
+     - address (text, nullable)
+     - email (varchar 255, nullable, unique)
+     - phone (varchar 20, nullable)
+     - contact_person (varchar 255, nullable)
+     - contact_person_email (varchar 255, nullable)
+     - contact_person_phone (varchar 20, nullable)
+     - avatar (varchar 255, nullable)
+     - remark (text, nullable)
+     - timestamps & softDeletes.
+   - Tambahkan trait SoftDeletes pada Model Supplier.
+
+3. AUTO-NUMBER LOGIC:
+   - Implementasikan logic pada Model Supplier menggunakan boot method 'creating' untuk mengisi field 'code' secara otomatis.
+   - Format: SUP-XXXXXX (contoh: SUP-000001).
+   - Nomor harus otomatis naik (increment) berdasarkan data terakhir.
+
+4. SECURITY (FILAMENT SHIELD):
+   - Integrasikan dengan Filament Shield.
+   - Jalankan command generate policy untuk resource Supplier ini agar role & permission terbentuk otomatis.
+
+5. EXPORT FEATURE:
+   - Tambahkan Header Action untuk Export data ke Excel menggunakan library 'paxer/filament-excel'.
+
+6. TABLE & FILTERS (MODAL MODE):
+   - Column: Tampilkan 'code', 'name', 'email', dan 'contact_person' pada tabel.
+   - FILTERING: Gunakan mode MODAL (jangan tampil di atas tabel).
+   - Gunakan method ->filtersFormColumns(2) agar tampilan filter di dalam modal rapi.
+   - List Filter: Filter Trashed (untuk softDelete) dan Filter Range Tanggal untuk 'created_at'.
+
+7. FORM UI:
+   - Gunakan Grid atau Section untuk memisahkan 'Informasi Perusahaan' dan 'Contact Person'.
+   - Gunakan FileUpload untuk field 'avatar' dengan direktori simpan 'suppliers'.
+   - Pastikan field 'name' required.
+
+Tolong eksekusi migrasi setelah file selesai dibuat.
