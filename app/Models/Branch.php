@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Models;
+
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
+
+class Branch extends Model
+{
+    use SoftDeletes, HasFactory, HasRoles;
+
+    protected $fillable = [
+        'company_id',
+        'code',
+        'name',
+        'category',
+        'phone_ext',
+        'manager_name',
+        'total_manpower',
+        'address',
+        'map_url',
+        'is_active'
+    ];
+
+    protected $casts = [
+        'category' => 'string'
+    ];
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('Y-m-d H:i:s');
+    }
+
+    public function getUpdatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('Y-m-d H:i:s');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime:Y-m-d H:i:s',
+            'updated_at' => 'datetime:Y-m-d H:i:s',
+            'deleted_at' => 'datetime',
+        ];
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($supplier) {
+            $supplier->code = self::generateAutoCode(
+                tableName: 'branches',
+                columnName: 'code',
+                prefix: 'PLT',
+                digits: 3,
+                separator: '-'
+            );
+        });
+    }
+}
