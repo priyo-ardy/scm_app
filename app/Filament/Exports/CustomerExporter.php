@@ -53,4 +53,9 @@ class CustomerExporter extends Exporter
 
         return $body;
     }
+
+    public function getFileName(Export $export): string
+    {
+        return 'customer-' . now()->format('YmdHis');
+    }
 }

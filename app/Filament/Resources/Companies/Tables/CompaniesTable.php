@@ -2,12 +2,16 @@
 
 namespace App\Filament\Resources\Companies\Tables;
 
+use App\Filament\Exports\CompanyExporter;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -49,10 +53,10 @@ class CompaniesTable
                     ->searchable(),
                 TextColumn::make('bank_beneficiary')
                     ->searchable(),
-                TextColumn::make('logo')
-                    ->searchable(),
-                TextColumn::make('favicon')
-                    ->searchable(),
+                ImageColumn::make('logo')
+                    ->disk('public'),
+                ImageColumn::make('favicon')
+                    ->disk('public'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -65,10 +69,10 @@ class CompaniesTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('currency_id')
+                TextColumn::make('currency.code')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('timezone_id')
+                TextColumn::make('timezone.name')
                     ->numeric()
                     ->sortable(),
             ])
@@ -84,6 +88,14 @@ class CompaniesTable
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
+                Action::make('refresh')
+                    ->label('Refresh')
+                    ->icon('heroicon-o-arrow-path')
+                    ->action(fn() => null),
+                ExportAction::make()
+                    ->exporter(CompanyExporter::class)
+                    ->label('Export')
+                    ->icon('heroicon-o-document-arrow-down'),
             ]);
     }
 }
