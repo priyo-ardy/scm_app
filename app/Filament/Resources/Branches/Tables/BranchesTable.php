@@ -18,9 +18,7 @@ class BranchesTable
     {
         return $table
             ->columns([
-                TextColumn::make('company_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('company.name'),
                 TextColumn::make('code')
                     ->searchable(),
                 TextColumn::make('name')

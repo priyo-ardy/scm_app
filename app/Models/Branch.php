@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use App\HasCodeGenerator;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
 class Branch extends Model
 {
-    use SoftDeletes, HasFactory, HasRoles;
+    use SoftDeletes, HasFactory, HasRoles, HasCodeGenerator;
 
     protected $fillable = [
         'company_id',
@@ -26,7 +28,8 @@ class Branch extends Model
     ];
 
     protected $casts = [
-        'category' => 'string'
+        'category' => 'string',
+        'map_url' => 'array'
     ];
 
     public function getCreatedAtAttribute($value)
@@ -59,5 +62,10 @@ class Branch extends Model
                 separator: '-'
             );
         });
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }
