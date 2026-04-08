@@ -45,11 +45,15 @@ class UsersForm
                         TextInput::make('email')
                             ->label('Email Address')
                             ->email()
+                            ->unique(ignoreRecord: false)
                             ->required()
                             ->maxLength(150)
                             ->placeholder('Email address')
                             ->autocomplete(false)
-                            ->autofocus(false),
+                            ->autofocus(false)
+                            ->validationMessages([
+                                'This email address already registered'
+                            ]),
                         TextInput::make('phone')
                             ->label('Phone Number')
                             ->tel()
@@ -69,6 +73,8 @@ class UsersForm
                             ->label('User Role')
                             ->relationship('roles', 'name')
                             ->native()
+                            ->preload()
+                            ->searchable()
                             ->required(),
                         Textarea::make('remark')
                             ->label('Remark')

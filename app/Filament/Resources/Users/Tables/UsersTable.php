@@ -96,14 +96,18 @@ class UsersTable
                         Select::make('role')
                             ->label('User Role')
                             ->relationship('roles', 'name')
-                            ->native(),
+                            ->native()
+                            ->searchable()
+                            ->preload()
+                            ->multiple(),
                         Select::make('is_locked')
                             ->label('Locked Status')
                             ->options([
                                 'true' => 'Locked',
                                 'false' => 'Unlocked',
                             ])
-                            ->native(),
+                            ->native()
+                            ->searchable(),
                         Grid::make(2)
                             ->schema([
                                 DatePicker::make('created_from')
