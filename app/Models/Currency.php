@@ -38,4 +38,9 @@ class Currency extends Model
             'deleted_at' => 'datetime',
         ];
     }
+
+    public function exchangeRates()
+    {
+        return $this->hasMany(ExchangeRate::class);
+    }
 }

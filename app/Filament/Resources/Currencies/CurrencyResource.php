@@ -5,10 +5,12 @@ namespace App\Filament\Resources\Currencies;
 use App\Filament\Resources\Currencies\Pages\CreateCurrency;
 use App\Filament\Resources\Currencies\Pages\EditCurrency;
 use App\Filament\Resources\Currencies\Pages\ListCurrencies;
+use App\Filament\Resources\Currencies\RelationManagers\ExchangeRatesRelationManager;
 use App\Filament\Resources\Currencies\Schemas\CurrencyForm;
 use App\Filament\Resources\Currencies\Tables\CurrenciesTable;
 use App\Models\Currency;
 use BackedEnum;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -39,7 +41,7 @@ class CurrencyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ExchangeRatesRelationManager::class
         ];
     }
 

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Currencies\Schemas;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Filament\Tables\Table;
 
 class CurrencyForm
 {
@@ -25,5 +26,12 @@ class CurrencyForm
                 Toggle::make('is_active')
                     ->required(),
             ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->recordTitleAttribute('rate_date')
+            ->columns([]);
     }
 }

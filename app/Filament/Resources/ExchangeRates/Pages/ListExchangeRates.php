@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Filament\Resources\ExchangeRates\Pages;
+
+use App\Filament\Resources\ExchangeRates\ExchangeRateResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Icons\Heroicon;
+
+class ListExchangeRates extends ListRecords
+{
+    protected static string $resource = ExchangeRateResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle),
+        ];
+    }
+}

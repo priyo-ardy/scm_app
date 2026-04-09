@@ -107,7 +107,7 @@ class CustomersTable
                                     ->label('Created Until')
                             ])->columnSpan(3)
                     ])->columns(3)
-                    ->query(function (Builder $query, array $data): Builder{
+                    ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['code'],
@@ -153,35 +153,35 @@ class CustomersTable
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
 
-                        if($data['code'] ?? null){
+                        if ($data['code'] ?? null) {
                             $indicators[] = 'Code: ' . $data['code'];
                         }
 
-                        if($data['name'] ?? null){
+                        if ($data['name'] ?? null) {
                             $indicators[] = 'Name: ' . $data['name'];
                         }
 
-                        if($data['email'] ?? null){
+                        if ($data['email'] ?? null) {
                             $indicators[] = 'Email: ' . $data['email'];
                         }
 
-                        if($data['phone'] ?? null){
+                        if ($data['phone'] ?? null) {
                             $indicators[] = 'Phone: ' . $data['phone'];
                         }
 
-                        if($data['fax'] ?? null){
+                        if ($data['fax'] ?? null) {
                             $indicators[] = 'Fax: ' . $data['fax'];
                         }
 
-                        if($data['contact_person'] ?? null){
+                        if ($data['contact_person'] ?? null) {
                             $indicators[] = 'Contact Person: ' . $data['contact_person'];
                         }
 
-                        if($data['contact_person_email'] ?? null){
+                        if ($data['contact_person_email'] ?? null) {
                             $indicators[] = 'Contact Person Email: ' . $data['contact_person_email'];
                         }
 
-                        if($data['contact_person_phone'] ?? null){
+                        if ($data['contact_person_phone'] ?? null) {
                             $indicators[] = 'Contact Person Phone: ' . $data['contact_person_phone'];
                         }
 

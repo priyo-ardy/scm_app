@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('tonnages', function (Blueprint $table) {
+            $table->id();
+            $table->string('code', 20)->unique();
+            $table->string('name', 150);
+            $table->decimal('clamping_force_kn', 12, 2)->nullable();
+            $table->text('remark')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->integer('std_dbugging')->default(0);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('tonnages');
+    }
+};

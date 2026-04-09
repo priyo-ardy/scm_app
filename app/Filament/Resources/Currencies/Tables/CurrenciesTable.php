@@ -53,7 +53,7 @@ class CurrenciesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Filter::make()
+                Filter::make('currency_filter')
                     ->schema([
                         TextInput::make('code')
                             ->label('Code')
@@ -75,7 +75,7 @@ class CurrenciesTable
                 Filter::make('is_active')
                     ->label('Active')
                     ->query(fn($query) => $query->where('is_active', true)),
-                TrashedFilter::make(),
+                // TrashedFilter::make(),
             ])
             ->recordActions([
                 ViewAction::make(),
