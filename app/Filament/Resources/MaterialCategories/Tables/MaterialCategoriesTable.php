@@ -33,9 +33,6 @@ class MaterialCategoriesTable
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('prefix')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
@@ -43,6 +40,7 @@ class MaterialCategoriesTable
                     ->color(fn(bool $state): string => $state ? 'danger' : 'success')
                     ->alignCenter(),
             ])
+            ->defaultSort('code', 'asc')
             ->filters([
                 Filter::make('filter')
                     ->columns(3)
@@ -58,10 +56,6 @@ class MaterialCategoriesTable
                                 fn(Builder $query, $name): Builder => $query->where('name', 'LIKE', "%$name%")
                             )
                             ->when(
-                                $data['prefix'],
-                                fn(Builder $query, $prefix): Builder => $query->where('prefix', 'LIKE', "%$prefix%")
-                            )
-                            ->when(
                                 $data['is_active'],
                                 fn(Builder $query, $is_active): Builder => $query->where('is_active', "%$is_active%")
                             );
@@ -71,10 +65,6 @@ class MaterialCategoriesTable
 
                         if ($data['name'] ?? null) {
                             $indicators[] = 'Name: ' . $data['name'];
-                        }
-
-                        if ($data['prefix'] ?? null) {
-                            $indicators[] = "Prefix: " . $data['prefix'];
                         }
 
                         if ($data['is_active'] ?? null) {

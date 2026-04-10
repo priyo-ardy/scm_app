@@ -4,8 +4,81 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cebf843025dcc38cd605b5730ffd3d3e",
+    "content-hash": "f764096d4fb9887b6354eb91731c9e14",
     "packages": [
+        {
+            "name": "awcodes/filament-badgeable-column",
+            "version": "v4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/awcodes/filament-badgeable-column.git",
+                "reference": "1fd978f6c911c7004b48ab6893ab3ede1bd7aa5b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/awcodes/filament-badgeable-column/zipball/1fd978f6c911c7004b48ab6893ab3ede1bd7aa5b",
+                "reference": "1fd978f6c911c7004b48ab6893ab3ede1bd7aa5b",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^5.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.15"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^9.0|^10.0",
+                "pestphp/pest": "^4.3",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "pestphp/pest-plugin-livewire": "^4.0",
+                "rector/rector": "^2.0",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Awcodes\\BadgeableColumn\\BadgeableColumnServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Awcodes\\BadgeableColumn\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "awcodes",
+                    "email": "awcodes1@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Filament Tables column to append and prepend badges.",
+            "homepage": "https://github.com/awcodes/filament-badgeable-column",
+            "keywords": [
+                "awcodes",
+                "badgeable-column",
+                "filament",
+                "laravel",
+                "plugin"
+            ],
+            "support": {
+                "issues": "https://github.com/awcodes/filament-badgeable-column/issues",
+                "source": "https://github.com/awcodes/filament-badgeable-column/tree/v4.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/awcodes",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-01-19T17:45:58+00:00"
+        },
         {
             "name": "bezhansalleh/filament-plugin-essentials",
             "version": "1.2.1",

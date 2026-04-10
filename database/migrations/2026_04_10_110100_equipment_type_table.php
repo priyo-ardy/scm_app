@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('material_categories', function (Blueprint $table) {
+        Schema::create('equipment_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 20)->unique();
-            $table->foreignId('parent_id')->nullable()->constrained('material_categories', 'id')->cascadeOnDelete();
-            $table->string('name', 150);
-            $table->integer('sort_order')->default(0);
-            $table->text('remark')->nullable();
+            $table->string('code', 20)->unique(); // EQT-001
+            $table->string('name', 150);           // Machine Equipment
+            $table->string('prefix', 10)->nullable()->unique(); // EQT, MCH, FRK
+            $table->string('icon')->nullable();       // Buat gaya-gayaan di UI
+            $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('material_categories');
+        Schema::dropIfExists('equipment_categories');
     }
 };

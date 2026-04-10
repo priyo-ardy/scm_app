@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "awcodes/filament-badgeable-column": "^4.0",
         "bezhansalleh/filament-shield": "^4.2",
         "dotswan/filament-map-picker": "^2.3",
         "filament/filament": "^5.4",
