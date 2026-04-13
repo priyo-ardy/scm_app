@@ -26,11 +26,38 @@ use Illuminate\Notifications\Action;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Models\Company;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $logoUrl = null;
+        $brandLogo = null;
+        $brandName = 'Schlemmer Automotive Indonesia';
+
+        try {
+            if (Schema::hasTable('companies')) {
+                $company = Company::first();
+
+                if ($company) {
+                    $brandName = $company->name ?? $brandName;
+
+                    if ($company->logo) {
+                        $brandLogo = Storage::url($company->logo);
+                    }
+
+                    if ($company->favicon) {
+                        $logoUrl = Storage::url($company->favicon);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+        }
+
         return $panel
             ->default()
             ->id('admin')
@@ -42,6 +69,8 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->brandName($brandName)
+            ->favicon($logoUrl)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

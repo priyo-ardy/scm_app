@@ -16,11 +16,14 @@ class Equipment extends Model
     protected $table = 'equipments';
 
     protected $fillable = [
+        'company_id',      // Baru ditambahkan
+        'branch_id',       // Baru ditambahkan
         'category_id',
         'code',
+        'equipment_no',
         'name',
-        'location',
-        'tonnage',
+        'specification',
+        'tonnage_id',      // Diperbaiki (sebelumnya 'tonnage')
         'brand',
         'model_number',
         'serial_number',
@@ -31,6 +34,7 @@ class Equipment extends Model
         'total_shots',
         'last_maintenance',
         'avatar',
+        'workshop_id',     // Diperbaiki (sebelumnya typo 'workhsop_id')
         'description'
     ];
 
@@ -42,9 +46,29 @@ class Equipment extends Model
         ];
     }
 
+    public function companyList(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id')->where('deleted_at', null)->orderBy('name', 'asc');
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(EquipmentCategory::class, 'category_id')->where('is_active', 1)->orderBy('name', 'asc');
+    }
+
+    public function branchList(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id')->where('is_active', 1)->orderBy('name', 'asc');
+    }
+
+    public function tonnageList(): BelongsTo
+    {
+        return $this->belongsTo(Tonnage::class, 'tonnage_id')->where('is_active', 1)->orderBy('name', 'asc');
+    }
+
+    public function workshopList(): BelongsTo
+    {
+        return $this->belongsTo(Workshop::class, 'workshop_id')->where('is_active', 1)->orderBy('name', 'asc');
     }
 
     public static function generateCurrentCode($categoryId)
