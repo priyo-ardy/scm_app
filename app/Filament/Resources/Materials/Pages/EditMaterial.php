@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\Equipments\Pages;
+namespace App\Filament\Resources\Materials\Pages;
 
-use App\Filament\Resources\Equipments\EquipmentsResource;
-use App\Models\Equipment;
+use App\Filament\Resources\Materials\MaterialResource;
+use App\Models\Material;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 
-class EditEquipments extends EditRecord
+class EditMaterial extends EditRecord
 {
-    protected static string $resource = EquipmentsResource::class;
+    protected static string $resource = MaterialResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -28,25 +28,25 @@ class EditEquipments extends EditRecord
                 ->tooltip('Go to first data')
                 ->icon(Heroicon::OutlinedChevronDoubleLeft)
                 ->url(function () {
-                    $firstRecord = Equipment::orderBy('code', 'asc')->first();
+                    $firstRecord = Material::orderBy('code', 'asc')->first();
 
                     return ($firstRecord && $firstRecord->id !== $this->record->id)
-                        ? EquipmentsResource::getUrl('edit', ['record' => $firstRecord])
+                        ? MaterialResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => !Equipment::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn() => !Material::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
                 ->tooltip('Previous')
                 ->icon(Heroicon::OutlinedChevronLeft)
                 ->url(function () {
-                    $prevRecord = Equipment::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
+                    $prevRecord = Material::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
 
                     return $prevRecord
-                        ? EquipmentsResource::getUrl('edit', ['record' => $prevRecord]) : null;
+                        ? MaterialResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn() => !Equipment::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn() => !Material::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -54,13 +54,13 @@ class EditEquipments extends EditRecord
                 ->icon(Heroicon::OutlinedChevronRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $nextRecord = Equipment::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
+                    $nextRecord = Material::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
 
                     return $nextRecord
-                        ? EquipmentsResource::getUrl('edit', ['record' => $nextRecord])
+                        ? MaterialResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => !Equipment::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn() => !Material::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -68,14 +68,14 @@ class EditEquipments extends EditRecord
                 ->icon(Heroicon::OutlinedChevronDoubleRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $lastRecord = Equipment::orderBy('code', 'desc')->first();
+                    $lastRecord = Material::orderBy('code', 'desc')->first();
 
                     // Jangan redirect kalau kita sudah di record terakhir
                     return ($lastRecord && $lastRecord->id !== $this->record->id)
-                        ? EquipmentsResource::getUrl('edit', ['record' => $lastRecord])
+                        ? MaterialResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => !Equipment::where('code', '>', $this->record->code)->exists())
+                ->disabled(fn() => !Material::where('code', '>', $this->record->code)->exists())
         ];
     }
 }
