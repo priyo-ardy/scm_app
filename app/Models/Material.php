@@ -7,13 +7,72 @@ use App\HasCodeGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasPermissions;
 
 class Material extends Model
 {
-    use HasFactory, HasPermissions, HasCodeGenerator, Blameable;
+    use HasFactory, HasPermissions, HasCodeGenerator, Blameable, SoftDeletes;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'company_id',
+        'category_id',
+        'code',
+        'name',
+        'specification',
+        'unit_id',
+        'purchase_unit_id',
+        'unit_conversion_rate',
+        'spq',
+        'qty_bag',
+        'net_weight',
+        'gross_weight',
+        'sprue',
+        'cycle_time',
+        'shift_capacity',
+        'properties',
+        'color',
+        'cavity',
+        'workshop_id',
+        'cust_part_no',
+        'cust_part_name',
+        'delivery_location',
+        'avatar',
+        'enable_min_stock',
+        'min_stock',
+        'enable_safety_stock',
+        'safety_stock',
+        'enable_max_stock',
+        'max_stock',
+        'reorder_point',
+        'description',
+        'mold_no',
+        'supplier_id',
+        'is_hazardous',
+        'storage_location_id',
+        'enable_expired',
+        'expiry_days',
+        'lead_time_days',
+        'status',
+        'drawing_no',
+        'process_routes',
+        'drawing_level',
+        'revision_no',
+        'tonnage_id',
+        'hs_code',
+        'regrind_method',
+        'carton_category',
+        'carton_length',
+        'carton_width',
+        'carton_height',
+        'dimension_unit_id',
+        'stacking_limit',
+        'is_inspection_required',
+        'last_purchase_price',
+        'images',
+        'created_by',
+        'updated_by',
+    ];
 
     protected function casts(): array
     {

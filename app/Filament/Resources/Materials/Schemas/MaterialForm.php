@@ -121,6 +121,7 @@ class MaterialForm
                             ->label('Default Supplier')
                             ->searchable()
                             ->preload()
+                            ->nullable()
                             ->relationship('supplierList', 'name')
                             ->columnSpan(4),
                         TextInput::make('hs_code')
@@ -131,6 +132,7 @@ class MaterialForm
                         Select::make('regrind_method')
                             ->label('Regrind Method')
                             ->searchable()
+                            ->nullable()
                             ->options(['inline' => 'Inline', 'offline' => 'Offline', 'no_regrind' => 'No regrind'])
                             ->columnSpan(2),
                         Select::make('status')
@@ -217,7 +219,6 @@ class MaterialForm
                             ->columnSpan(2),
                         TextInput::make('qty_bag')
                             ->label('Qty/Bag')
-                            ->required()
                             ->numeric()
                             ->default(0)
                             ->columnSpan(2),
@@ -313,7 +314,6 @@ class MaterialForm
                             ->columnSpan(2)
                             ->default(0),
                         TextInput::make('min_stock')
-                            ->required()
                             ->numeric()
                             ->default(0.0)
                             ->columnSpan(2),
@@ -326,7 +326,6 @@ class MaterialForm
                             ->columnSpan(2)
                             ->default(0),
                         TextInput::make('safety_stock')
-                            ->required()
                             ->numeric()
                             ->default(0.0)
                             ->columnSpan(2),
@@ -339,12 +338,10 @@ class MaterialForm
                             ->columnSpan(2)
                             ->default(0),
                         TextInput::make('max_stock')
-                            ->required()
                             ->numeric()
                             ->default(0.0)
                             ->columnSpan(2),
                         TextInput::make('reorder_point')
-                            ->required()
                             ->numeric()
                             ->default(0.0)
                             ->columnSpan(2),
@@ -357,6 +354,8 @@ class MaterialForm
                                 '0' => 'No',
                                 '1' => 'Yes'
                             ])
+                            ->default(0)
+                            ->nullable()
                             ->columnSpan(2),
                         TextInput::make('expiry_days')
                             ->label('Expired Days')
@@ -371,6 +370,7 @@ class MaterialForm
                         Select::make('is_inspection_required')
                             ->label('Required Inspection')
                             ->required()
+                            ->nullable()
                             ->options([
                                 '0' => 'No',
                                 '1' => 'Yes'
@@ -428,15 +428,16 @@ class MaterialForm
                 Section::make()
                     ->description('Material Image')
                     ->schema([
-                        FileUpload::make('avatar')
+                        FileUpload::make('images')
                             ->hiddenLabel()
                             ->image()
                             ->imageEditor()
                             ->alignCenter()
                             ->visibility('public')
-                            ->directory('material-avatar')
+                            ->directory('material-images')
+                            ->nullable()
                             ->disk('public')
-                            ->saveRelationshipsUsing(null)
+                            ->preserveFilenames(false)
                             ->maxSize(10240)
                             ->openable()
                             ->imageAspectRatio(['16:9', '4:3', '1:1'])

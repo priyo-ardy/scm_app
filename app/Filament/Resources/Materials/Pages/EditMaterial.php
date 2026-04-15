@@ -6,6 +6,7 @@ use App\Filament\Resources\Materials\MaterialResource;
 use App\Models\Material;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 
@@ -21,6 +22,33 @@ class EditMaterial extends EditRecord
                 ->icon('heroicon-m-arrow-left')
                 ->color('gray')
                 ->url(static::getResource()::getUrl('index')),
+            Action::make('add')
+                ->label('New')
+                ->icon(Heroicon::OutlinedPlusCircle)
+                ->color('success')
+                ->url(fn() => $this->getResource()::getUrl('create')),
+            Action::make('copy')
+                ->label('Copy')
+                ->icon(Heroicon::OutlinedDocumentDuplicate)
+                ->color('warning')
+                ->action(function ($record) {
+                    $data = $record->toArray();
+                    unset($data['id'], $data['created_at'], $data['updated_at']);
+                    $data['code'] = $record->code . '-COPY-' . uniqid();
+                    $newRecord = \App\Models\Material::create($data);
+
+                    if ($newRecord) {
+                        Notification::make()
+                            ->title('Material Copied Successfully')
+                            ->success()
+                            ->send();
+
+                        return redirect(static::getResource()::getUrl('edit', ['record' => $newRecord]));
+                    }
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Duplicate data')
+                ->modalDescription('Are you sure want to duplicate this data? Code will be suffixed with "-copy".'),
             DeleteAction::make()->icon(Heroicon::OutlinedTrash),
             Action::make('first')
                 ->label('First')
