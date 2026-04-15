@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Branch extends Model
 {
-    use SoftDeletes, HasFactory, HasRoles, HasCodeGenerator;
+    use HasCodeGenerator, HasFactory, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'company_id',
@@ -24,12 +24,12 @@ class Branch extends Model
         'total_manpower',
         'address',
         'map_url',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [
         'category' => 'string',
-        'map_url' => 'array'
+        'map_url' => 'array',
     ];
 
     public function getCreatedAtAttribute($value)

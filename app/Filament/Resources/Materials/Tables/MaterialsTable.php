@@ -3,32 +3,26 @@
 namespace App\Filament\Resources\Materials\Tables;
 
 use App\Filament\Exports\MaterialExporter;
+use App\Models\Company;
+use App\Models\MaterialCategory;
+use App\Models\Supplier;
+use App\Models\Workshop;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\QueryBuilder\Constraints\BooleanConstraint;
-use Filament\QueryBuilder\Constraints\NumberConstraint;
-use Filament\QueryBuilder\Constraints\SelectConstraint;
-use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class MaterialsTable
@@ -98,24 +92,24 @@ class MaterialsTable
                 TextColumn::make('enable_min_stock')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No'),
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
                 TextColumn::make('min_stock')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('enable_safety_stock')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No'),
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
                 TextColumn::make('safety_stock')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('enabl_max_stock')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No'),
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
                 TextColumn::make('max_stock')
                     ->numeric()
                     ->sortable(),
@@ -128,15 +122,15 @@ class MaterialsTable
                 TextColumn::make('is_hazardous')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No'),
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
                 TextColumn::make('storage_location_id')
                     ->searchable(),
                 TextColumn::make('enable_expired')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No'),
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
                 TextColumn::make('expiry_days')
                     ->numeric()
                     ->sortable(),
@@ -171,8 +165,8 @@ class MaterialsTable
                 TextColumn::make('is_inspection_required')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No'),
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
                 TextColumn::make('last_purchase_price')
                     ->money('IDR')
                     ->sortable(),
@@ -205,34 +199,89 @@ class MaterialsTable
             ->filters([
                 QueryBuilder::make()
                     ->constraints([
-                        // TEXT: Untuk Nama, Code, Spec, dll
-                        TextConstraint::make('code')
+                        // --- 1. IDENTITAS (TEXT) ---
+                        QueryBuilder\Constraints\TextConstraint::make('code')
                             ->label('Material Code'),
-                        TextConstraint::make('name')
+                        QueryBuilder\Constraints\TextConstraint::make('name')
                             ->label('Material Name'),
-                        TextConstraint::make('specification'),
+                        QueryBuilder\Constraints\TextConstraint::make('specification')
+                            ->label('Specification'),
+                        QueryBuilder\Constraints\TextConstraint::make('description')
+                            ->label('Description'),
+                        QueryBuilder\Constraints\TextConstraint::make('cust_part_no')
+                            ->label('Customer Part No'),
+                        QueryBuilder\Constraints\TextConstraint::make('cust_part_name')
+                            ->label('Customer Part Name'),
+                        QueryBuilder\Constraints\TextConstraint::make('drawing_no')
+                            ->label('Drawing No'),
 
-                        // NUMBER: Untuk Weight, SPQ, Cavity (Otomatis ada operator > < =)
-                        NumberConstraint::make('net_weight')
+                        // --- 2. TEKNIS & BERAT (NUMBER/DECIMAL) ---
+                        QueryBuilder\Constraints\NumberConstraint::make('net_weight')
                             ->label('Net Weight'),
-                        NumberConstraint::make('cavity'),
-                        NumberConstraint::make('cycle_time'),
+                        QueryBuilder\Constraints\NumberConstraint::make('gross_weight')
+                            ->label('Gross Weight'),
+                        QueryBuilder\Constraints\NumberConstraint::make('cycle_time')
+                            ->label('Cycle Time'),
+                        QueryBuilder\Constraints\NumberConstraint::make('cavity')
+                            ->label('Cavity'),
+                        QueryBuilder\Constraints\NumberConstraint::make('spq')
+                            ->label('SPQ'),
+                        QueryBuilder\Constraints\NumberConstraint::make('qty_bag')
+                            ->label('Qty/Bag'),
+                        QueryBuilder\Constraints\NumberConstraint::make('shift_capacity')
+                            ->label('Shift Capacity'),
 
-                        // SELECT: Untuk Status, Workshop (Otomatis ada operator Is/Is Not)
-                        SelectConstraint::make('status')
+                        // --- 3. STATUS & PILIHAN (SELECT) ---
+                        QueryBuilder\Constraints\SelectConstraint::make('status')
                             ->options([
                                 'draft' => 'Draft',
                                 'active' => 'Active',
                                 'phase_out' => 'Phase Out',
+                                'obsolete' => 'Obsolete',
                             ]),
-                        SelectConstraint::make('workshop_id')
-                            ->label('Workshop')
-                            ->options(\App\Models\Workshop::pluck('name', 'id')->toArray()),
+                        QueryBuilder\Constraints\SelectConstraint::make('properties')
+                            ->options([
+                                'purchase' => 'Purchase',
+                                'self_made' => 'Self Made',
+                                'sub_contract' => 'Sub Contract',
+                                'asset' => 'Asset',
+                            ]),
+                        QueryBuilder\Constraints\SelectConstraint::make('regrind_method')
+                            ->options([
+                                'inline' => 'Inline',
+                                'offline' => 'Offline',
+                                'no_regrind' => 'No Regrind',
+                            ]),
 
-                        // BOOLEAN: Untuk Hazardous, dll
-                        BooleanConstraint::make('is_hazardous')
+                        // --- 4. RELASI (SELECT DARI DATABASE) ---
+                        QueryBuilder\Constraints\SelectConstraint::make('company_id')
+                            ->label('Company')
+                            ->options(Company::pluck('name', 'id')),
+                        QueryBuilder\Constraints\SelectConstraint::make('workshop_id')
+                            ->label('Workshop')
+                            ->options(Workshop::pluck('name', 'id')),
+                        QueryBuilder\Constraints\SelectConstraint::make('supplier_id')
+                            ->label('Supplier')
+                            ->options(Supplier::pluck('name', 'id')),
+                        QueryBuilder\Constraints\SelectConstraint::make('category_id')
+                            ->label('Category')
+                            ->options(MaterialCategory::pluck('name', 'id')),
+
+                        // --- 5. LOGIKA / FLAG (BOOLEAN) ---
+                        QueryBuilder\Constraints\BooleanConstraint::make('is_hazardous')
                             ->label('Is Hazardous'),
+                        QueryBuilder\Constraints\BooleanConstraint::make('is_inspection_required')
+                            ->label('Inspection Required'),
+                        QueryBuilder\Constraints\BooleanConstraint::make('enable_min_stock')
+                            ->label('Enable Min Stock'),
+                        QueryBuilder\Constraints\BooleanConstraint::make('enable_expired')
+                            ->label('Enable Expired'),
+
+                        // --- 6. TANGGAL (DATE) ---
+                        QueryBuilder\Constraints\DateConstraint::make('created_at')
+                            ->label('Created Date'),
                     ])
+                    ->constraintPickerColumns(4),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersFormColumns(1)
@@ -246,7 +295,7 @@ class MaterialsTable
                     BulkAction::make('bulkEdit')
                         ->label('Mass Edit')
                         ->color('warning')
-                        ->icon(HeroIcon::OutlinedPencilSquare)
+                        ->icon(Heroicon::OutlinedPencilSquare)
                         ->schema([
                             Select::make('column_to_update')
                                 ->label('Edit field name')
@@ -288,14 +337,14 @@ class MaterialsTable
                             // Tipe TEXTAREA (Specification)
                             Textarea::make('value_textarea')
                                 ->label('New Specification')
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'specification')
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'specification')
                                 ->required(),
 
                             // Tipe NUMERIC (SPQ, Qty/Bag, Cavity, Capacity)
                             TextInput::make('value_numeric')
                                 ->label('New Value (Integer)')
                                 ->numeric()
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['spq', 'qty_bag', 'shift_capacity', 'cavity']))
+                                ->visible(fn (Get $get) => in_array($get('column_to_update'), ['spq', 'qty_bag', 'shift_capacity', 'cavity']))
                                 ->required(),
 
                             // Tipe DECIMAL (Weights, Cycle Time, Carton Dims)
@@ -303,47 +352,47 @@ class MaterialsTable
                                 ->label('New Value (Decimal)')
                                 ->numeric()
                                 ->step('0.00001')
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['net_weight', 'gross_weight', 'cycle_time', 'carton_length', 'carton_width', 'carton_height']))
+                                ->visible(fn (Get $get) => in_array($get('column_to_update'), ['net_weight', 'gross_weight', 'cycle_time', 'carton_length', 'carton_width', 'carton_height']))
                                 ->required(),
 
                             // Tipe RELATIONSHIP (Workshop, Supplier, Tonnage, Unit)
                             Select::make('value_relation_workshop')
                                 ->label('Select New Workshop')
                                 ->relationship('workshopList', 'name')
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'workshop_id')
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'workshop_id')
                                 ->required(),
 
                             Select::make('value_relation_supplier')
                                 ->label('Select New Supplier')
                                 ->relationship('supplierList', 'name')
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'supplier_id')
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'supplier_id')
                                 ->required(),
 
                             // Tipe ENUM (Status)
                             Select::make('value_status')
                                 ->label('Select New Status')
                                 ->options(['draft' => 'Draft', 'active' => 'Active', 'phase_out' => 'Phase out', 'obsolete' => 'Obsolete'])
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'status')
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'status')
                                 ->required(),
 
                             // Tipe ENUM (Regrind Method)
                             Select::make('value_regrind')
                                 ->label('Select New Regrind Method')
                                 ->options(['inline' => 'Inline', 'offline' => 'Offline', 'no_regrind' => 'No regrind'])
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'regrind_method')
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'regrind_method')
                                 ->required(),
 
                             // Tipe BOOLEAN (Hazardous, Inspection)
                             Select::make('value_boolean')
                                 ->label('Select Yes/No')
                                 ->options(['0' => 'No', '1' => 'Yes'])
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['is_hazardous', 'is_inspection_required']))
+                                ->visible(fn (Get $get) => in_array($get('column_to_update'), ['is_hazardous', 'is_inspection_required']))
                                 ->required(),
 
                             // Tipe STRING BIASA (Part No, Part Name, Delivery Loc, Mold No)
                             TextInput::make('value_string')
                                 ->label('New Text Value')
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['cust_part_no', 'cust_part_name', 'delivery_location', 'mold_no', 'drawing_no', 'hs_code']))
+                                ->visible(fn (Get $get) => in_array($get('column_to_update'), ['cust_part_no', 'cust_part_name', 'delivery_location', 'mold_no', 'drawing_no', 'hs_code']))
                                 ->required(),
                         ])
                         ->action(function (Collection $records, array $data): void {
@@ -367,20 +416,20 @@ class MaterialsTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
                         })
-                        ->deselectRecordsAfterCompletion()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
-                    ->exporter(MaterialExporter::class)
+                    ->exporter(MaterialExporter::class),
             ]);
     }
 }

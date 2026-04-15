@@ -5,9 +5,8 @@ namespace App\Filament\Resources\Materials\Schemas;
 use App\Models\MaterialCategory;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -33,7 +32,7 @@ class MaterialForm
                             ->columnSpan(3),
                         Select::make('category_id')
                             ->label('Category')
-                            ->relationship('categoryList', 'name', fn($query) => $query->where('is_active', '1')->orderBy('code', 'asc'))
+                            ->relationship('categoryList', 'name', fn ($query) => $query->where('is_active', '1')->orderBy('code', 'asc'))
                             ->getOptionLabelFromRecordUsing(function ($record) {
                                 $depth = substr_count($record->code, '.');
                                 $indent = str_repeat('   ', $depth);
@@ -45,15 +44,16 @@ class MaterialForm
                             ->preload()
                             ->live()
                             ->afterStateUpdated(function (string $state, Set $set) {
-                                if (!$state) {
+                                if (! $state) {
                                     $set('code', '');
+
                                     return;
                                 }
 
                                 $category = MaterialCategory::find($state);
 
                                 if ($category) {
-                                    $set('code', $category->code . '.');
+                                    $set('code', $category->code.'.');
                                 }
                             })
                             ->columnSpan(4),
@@ -63,14 +63,16 @@ class MaterialForm
                             ->maxLength(150)
                             ->unique(ignoreRecord: true)
                             ->validationMessages([
-                                'unique' => 'This code already registered'
+                                'unique' => 'This code already registered',
                             ])
                             ->live()
                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                 $categoryId = $get('category_id');
-                                if (! $categoryId) return;
+                                if (! $categoryId) {
+                                    return;
+                                }
 
-                                $categoryCode = MaterialCategory::find($categoryId)?->code . '.';
+                                $categoryCode = MaterialCategory::find($categoryId)?->code.'.';
 
                                 // Jika user mencoba menghapus atau merubah awalan kategori
                                 if (! str_starts_with($state, $categoryCode)) {
@@ -98,15 +100,15 @@ class MaterialForm
                             ->required()
                             ->searchable()
                             ->options([
-                                'purchase'      => '1. Purchase',
-                                'self_made'     => '2. Self made',
-                                'sub_contract'  => '3. Sub contract',
-                                'configure'     => '4. Configure',
-                                'asset'         => '5. Asset',
-                                'feature'       => '6. Feature',
-                                'expense'       => '7. Expense',
-                                'virtual'       => '8. Virtual',
-                                'service'       => '9. Service',
+                                'purchase' => '1. Purchase',
+                                'self_made' => '2. Self made',
+                                'sub_contract' => '3. Sub contract',
+                                'configure' => '4. Configure',
+                                'asset' => '5. Asset',
+                                'feature' => '6. Feature',
+                                'expense' => '7. Expense',
+                                'virtual' => '8. Virtual',
+                                'service' => '9. Service',
                             ])
                             ->default('purchase')
                             ->columnSpan(2),
@@ -153,7 +155,7 @@ class MaterialForm
                             ->label('Is Hazardous')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->default(0)
                             ->searchable()
@@ -297,7 +299,7 @@ class MaterialForm
                             ->maxLength(150)
                             ->placeholder('Process Routes')
                             ->default(null)
-                            ->columnSpan(6)
+                            ->columnSpan(6),
                     ])
                     ->columns(12)
                     ->columnSpanFull()
@@ -309,7 +311,7 @@ class MaterialForm
                             ->label('Enable Min Stock')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->columnSpan(2)
                             ->default(0),
@@ -321,7 +323,7 @@ class MaterialForm
                             ->label('Enable Safety Stock')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->columnSpan(2)
                             ->default(0),
@@ -333,7 +335,7 @@ class MaterialForm
                             ->label('Enable Max Stock')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->columnSpan(2)
                             ->default(0),
@@ -352,7 +354,7 @@ class MaterialForm
                             ->label('Enable Expired')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->default(0)
                             ->nullable()
@@ -373,10 +375,10 @@ class MaterialForm
                             ->nullable()
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->default('0')
-                            ->columnSpan(2)
+                            ->columnSpan(2),
                     ])
                     ->columns(12)
                     ->columnSpanFull()
@@ -451,8 +453,10 @@ class MaterialForm
                                 $materialCode = $get('code');
                                 if (filled($materialCode)) {
                                     $safeCode = str_replace(['/', '\\', '?', '*', ':', '|', '"', '<', '>', ' '], '-', $materialCode);
-                                    return (string) str($safeCode . '-' . now()->timestamp . '-' . uniqid() . '.' . $file->getClientOriginalExtension());
+
+                                    return (string) str($safeCode.'-'.now()->timestamp.'-'.uniqid().'.'.$file->getClientOriginalExtension());
                                 }
+
                                 return $file->hashName();
                             })
                             ->rules([
@@ -463,7 +467,7 @@ class MaterialForm
                                             $totalSize = 0;
                                             foreach ($value as $file) {
                                                 // Jika file baru (TemporaryUploadedFile)
-                                                if ($file instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+                                                if ($file instanceof TemporaryUploadedFile) {
                                                     $totalSize += $file->getSize();
                                                 }
                                                 // Jika file lama (sudah ada di server/string path)
@@ -472,15 +476,15 @@ class MaterialForm
 
                                             $maxTotal = 50 * 1024 * 1024; // 50MB dalam Bytes
                                             if ($totalSize > $maxTotal) {
-                                                $fail("The total size of all images must not exceed 50MB.");
+                                                $fail('The total size of all images must not exceed 50MB.');
                                             }
                                         }
                                     };
                                 },
                             ])
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ])->columnSpanFull()
-                    ->collapsed(false)
+                    ->collapsed(false),
             ]);
     }
 }

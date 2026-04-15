@@ -10,12 +10,12 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Forms\Components\Select;
+use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
-use Filament\Notifications\Notification;
 
 class EquipmentCategoriesTable
 {
@@ -39,7 +39,7 @@ class EquipmentCategoriesTable
                 TextColumn::make('description')
                     ->label('remark')
                     ->sortable()
-                    ->searchable()
+                    ->searchable(),
             ])
             ->filters([
                 //
@@ -61,14 +61,14 @@ class EquipmentCategoriesTable
                                 ->label('Status')
                                 ->options([
                                     '0' => 'Deactive',
-                                    '1' => 'Active'
+                                    '1' => 'Active',
                                 ])
                                 ->searchable()
-                                ->native(false)
+                                ->native(false),
                         ])->action(function (Collection $records, array $data) {
                             foreach ($records as $record) {
                                 $record->update([
-                                    'is_active' => $data['is_active']
+                                    'is_active' => $data['is_active'],
                                 ]);
                             }
 
@@ -81,16 +81,16 @@ class EquipmentCategoriesTable
                                 ->send();
                         })
                         ->deselectRecordsAfterCompletion()
-                        ->modalSubmitActionLabel('Update')
+                        ->modalSubmitActionLabel('Update'),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
-                    ->exporter(EquipmentCategoryExporter::class)
+                    ->exporter(EquipmentCategoryExporter::class),
             ]);
     }
 }

@@ -4,21 +4,24 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\LogsAllActivities;
+use Database\Factories\UserFactory;
+use Filament\Notifications\Notification;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Filament\Panel;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use SoftDeletes;
-    use HasRoles;
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+    use HasRoles;
+    use SoftDeletes;
+
+    use SoftDeletes;
     // use LogsAllActivities;
 
     /**
@@ -37,7 +40,7 @@ class User extends Authenticatable
         'last_login_from',
         'avatar',
         'remark',
-        'role'
+        'role',
     ];
 
     /**

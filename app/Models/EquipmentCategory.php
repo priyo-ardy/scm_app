@@ -9,7 +9,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class EquipmentCategory extends Model
 {
-    use HasFactory, HasPermissions, HasCodeGenerator;
+    use HasCodeGenerator, HasFactory, HasPermissions;
 
     protected $fillable = [
         'code',
@@ -17,7 +17,7 @@ class EquipmentCategory extends Model
         'prefix',
         'icon',
         'description',
-        'is_active'
+        'is_active',
     ];
 
     protected function casts(): array

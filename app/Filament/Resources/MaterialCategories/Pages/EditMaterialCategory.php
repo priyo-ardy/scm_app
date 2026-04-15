@@ -29,7 +29,7 @@ class EditMaterialCategory extends EditRecord
                         ? MaterialCategoryResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => !MaterialCategory::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn () => ! MaterialCategory::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
@@ -41,7 +41,7 @@ class EditMaterialCategory extends EditRecord
                     return $prevRecord
                         ? MaterialCategoryResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn() => !MaterialCategory::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn () => ! MaterialCategory::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -55,7 +55,7 @@ class EditMaterialCategory extends EditRecord
                         ? MaterialCategoryResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => !MaterialCategory::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn () => ! MaterialCategory::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -70,7 +70,7 @@ class EditMaterialCategory extends EditRecord
                         ? MaterialCategoryResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => !MaterialCategory::where('code', '>', $this->record->code)->exists())
+                ->disabled(fn () => ! MaterialCategory::where('code', '>', $this->record->code)->exists()),
         ];
     }
 }

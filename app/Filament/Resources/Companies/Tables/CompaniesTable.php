@@ -91,7 +91,7 @@ class CompaniesTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->exporter(CompanyExporter::class)
                     ->label('Export')

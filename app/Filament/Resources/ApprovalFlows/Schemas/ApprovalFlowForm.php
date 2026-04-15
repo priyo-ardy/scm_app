@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\ApprovalFlows\Schemas;;
+namespace App\Filament\Resources\ApprovalFlows\Schemas;
 
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class ApprovalFlowForm
 {
@@ -62,7 +61,7 @@ class ApprovalFlowForm
                                     ->searchable()
                                     ->preload()
                                     ->native()
-                                    ->columnSpan(6)
+                                    ->columnSpan(6),
                             ])
                             ->columns(12)
                             ->itemNumbers()
@@ -71,10 +70,10 @@ class ApprovalFlowForm
                             ->collapsible()
                             ->orderColumn('order')
                             ->reorderableWithButtons()
-                            ->reorderableWithDragAndDrop()
+                            ->reorderableWithDragAndDrop(),
                     ])
                     ->columns(1)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

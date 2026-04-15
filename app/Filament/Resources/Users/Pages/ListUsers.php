@@ -4,14 +4,14 @@ namespace App\Filament\Resources\Users\Pages;
 
 use App\Filament\Exports\UsersExporter;
 use App\Filament\Resources\Users\UsersResource;
-use Spatie\Permission\Models\Role;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Actions\ExportAction;
+use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class ListUsers extends ListRecords
 {
@@ -44,7 +44,7 @@ class ListUsers extends ListRecords
             $label = Str::title(ucwords(str_replace('_', ' ', $role->name)));
 
             $tabs[$role->name] = Tab::make($label)
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('role', $role->id));
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('role', $role->id));
             // ->badge(fn() => \App\Models\User::where('role', $role->id)->count());
         }
 

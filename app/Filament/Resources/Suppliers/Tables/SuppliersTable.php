@@ -12,11 +12,14 @@ use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Actions\Action as TableAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action as TableAction;
+use Illuminate\Database\Eloquent\Builder;
 
 class SuppliersTable
 {
@@ -94,7 +97,7 @@ class SuppliersTable
                     ->sortable(),
                 TextColumn::make('payment_method')
                     ->label('Payment Method')
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'cash' => 'Cash',
                         'bank' => 'Bank Transfer',
                         'cheque' => 'Cheque',
@@ -105,26 +108,26 @@ class SuppliersTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('remark')
-                    ->label('Remark')
+                    ->label('Remark'),
             ])
             ->filters([
                 TrashedFilter::make(),
-                \Filament\Tables\Filters\Filter::make('created_at')
+                Filter::make('created_at')
                     ->form([
-                        \Filament\Forms\Components\DatePicker::make('created_from'),
-                        \Filament\Forms\Components\DatePicker::make('created_until'),
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
                     ])
-                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data): \Illuminate\Database\Eloquent\Builder {
+                    ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn(\Illuminate\Database\Eloquent\Builder $query, $date): \Illuminate\Database\Eloquent\Builder => $query->whereDate('created_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn(\Illuminate\Database\Eloquent\Builder $query, $date): \Illuminate\Database\Eloquent\Builder => $query->whereDate('created_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
-                    })
+                    }),
             ])
             ->filtersFormColumns(2)
             // ->filtersTriggerAction(
@@ -136,7 +139,7 @@ class SuppliersTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make()
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -147,10 +150,10 @@ class SuppliersTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->exporter(SupplierExporter::class)
-                    ->icon('heroicon-o-arrow-down-tray')
+                    ->icon('heroicon-o-arrow-down-tray'),
             ]);
     }
 }

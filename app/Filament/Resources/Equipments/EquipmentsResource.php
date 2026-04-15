@@ -20,8 +20,11 @@ class EquipmentsResource extends Resource
     protected static ?string $model = Equipment::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+
     protected static ?string $navigationLabel = 'List of Equipments';
+
     protected static ?int $navigationSort = 8;
 
     protected static ?string $recordTitleAttribute = 'Equipment';

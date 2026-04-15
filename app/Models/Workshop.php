@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Blameable;
 use App\HasCodeGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Workshop extends Model
 {
-    use HasFactory, HasRoles, HasCodeGenerator;
+    use HasCodeGenerator, HasFactory, HasRoles;
 
     protected $fillable = [
         'code',
@@ -21,7 +20,7 @@ class Workshop extends Model
         'pic_id',
         'phone',
         'remarks',
-        'is_active'
+        'is_active',
     ];
 
     public function branch(): BelongsTo

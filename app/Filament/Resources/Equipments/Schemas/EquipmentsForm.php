@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Equipments\Schemas;
 
-use App\Models\Branch;
 use App\Models\Equipment;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -31,18 +30,18 @@ class EquipmentsForm
                             ->preload()
                             ->required()
                             ->live()
-                            ->afterStateUpdated(fn(Set $set) => $set('branch_id', null))
+                            ->afterStateUpdated(fn (Set $set) => $set('branch_id', null))
                             ->searchable()
                             ->columnSpan(4),
                         Select::make('branch_id')
                             ->label('Branch')
-                            ->relationship('branchList', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('company_id', $get('company_id')))
+                            ->relationship('branchList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $get('company_id')))
                             ->native(false)
                             ->preload()
                             ->required()
                             ->live()
                             ->searchable()
-                            ->columnSpan(3)
+                            ->columnSpan(3),
                     ])
                     ->columns(12)
                     ->columnSpanFull(),
@@ -74,7 +73,7 @@ class EquipmentsForm
                         TextInput::make('name')
                             ->label('Name')
                             ->maxLength(150)
-                            ->placeholder("Equipment/Machine Name")
+                            ->placeholder('Equipment/Machine Name')
                             ->required()
                             ->autocomplete(false)
                             ->columnSpan(7),
@@ -93,7 +92,7 @@ class EquipmentsForm
                             ->autocomplete(false),
                         Select::make('workshop_id')
                             ->label('Workshop')
-                            ->relationship('workshopList', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('branch_id', $get('branch_id')))
+                            ->relationship('workshopList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('branch_id', $get('branch_id')))
                             ->native(false)
                             ->preload()
                             ->searchable()
@@ -145,7 +144,7 @@ class EquipmentsForm
                                 'standby' => 'Standby',
                                 'running' => 'Running',
                                 'breakdown' => 'Breakdown',
-                                'repair' => "Repair"
+                                'repair' => 'Repair',
                             ])
                             ->searchable()
                             ->native(false)
@@ -170,10 +169,10 @@ class EquipmentsForm
                             ->label('Description')
                             ->placeholder('Additional information here')
                             ->rows(3)
-                            ->columnSpan(6)
+                            ->columnSpan(6),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

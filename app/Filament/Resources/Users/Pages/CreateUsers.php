@@ -3,11 +3,10 @@
 namespace App\Filament\Resources\Users\Pages;
 
 use App\Filament\Resources\Users\UsersResource;
-use Filament\Notifications\Notification;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\UniqueConstraintViolationException;
 
 class CreateUsers extends CreateRecord
 {
@@ -16,5 +15,16 @@ class CreateUsers extends CreateRecord
     public function getHeading(): string|Htmlable|null
     {
         return 'Create New User';
+    }
+
+    public function getHeaderActions(): array
+    {
+        return [
+            Action::make('back')
+                ->label('Back to List')
+                ->icon(Heroicon::OutlinedArrowLeft)
+                ->color('gray')
+                ->url(static::getResource()::getUrl('index'))
+        ];
     }
 }

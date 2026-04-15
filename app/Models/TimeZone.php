@@ -10,13 +10,13 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class TimeZone extends Model
 {
-    use SoftDeletes, HasFactory, HasPermissions;
+    use HasFactory, HasPermissions, SoftDeletes;
 
     protected $fillable = [
         'name',
         'offset',
         'description',
-        'is_active'
+        'is_active',
     ];
 
     public function getCreatedAtAttribute($value)

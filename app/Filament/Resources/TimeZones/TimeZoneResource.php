@@ -20,9 +20,13 @@ use UnitEnum;
 class TimeZoneResource extends Resource
 {
     protected static ?string $model = TimeZone::class;
-    protected static string|UnitEnum|null $navigationGroup = "Application Setup";
+
+    protected static string|UnitEnum|null $navigationGroup = 'Application Setup';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::GlobeAlt;
+
     protected static ?int $navigationSort = 2;
+
     protected static ?string $recordTitleAttribute = 'Time Zones';
 
     public static function form(Schema $schema): Schema

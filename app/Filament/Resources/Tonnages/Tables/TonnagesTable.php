@@ -14,7 +14,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
@@ -52,14 +51,14 @@ class TonnagesTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Active' : 'Deactive')
-                    ->color(fn(bool $state): string => $state ? 'danger' : 'success')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Active' : 'Deactive')
+                    ->color(fn (bool $state): string => $state ? 'danger' : 'success')
                     ->alignCenter()
                     ->sortable(),
                 TextColumn::make('remark')
                     ->label('Remark')
                     ->searchable()
-                    ->sortable()
+                    ->sortable(),
             ])
             ->filters([
                 Filter::make('filter')
@@ -70,70 +69,70 @@ class TonnagesTable
                         TextInput::make('clamping_force_kn')->label('Clamping Force KN')->numeric()->placeholder('Search with clamping force ...')->autocomplete(false),
                         Select::make('is_active')->options(['0' => 'Deactive', '1' => 'Active'])->native()->searchable(),
                         TextInput::make('std_dbugging')->numeric()->placeholder('Search with debugging'),
-                        Textarea::make('remark')->label('Remark')->placeholder('Search with remark')->autocomplete(false)
+                        Textarea::make('remark')->label('Remark')->placeholder('Search with remark')->autocomplete(false),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['code'],
-                                fn(Builder $query, $code): Builder => $query->where('code', 'LIKE', "%$code%")
+                                fn (Builder $query, $code): Builder => $query->where('code', 'LIKE', "%$code%")
                             )
                             ->when(
                                 $data['name'],
-                                fn(Builder $query, $name): Builder => $query->where('name', 'LIKE', "%$name%")
+                                fn (Builder $query, $name): Builder => $query->where('name', 'LIKE', "%$name%")
                             )
                             ->when(
                                 $data['clamping_force_kn'],
-                                fn(Builder $query, $clamping_force_kn): Builder => $query->where('clamping_force_kn', 'LIKE', "%$clamping_force_kn%")
+                                fn (Builder $query, $clamping_force_kn): Builder => $query->where('clamping_force_kn', 'LIKE', "%$clamping_force_kn%")
                             )
                             ->when(
                                 $data['is_active'],
-                                fn(Builder $query, $is_active): Builder => $query->where('is_active', "$is_active")
+                                fn (Builder $query, $is_active): Builder => $query->where('is_active', "$is_active")
                             )
                             ->when(
                                 $data['remark'],
-                                fn(Builder $query, $remark): Builder => $query->where('remark', 'LIKE', "%$remark%")
+                                fn (Builder $query, $remark): Builder => $query->where('remark', 'LIKE', "%$remark%")
                             )
                             ->when(
                                 $data['std_dbugging'],
-                                fn(Builder $query, $std_dbugging): Builder => $query->where('std_dbugging', 'LIKE', "%$std_dbugging%")
+                                fn (Builder $query, $std_dbugging): Builder => $query->where('std_dbugging', 'LIKE', "%$std_dbugging%")
                             );
                     })
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
 
                         if ($data['code'] ?? null) {
-                            $indicators[] = 'Workshop Code: ' . $data['code'];
+                            $indicators[] = 'Workshop Code: '.$data['code'];
                         }
 
                         if ($data['name'] ?? null) {
-                            $indicators[] = 'Workshop Name: ' . $data['name'];
+                            $indicators[] = 'Workshop Name: '.$data['name'];
                         }
 
                         if ($data['clamping_force_kn'] ?? null) {
-                            $indicators[] = 'Clamping Force Kn: ' . $data['clamping_force_kn'];
+                            $indicators[] = 'Clamping Force Kn: '.$data['clamping_force_kn'];
                         }
 
                         if ($data['is_active'] ?? null) {
                             $status = ($data['is_active'] == '1') ? 'Active' : 'Deactive';
-                            $indicators[] = 'Status: ' . ($status ?? $data['is_active']);
+                            $indicators[] = 'Status: '.($status ?? $data['is_active']);
                         }
 
                         if ($data['remark'] ?? null) {
-                            $indicators[] = 'Remark: ' . $data['remark'];
+                            $indicators[] = 'Remark: '.$data['remark'];
                         }
 
                         if ($data['std_dbugging'] ?? null) {
-                            $indicators[] = 'Standart Debugging: ' . $data['std_dbugging'];
+                            $indicators[] = 'Standart Debugging: '.$data['std_dbugging'];
                         }
 
                         return $indicators;
-                    })
+                    }),
             ])
             ->filtersLayout(FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::Funnel)
@@ -141,7 +140,7 @@ class TonnagesTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make()
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -150,11 +149,11 @@ class TonnagesTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
-                    ->exporter(TonnageExporter::class)
+                    ->exporter(TonnageExporter::class),
             ]);
     }
 }

@@ -22,7 +22,7 @@ class UnitsForm
                                 'length' => 'Length',
                                 'mass' => 'Mass',
                                 'volume' => 'Volume',
-                                'other' => 'Others'
+                                'other' => 'Others',
                             ])
                             ->searchable()
                             ->native()
@@ -37,7 +37,7 @@ class UnitsForm
                             ->autofocus()
                             ->autocomplete(false)
                             ->validationMessages([
-                                'This unit code already registered'
+                                'This unit code already registered',
                             ])->columnSpan(2),
                         TextInput::make('name')
                             ->label('Unit Name')
@@ -60,10 +60,10 @@ class UnitsForm
                             ->required()
                             ->numeric()
                             ->placeholder('Unit Conversion Rate')
-                            ->columnSpan(2)
+                            ->columnSpan(2),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -20,9 +20,13 @@ class EquipmentCategoryResource extends Resource
     protected static ?string $model = EquipmentCategory::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static string|UnitEnum|null $navigationGroup = "Master Data";
+
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+
     protected static ?int $navigationSort = 7;
+
     protected static ?string $pluralLabel = 'List of Equipment Category';
+
     protected static ?string $label = 'Euipment Category';
 
     protected static ?string $recordTitleAttribute = 'EquipmentCategory';

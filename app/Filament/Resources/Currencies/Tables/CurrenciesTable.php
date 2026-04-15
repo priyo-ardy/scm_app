@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Currencies\Tables;
 
 use App\Filament\Exports\CurrencyExporter;
-use Dom\Text;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -62,25 +61,25 @@ class CurrenciesTable
                             ->label('Name')
                             ->placeholder('Enter currency name'),
                         DatePicker::make('created_from')
-                            ->label("Created From"),
+                            ->label('Created From'),
                         DatePicker::make('created_until')
-                            ->label("Created Until"),
+                            ->label('Created Until'),
                     ])->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['code'], fn(Builder $query, $code) => $query->where('code', 'like', "%{$code}%"))
-                            ->when($data['name'], fn(Builder $query, $name) => $query->where('name', 'like', "%{$name}%"))
-                            ->when($data['created_from'], fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
-                            ->when($data['created_until'], fn(Builder $query, $date) => $query->whereDate('created_at', '<=', $date));
+                            ->when($data['code'], fn (Builder $query, $code) => $query->where('code', 'like', "%{$code}%"))
+                            ->when($data['name'], fn (Builder $query, $name) => $query->where('name', 'like', "%{$name}%"))
+                            ->when($data['created_from'], fn (Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn (Builder $query, $date) => $query->whereDate('created_at', '<=', $date));
                     }),
                 Filter::make('is_active')
                     ->label('Active')
-                    ->query(fn($query) => $query->where('is_active', true)),
+                    ->query(fn ($query) => $query->where('is_active', true)),
                 // TrashedFilter::make(),
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make()
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -91,7 +90,7 @@ class CurrenciesTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->exporter(CurrencyExporter::class)
                     ->label('Export')

@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Customers\Schemas;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -30,7 +30,7 @@ class CustomerForm
                             ->columnSpanFull()
                             ->imagePreviewHeight('350px')
                             ->removeUploadedFileButtonPosition('right')
-                            ->saveRelationshipsUsing(null)
+                            ->saveRelationshipsUsing(null),
                     ])->columnSpan(1),
                 Section::make()
                     ->description('Basic Information')
@@ -51,7 +51,7 @@ class CustomerForm
                             ->autofocus()
                             ->placeholder('Customer Name')
                             ->columnSpan(4)
-                            ->dehydrateStateUsing(fn($state) => ucwords(strtolower($state))),
+                            ->dehydrateStateUsing(fn ($state) => ucwords(strtolower($state))),
                         Textarea::make('address')
                             ->label('Customer Address')
                             ->rows(1)
@@ -94,7 +94,7 @@ class CustomerForm
                             ->label('Remark')
                             ->placeholder('Additional Information')
                             ->rows(3)
-                            ->columnSpan(12)
+                            ->columnSpan(12),
                     ])
                     ->columns(12)
                     ->columnSpan(2)
@@ -184,7 +184,7 @@ class CustomerForm
                     ])
                     ->columns(12)
                     ->collapsed(false)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

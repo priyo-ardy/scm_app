@@ -39,8 +39,9 @@ class SupplierExporter extends Exporter
                     '30' => '30 Days after delivery',
                     '60' => '60 Days after delivery',
                     '90' => '90 Days after delivery',
+                    default => $state
                 }),
-            ExportColumn::make('remark')->label('Remark')
+            ExportColumn::make('remark')->label('Remark'),
         ];
     }
 

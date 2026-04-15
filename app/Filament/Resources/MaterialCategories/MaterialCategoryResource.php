@@ -20,9 +20,13 @@ class MaterialCategoryResource extends Resource
     protected static ?string $model = MaterialCategory::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+
     protected static ?int $navigationSort = 6;
+
     protected static ?string $pluralLabel = 'List of Material Category';
+
     protected static ?string $label = 'Material Category';
 
     protected static ?string $recordTitleAttribute = 'List of Material Category';

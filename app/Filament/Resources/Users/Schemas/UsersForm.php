@@ -5,10 +5,9 @@ namespace App\Filament\Resources\Users\Schemas;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
 
 class UsersForm
@@ -31,7 +30,7 @@ class UsersForm
                             ->columnSpanFull()
                             ->imagePreviewHeight('350px')
                             ->removeUploadedFileButtonPosition('right')
-                            ->saveRelationshipsUsing(null)
+                            ->saveRelationshipsUsing(null),
                     ])->columnSpan(1),
                 Section::make()
                     ->schema([
@@ -52,7 +51,7 @@ class UsersForm
                             ->autocomplete(false)
                             ->autofocus(false)
                             ->validationMessages([
-                                'This email address already registered'
+                                'This email address already registered',
                             ]),
                         TextInput::make('phone')
                             ->label('Phone Number')
@@ -65,9 +64,9 @@ class UsersForm
                             ->label('Password')
                             ->password()
                             ->revealable()
-                            ->required(fn($context) => $context === 'create')
-                            ->dehydrated(fn($state) => filled($state))
-                            ->mutateDehydratedStateUsing(fn($state) => Hash::make($state))
+                            ->required(fn ($context) => $context === 'create')
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->mutateDehydratedStateUsing(fn ($state) => Hash::make($state))
                             ->columnSpanFull(),
                         Select::make('role')
                             ->label('User Role')
@@ -78,13 +77,13 @@ class UsersForm
                             ->required(),
                         Textarea::make('remark')
                             ->label('Remark')
-                            ->placeholder("Additional Information")
+                            ->placeholder('Additional Information')
                             ->trim()
                             ->disableGrammarly()
                             ->cols(20)
                             ->columnSpanFull()
-                            ->rows(5)
-                    ])->columnSpan(2)
+                            ->rows(5),
+                    ])->columnSpan(2),
             ]);
     }
 }

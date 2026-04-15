@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class Material extends Model
 {
-    use HasFactory, HasPermissions, HasCodeGenerator, Blameable, SoftDeletes;
+    use Blameable, HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes;
 
     protected $fillable = [
         'company_id',

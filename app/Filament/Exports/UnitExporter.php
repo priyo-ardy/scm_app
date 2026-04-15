@@ -26,10 +26,10 @@ class UnitExporter extends Exporter
 
                     return match ($cleanState) {
                         'length' => 'Length',
-                        'mass'   => 'Mass',
+                        'mass' => 'Mass',
                         'volume' => 'Volume',
-                        'other'  => 'Others',
-                        default  => ucfirst($cleanState),
+                        'other' => 'Others',
+                        default => ucfirst($cleanState),
                     };
                 }),
             ExportColumn::make('baseUnit.name')
@@ -38,16 +38,16 @@ class UnitExporter extends Exporter
                 ->label('Unit Conversion Rate'),
             ExportColumn::make('is_active')
                 ->label('Status')
-                ->formatStateUsing(fn($state): string => $state ? 'Active' : 'Disabled'),
+                ->formatStateUsing(fn ($state): string => $state ? 'Active' : 'Disabled'),
         ];
     }
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your unit export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your unit export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -55,6 +55,6 @@ class UnitExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'unit_of_measurements_' . now()->format('YmdHis');
+        return 'unit_of_measurements_'.now()->format('YmdHis');
     }
 }

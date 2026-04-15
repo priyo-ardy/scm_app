@@ -21,15 +21,21 @@ class SuppliersResource extends Resource
 {
     protected static ?string $model = Supplier::class;
 
-    protected static string|UnitEnum|null $navigationGroup = "Master Data";
-    protected static ?int $navigationSort = 1;
-    protected static ?string $navigationLabel = 'List of Supplier';
-    protected static ?string $breadcrumb = 'List of Supplier';
-    protected static ?string $pluralLabel = 'List of Supplier';
-    protected static ?string $modelLabel = 'Supplier';
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static ?string $recordTitleAttribute = 'List of Supplier';
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $navigationLabel = 'List of Supplier';
+
+    protected static ?string $breadcrumb = 'List of Supplier';
+
+    protected static ?string $pluralLabel = 'List of Supplier';
+
+    protected static ?string $modelLabel = 'Supplier';
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $recordTitleAttribute = 'List of Supplier';
 
     public static function form(Schema $schema): Schema
     {

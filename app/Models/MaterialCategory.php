@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class MaterialCategory extends Model
 {
-    use HasFactory, HasPermissions, HasCodeGenerator;
+    use HasCodeGenerator, HasFactory, HasPermissions;
 
     protected $fillable = [
         'code',
@@ -18,7 +18,7 @@ class MaterialCategory extends Model
         'parent_id',
         'sort_order',
         'remark',
-        'is_active'
+        'is_active',
     ];
 
     protected function casts(): array
@@ -42,7 +42,7 @@ class MaterialCategory extends Model
             $parentChanged = $category->isDirty('parent_id');
 
             // Cek: Apakah ini record baru?
-            $isNew = !$category->exists;
+            $isNew = ! $category->exists;
 
             // KITA HANYA GENERATE ULANG JIKA:
             // 1. Punya parent_id DAN (Data Baru ATAU Parent-nya diganti)
@@ -65,7 +65,7 @@ class MaterialCategory extends Model
                 }
 
                 // Set kode baru: misal "2" + "." + "1" = "2.1"
-                $category->code = $parent->code . '.' . $nextNumber;
+                $category->code = $parent->code.'.'.$nextNumber;
             }
 
             // Jika parent_id tidak berubah, variabel $category->code tidak kita sentuh,

@@ -10,14 +10,14 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Currency extends Model
 {
-    use HasRoles, HasFactory, SoftDeletes;
+    use HasFactory, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'code',
         'name',
         'symbol',
         'decimal_digits',
-        'is_active'
+        'is_active',
     ];
 
     public function getCreatedAtAttribute($value)

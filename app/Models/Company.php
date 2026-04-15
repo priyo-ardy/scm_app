@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Company extends Model
 {
-    use SoftDeletes, HasFactory, HasRoles, HasCodeGenerator;
+    use HasCodeGenerator, HasFactory, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'code',
@@ -34,7 +34,7 @@ class Company extends Model
         'logo',
         'favicon',
         'currency_id',
-        'timezone_id'
+        'timezone_id',
     ];
 
     public function getCreatedAtAttribute($value)
@@ -61,7 +61,6 @@ class Company extends Model
         // Parameter kedua adalah nama foreign key di tabel companies
         return $this->belongsTo(Currency::class, 'currency_id');
     }
-
 
     public function timezone(): BelongsTo
     {

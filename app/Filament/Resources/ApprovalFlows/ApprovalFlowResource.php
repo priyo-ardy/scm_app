@@ -20,7 +20,9 @@ class ApprovalFlowResource extends Resource
     protected static ?string $model = ApprovalFlow::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCommandLine;
+
     protected static string|UnitEnum|null $navigationGroup = 'Application Setup';
+
     protected static ?int $navigationSort = 5;
 
     protected static ?string $recordTitleAttribute = 'Approval Flow';

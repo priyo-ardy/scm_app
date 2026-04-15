@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+    level: 5
+    ignoreErrors:
+        - '#PHPUnit\\Framework\\TestCase#'
+        - '#Unsafe usage of new static#'
+        - '#Access to an undefined property App\\Models\\*#'
+        - '#Access to an undefined property Filament\\Tables\\Columns\\Column::\$[a-zA-Z0-9_]+#'
+    reportUnmatchedIgnoredErrors: false

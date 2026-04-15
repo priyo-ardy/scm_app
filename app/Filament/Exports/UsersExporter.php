@@ -42,6 +42,6 @@ class UsersExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'users-' . now()->format('YmdHis');
+        return 'list_of_users_' . now()->format('YmdHis');
     }
 }

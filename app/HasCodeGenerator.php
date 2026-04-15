@@ -2,13 +2,11 @@
 
 namespace App;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 trait HasCodeGenerator
 {
-
     public static function generateAutoCode(
         string $tableName,
         string $columnName,
@@ -18,22 +16,22 @@ trait HasCodeGenerator
     ): string {
         // $lastRecord = DB::table($tableName)->latest('id')->first();
         $lastRecord = DB::table($tableName)
-            ->where($columnName, 'like', $prefix . $separator . '%')
+            ->where($columnName, 'like', $prefix.$separator.'%')
             ->orderBy($columnName, 'desc')
             ->lockForUpdate()
             ->first();
 
-        if (!$lastRecord || empty(($lastRecord->$columnName))) {
+        if (! $lastRecord || empty(($lastRecord->$columnName))) {
             $number = 1;
         } else {
             $lastCode = $lastRecord->$columnName;
-            $lastNumber = (int) Str::after($lastCode, $prefix . $separator);
+            $lastNumber = (int) Str::after($lastCode, $prefix.$separator);
             $number = $lastNumber + 1;
         }
 
         $formattedNumber = str_pad($number, $digits, '0', STR_PAD_LEFT);
 
-        return $prefix . $separator . $formattedNumber;
+        return $prefix.$separator.$formattedNumber;
     }
 
     public static function generateCodeWithDate(
@@ -44,19 +42,19 @@ trait HasCodeGenerator
         string $separator = ''
     ): string {
         $now = now(); // Pakai helper now() lebih simpel
-        $datePart = $now->format("Ymd");
-        $yearPart = $now->format("Y");
+        $datePart = $now->format('Ymd');
+        $yearPart = $now->format('Y');
 
         // 1. Cari record terakhir berdasarkan TAHUN saja agar sequence
         // tetap berlanjut walau ganti hari, tapi reset saat ganti tahun.
         // Atau kalau mau reset tiap hari, ganti $yearPart jadi $datePart.
         $lastRecord = DB::table($tableName)
-            ->where($columnName, 'like', $prefix . $separator . $yearPart . '%')
+            ->where($columnName, 'like', $prefix.$separator.$yearPart.'%')
             ->orderBy($columnName, 'desc') // Lebih akurat cari angka terbesar
             ->lockForUpdate()
             ->first();
 
-        if (!$lastRecord || empty(($lastRecord->$columnName))) {
+        if (! $lastRecord || empty(($lastRecord->$columnName))) {
             $number = 1;
         } else {
             $lastCode = $lastRecord->$columnName;
@@ -67,9 +65,9 @@ trait HasCodeGenerator
             $number = $lastNumber + 1;
         }
 
-        $formattedNumber = str_pad((string)$number, $digits, '0', STR_PAD_LEFT);
+        $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
 
         // Hasil: PREFIX-20240325-000001
-        return $prefix . $separator . $datePart . $separator . $formattedNumber;
+        return $prefix.$separator.$datePart.$separator.$formattedNumber;
     }
 }

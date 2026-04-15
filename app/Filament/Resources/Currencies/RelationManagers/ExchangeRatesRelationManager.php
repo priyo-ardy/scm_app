@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Currencies\RelationManagers;
 
 use App\Filament\Resources\ExchangeRates\ExchangeRateResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;

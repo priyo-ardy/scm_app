@@ -28,25 +28,44 @@ class EditEquipmentCategory extends EditRecord
                 ->tooltip('Go to first data')
                 ->icon(Heroicon::OutlinedChevronDoubleLeft)
                 ->url(function () {
-                    $firstRecord = EquipmentCategory::orderBy('code', 'asc')->first();
+                    $currentRecord = $this->record;
 
-                    return ($firstRecord && $firstRecord->id !== $this->record->id)
+                    if (!$currentRecord instanceof EquipmentCategory) return null;
+
+                    $firstRecord = EquipmentCategory::orderBy('code', 'asc')->first();
+                    return ($firstRecord && $firstRecord->id !== $currentRecord->id)
                         ? EquipmentCategoryResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => !EquipmentCategory::where('code', '<', $this->record->code)->exists()),
+                ->disabled(function () {
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof EquipmentCategory) return true;
+
+                    return ! EquipmentCategory::where('code', '<', $currentRecord->code)->exists();
+                }),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
                 ->tooltip('Previous')
                 ->icon(Heroicon::OutlinedChevronLeft)
                 ->url(function () {
-                    $prevRecord = EquipmentCategory::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof EquipmentCategory) return null;
+
+                    $prevRecord = EquipmentCategory::where('code', '<', $currentRecord->code)
+                        ->orderBy('code', 'desc')
+                        ->first();
 
                     return $prevRecord
-                        ? EquipmentCategoryResource::getUrl('edit', ['record' => $prevRecord]) : null;
+                        ? EquipmentCategoryResource::getUrl('edit', ['record' => $prevRecord])
+                        : null;
                 })
-                ->hidden(fn() => !EquipmentCategory::where('code', '<', $this->record->code)->exists()),
+                ->hidden(function () {
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof EquipmentCategory) return true;
+
+                    return ! EquipmentCategory::where('code', '<', $currentRecord->code)->exists();
+                }),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -54,13 +73,23 @@ class EditEquipmentCategory extends EditRecord
                 ->icon(Heroicon::OutlinedChevronRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $nextRecord = EquipmentCategory::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof EquipmentCategory) return null;
+
+                    $nextRecord = EquipmentCategory::where('code', '>', $currentRecord->code)
+                        ->orderBy('code', 'asc')
+                        ->first();
 
                     return $nextRecord
                         ? EquipmentCategoryResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => !EquipmentCategory::where('code', '>', $this->record->code)->exists()),
+                ->hidden(function () {
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof EquipmentCategory) return true;
+
+                    return ! EquipmentCategory::where('code', '>', $currentRecord->code)->exists();
+                }),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -68,14 +97,21 @@ class EditEquipmentCategory extends EditRecord
                 ->icon(Heroicon::OutlinedChevronDoubleRight)
                 ->iconPosition('after')
                 ->url(function () {
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof EquipmentCategory) return null;
+
                     $lastRecord = EquipmentCategory::orderBy('code', 'desc')->first();
 
-                    // Jangan redirect kalau kita sudah di record terakhir
-                    return ($lastRecord && $lastRecord->id !== $this->record->id)
+                    return ($lastRecord && $lastRecord->id !== $currentRecord->id)
                         ? EquipmentCategoryResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => !EquipmentCategory::where('code', '>', $this->record->code)->exists())
+                ->disabled(function () {
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof EquipmentCategory) return true;
+
+                    return ! EquipmentCategory::where('code', '>', $currentRecord->code)->exists();
+                }),
         ];
     }
 }

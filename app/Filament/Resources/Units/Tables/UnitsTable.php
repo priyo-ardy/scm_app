@@ -10,7 +10,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 
 class UnitsTable
@@ -44,9 +43,9 @@ class UnitsTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Active' : 'Disable')
-                    ->color(fn(bool $state): string => $state ? 'danger' : 'success')
-                    ->alignCenter()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Active' : 'Disable')
+                    ->color(fn (bool $state): string => $state ? 'danger' : 'success')
+                    ->alignCenter(),
             ])
             ->filters([
                 //
@@ -61,11 +60,11 @@ class UnitsTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->exporter(UnitExporter::class)
                     ->label('Export')
-                    ->icon(Heroicon::OutlinedArrowDownTray)
+                    ->icon(Heroicon::OutlinedArrowDownTray),
             ]);
     }
 }

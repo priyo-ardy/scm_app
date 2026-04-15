@@ -31,7 +31,7 @@ class SuppliersForm
                             ->columnSpanFull()
                             ->imagePreviewHeight('350px')
                             ->removeUploadedFileButtonPosition('right')
-                            ->saveRelationshipsUsing(null)
+                            ->saveRelationshipsUsing(null),
                     ])->columnSpan(1),
                 Section::make()
                     ->description('Base Information')
@@ -45,14 +45,14 @@ class SuppliersForm
                         TextInput::make('name')
                             ->label('Supplier Name')
                             ->live()
-                            ->afterStateUpdated(fn($set, $state) => $set('name', ucwords($state)))
+                            ->afterStateUpdated(fn ($set, $state) => $set('name', ucwords($state)))
                             ->required()
                             ->maxLength(150)
                             ->autocomplete(false)
                             ->autofocus()
                             ->placeholder('Supplier Name')
                             ->columnSpan(4)
-                            ->dehydrateStateUsing(fn($state) => ucwords(strtolower($state))),
+                            ->dehydrateStateUsing(fn ($state) => ucwords(strtolower($state))),
                         Textarea::make('address')
                             ->label('Supplier Address')
                             ->rows(1)
@@ -95,7 +95,7 @@ class SuppliersForm
                             ->label('Remark')
                             ->placeholder('Additional Information')
                             ->rows(3)
-                            ->columnSpan(12)
+                            ->columnSpan(12),
                     ])
                     ->columns(12)
                     ->columnSpan(2)
@@ -181,7 +181,7 @@ class SuppliersForm
                     ])
                     ->columns(12)
                     ->collapsed(false)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

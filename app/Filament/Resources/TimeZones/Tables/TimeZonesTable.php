@@ -55,13 +55,13 @@ class TimeZonesTable
                             ->placeholder('Enter timezone description'),
                     ])->query(function ($query, array $data) {
                         return $query
-                            ->when($data['name'], fn($query, $name) => $query->where('name', 'like', "%{$name}%"))
-                            ->when($data['offset'], fn($query, $offset) => $query->where('offset', 'like', "%{$offset}%"))
-                            ->when($data['description'], fn($query, $description) => $query->where('description', 'like', "%{$description}%"));
+                            ->when($data['name'], fn ($query, $name) => $query->where('name', 'like', "%{$name}%"))
+                            ->when($data['offset'], fn ($query, $offset) => $query->where('offset', 'like', "%{$offset}%"))
+                            ->when($data['description'], fn ($query, $description) => $query->where('description', 'like', "%{$description}%"));
                     }),
                 Filter::make('is_active')
                     ->label('Active')
-                    ->query(fn($query) => $query->where('is_active', true)),
+                    ->query(fn ($query) => $query->where('is_active', true)),
                 TrashedFilter::make(),
             ])
             ->recordActions([
@@ -76,7 +76,7 @@ class TimeZonesTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->exporter(TimeZonesExporter::class)
                     ->label('Export')

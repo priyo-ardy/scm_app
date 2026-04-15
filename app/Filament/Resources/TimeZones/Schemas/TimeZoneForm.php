@@ -26,7 +26,7 @@ class TimeZoneForm
                             ->afterStateUpdated(function ($set, $state) {
                                 $set('name', ucwords($state));
                             })
-                            ->dehydrateStateUsing(fn($state) => ucwords(strtolower($state))),
+                            ->dehydrateStateUsing(fn ($state) => ucwords(strtolower($state))),
                         TextInput::make('offset')
                             ->label('Time Zone Offset')
                             ->required()

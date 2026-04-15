@@ -16,7 +16,7 @@ class Unit extends Model
         'category',
         'base_unit_id',
         'conversion_factor',
-        'is_active'
+        'is_active',
     ];
 
     protected function casts(): array

@@ -4,7 +4,6 @@ namespace App\Filament\Exports;
 
 use App\Models\Equipment;
 use Carbon\Carbon;
-use Carbon\CarbonImmutable;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
@@ -42,8 +41,9 @@ class EquipmentExporter extends Exporter
                 'standby' => 'Standby',
                 'running' => 'Running',
                 'breakdown' => 'Breakdown',
-                'repair' => "Repair",
-                'default' => 'Running'
+                'repair' => 'Repair',
+                'default' => 'Running',
+                default => $state
             }),
             ExportColumn::make('installation_date')
                 ->label('Installation Date')
@@ -65,7 +65,7 @@ class EquipmentExporter extends Exporter
                 }),
             ExportColumn::make('total_shots')->label('Total Shots'),
             ExportColumn::make('workshopList.name')->label('Workshop'),
-            ExportColumn::make('description')->label('Description')
+            ExportColumn::make('description')->label('Description'),
         ];
     }
 

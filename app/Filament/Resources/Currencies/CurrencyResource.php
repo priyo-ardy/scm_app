@@ -10,7 +10,6 @@ use App\Filament\Resources\Currencies\Schemas\CurrencyForm;
 use App\Filament\Resources\Currencies\Tables\CurrenciesTable;
 use App\Models\Currency;
 use BackedEnum;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -24,8 +23,11 @@ class CurrencyResource extends Resource
     protected static ?string $model = Currency::class;
 
     protected static string|UnitEnum|null $navigationGroup = 'Application Setup';
+
     protected static ?int $navigationSort = 1;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Banknotes;
+
     protected static ?string $recordTitleAttribute = 'Currency';
 
     public static function form(Schema $schema): Schema
@@ -41,7 +43,7 @@ class CurrencyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ExchangeRatesRelationManager::class
+            ExchangeRatesRelationManager::class,
         ];
     }
 

@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Workshops\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -29,8 +29,8 @@ class WorkshopForm
                             ->autocomplete(false)
                             ->required()
                             ->live()
-                            ->afterStateUpdated(fn($set, $state) => $set('name', ucwords($state)))
-                            ->dehydrateStateUsing(fn($state) => ucwords(strtolower($state)))
+                            ->afterStateUpdated(fn ($set, $state) => $set('name', ucwords($state)))
+                            ->dehydrateStateUsing(fn ($state) => ucwords(strtolower($state)))
                             ->columnSpan(4),
                         Select::make('branch_id')
                             ->label('Branch')
@@ -65,10 +65,10 @@ class WorkshopForm
                             ->rows(2)
                             ->columnSpan(6)
                             ->placeholder('Describe additional information here')
-                            ->nullable()
+                            ->nullable(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

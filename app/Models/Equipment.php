@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class Equipment extends Model
 {
-    use HasFactory, HasPermissions, HasCodeGenerator;
+    use HasCodeGenerator, HasFactory, HasPermissions;
 
     protected $table = 'equipments';
 
@@ -35,7 +35,7 @@ class Equipment extends Model
         'last_maintenance',
         'avatar',
         'workshop_id',     // Diperbaiki (sebelumnya typo 'workhsop_id')
-        'description'
+        'description',
     ];
 
     protected function casts(): array
@@ -73,7 +73,9 @@ class Equipment extends Model
 
     public static function generateCurrentCode($categoryId)
     {
-        if (!$categoryId) return null;
+        if (! $categoryId) {
+            return null;
+        }
 
         $category = EquipmentCategory::find($categoryId);
         $prefix = $category?->prefix ?? 'EQP';
@@ -93,7 +95,7 @@ class Equipment extends Model
         static::creating(function ($model) {
             DB::transaction(function () use ($model) {
                 $category = EquipmentCategory::find($model->category_id);
-                $prefix = $category?->prefix ?? "EQP";
+                $prefix = $category?->prefix ?? 'EQP';
 
                 $model->code = static::generateAutoCode(
                     tableName: 'equipments',

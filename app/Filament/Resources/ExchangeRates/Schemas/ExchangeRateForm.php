@@ -4,8 +4,8 @@ namespace App\Filament\Resources\ExchangeRates\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -38,10 +38,10 @@ class ExchangeRateForm
                             ->label('Remark')
                             ->placeholder('Additional information')
                             ->nullable()
-                            ->columnSpan(4)
+                            ->columnSpan(4),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -25,7 +25,6 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Filters\SelectFilter;
 
 class EquipmentsTable
 {
@@ -86,16 +85,16 @@ class EquipmentsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('purchase_date')
-                    ->date("d-M-Y")
+                    ->date('d-M-Y')
                     ->label('Purchase Date')
                     ->sortable(),
                 TextColumn::make('installation_date')
                     ->label('Installation Date')
-                    ->date("d-M-Y")
+                    ->date('d-M-Y')
                     ->sortable(),
                 TextColumn::make('last_maintenance')
                     ->label('Last Maintenance Date')
-                    ->date("d-M-Y")
+                    ->date('d-M-Y')
                     ->sortable(),
                 TextColumn::make('total_shots')
                     ->label('Total Shots')
@@ -103,21 +102,21 @@ class EquipmentsTable
                     ->alignRight(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'standby' => 'Standby',
                         'running' => 'Running',
                         'breakdown' => 'Breakdown',
                         'repair' => 'Repair',
                         default => ucfirst($state), // Fallback kalau ada data lain
                     })
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'standby' => 'info',      // Biru: Sedang bersiap/menunggu
                         'running' => 'success',   // Hijau: Aman dan beroperasi normal
                         'breakdown' => 'danger',  // Merah: Rusak parah/berhenti beroperasi
                         'repair' => 'warning',    // Kuning/Oranye: Sedang dalam perbaikan
                         default => 'gray',        // Abu-abu: Default
                     })
-                    ->icon(fn(string $state): string => match ($state) {
+                    ->icon(fn (string $state): string => match ($state) {
                         'standby' => 'heroicon-m-pause-circle',
                         'running' => 'heroicon-m-play-circle',
                         'breakdown' => 'heroicon-m-exclamation-triangle',
@@ -127,7 +126,7 @@ class EquipmentsTable
                 TextColumn::make('description')
                     ->label('Remark')
                     ->searchable()
-                    ->sortable()
+                    ->sortable(),
             ])
             ->filters([
                 Filter::make('equipment_filter')
@@ -140,17 +139,17 @@ class EquipmentsTable
                                     ->native(false)
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(fn(Set $set) => $set('branch_id', null))
+                                    ->afterStateUpdated(fn (Set $set) => $set('branch_id', null))
                                     ->searchable()
                                     ->columnSpan(5),
                                 Select::make('branch_id')
                                     ->label('Branch')
-                                    ->relationship('branchList', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('company_id', $get('company_id')))
+                                    ->relationship('branchList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $get('company_id')))
                                     ->native(false)
                                     ->preload()
                                     ->live()
                                     ->searchable()
-                                    ->columnSpan(4)
+                                    ->columnSpan(4),
                             ])
                             ->columns(12)
                             ->columnSpanFull(),
@@ -172,7 +171,7 @@ class EquipmentsTable
                                 TextInput::make('name')
                                     ->label('Name')
                                     ->maxLength(150)
-                                    ->placeholder("Equipment/Machine Name")
+                                    ->placeholder('Equipment/Machine Name')
                                     ->autocomplete(false)
                                     ->columnSpan(7),
                                 Textarea::make('specification')
@@ -189,7 +188,7 @@ class EquipmentsTable
                                     ->autocomplete(false),
                                 Select::make('workshop_id')
                                     ->label('Workshop')
-                                    ->relationship('workshopList', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('branch_id', $get('branch_id')))
+                                    ->relationship('workshopList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('branch_id', $get('branch_id')))
                                     ->native(false)
                                     ->multiple()
                                     ->preload()
@@ -231,7 +230,7 @@ class EquipmentsTable
                                         'standby' => 'Standby',
                                         'running' => 'Running',
                                         'breakdown' => 'Breakdown',
-                                        'repair' => "Repair"
+                                        'repair' => 'Repair',
                                     ])
                                     ->searchable()
                                     ->native(false)
@@ -240,142 +239,141 @@ class EquipmentsTable
                                     ->label('Description')
                                     ->placeholder('Additional information here')
                                     ->rows(3)
-                                    ->columnSpanFull()
+                                    ->columnSpanFull(),
                             ])
                             ->columns(12)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['company_id'],
-                                fn(Builder $query, $company_id): Builder => $query->where('company_id', "$company_id")
+                                fn (Builder $query, $company_id): Builder => $query->where('company_id', "$company_id")
                             )
                             ->when(
                                 $data['branch_id'],
-                                fn(Builder $query, $branch_id): Builder => $query->where('branch_id', "$branch_id")
+                                fn (Builder $query, $branch_id): Builder => $query->where('branch_id', "$branch_id")
                             )
                             ->when(
                                 $data['category_id'],
-                                fn(Builder $query, $category_ids): Builder => $query->whereIn('category_id', $category_ids)
+                                fn (Builder $query, $category_ids): Builder => $query->whereIn('category_id', $category_ids)
                             )
                             ->when(
                                 $data['code'],
-                                fn(Builder $query, $code): Builder => $query->where('code', 'LIKE', "%$code%")
+                                fn (Builder $query, $code): Builder => $query->where('code', 'LIKE', "%$code%")
                             )
                             ->when(
                                 $data['name'],
-                                fn(Builder $query, $name): Builder => $query->where('name', 'LIKE', "%$name%")
+                                fn (Builder $query, $name): Builder => $query->where('name', 'LIKE', "%$name%")
                             )
                             ->when(
                                 $data['specification'],
-                                fn(Builder $query, $specification): Builder => $query->where('specification', 'LIKE', "%$specification%")
+                                fn (Builder $query, $specification): Builder => $query->where('specification', 'LIKE', "%$specification%")
                             )
                             ->when(
                                 $data['equipment_no'],
-                                fn(Builder $query, $equipment_no): Builder => $query->where('equipment_no', 'LIKE', "%$equipment_no%")
+                                fn (Builder $query, $equipment_no): Builder => $query->where('equipment_no', 'LIKE', "%$equipment_no%")
                             )
                             ->when(
                                 $data['workshop_id'],
-                                fn(Builder $query, $workshop_ids): Builder => $query->whereIn('workshop_id', $workshop_ids),
+                                fn (Builder $query, $workshop_ids): Builder => $query->whereIn('workshop_id', $workshop_ids),
                             )
                             ->when(
                                 $data['tonnage_id'],
-                                fn(Builder $query, $tonnage_id): Builder => $query->where('tonnage_id', "$tonnage_id")
+                                fn (Builder $query, $tonnage_id): Builder => $query->where('tonnage_id', "$tonnage_id")
                             )
                             ->when(
                                 $data['brand'],
-                                fn(Builder $query, $brand): Builder => $query->where('brand', 'LIKE', "%$brand%")
+                                fn (Builder $query, $brand): Builder => $query->where('brand', 'LIKE', "%$brand%")
                             )
                             ->when(
                                 $data['model_number'],
-                                fn(Builder $query, $model_number): Builder => $query->where('model_number', 'LIKE', "%$model_number%")
+                                fn (Builder $query, $model_number): Builder => $query->where('model_number', 'LIKE', "%$model_number%")
                             )
                             ->when(
                                 $data['serial_number'],
-                                fn(Builder $query, $serial_number): Builder => $query->where('serial_number', 'LIKE', "%$serial_number%")
+                                fn (Builder $query, $serial_number): Builder => $query->where('serial_number', 'LIKE', "%$serial_number%")
                             )
                             ->when(
                                 $data['machine_rate'],
-                                fn(Builder $query, $machine_rate): Builder => $query->where('machine_rate', 'LIKE', "%$machine_rate%")
+                                fn (Builder $query, $machine_rate): Builder => $query->where('machine_rate', 'LIKE', "%$machine_rate%")
                             )
                             ->when(
                                 $data['status'],
-                                fn(Builder $query, $status): Builder => $query->where('status', "$status")
+                                fn (Builder $query, $status): Builder => $query->where('status', "$status")
                             )
                             ->when(
                                 $data['description'],
-                                fn(Builder $query, $description): Builder => $query->where('description', 'LIKE', "%$description%")
-                            )
-                        ;
+                                fn (Builder $query, $description): Builder => $query->where('description', 'LIKE', "%$description%")
+                            );
                     })
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
 
                         if ($data['company_id'] ?? null) {
                             $companyName = Company::find($data['company_id'])?->name;
-                            $indicators[] = 'Company: ' . ($companyName ?? $data['company_id']);
+                            $indicators[] = 'Company: '.($companyName ?? $data['company_id']);
                         }
 
                         if ($data['branch_id'] ?? null) {
                             $branchName = Branch::find($data['branch_id'])?->name;
-                            $indicators[] = 'Branch: ' . ($branchName ?? $data['branch_id']);
+                            $indicators[] = 'Branch: '.($branchName ?? $data['branch_id']);
                         }
 
                         if ($data['category_id'] ?? null) {
                             $categoryNames = EquipmentCategory::whereIn('id', $data['category_id'])->pluck('name')->implode(', ');
-                            $indicators[] = 'Category: ' . $categoryNames;
+                            $indicators[] = 'Category: '.$categoryNames;
                         }
 
                         if ($data['code'] ?? null) {
-                            $indicators[] = 'Code: ' . $data['code'];
+                            $indicators[] = 'Code: '.$data['code'];
                         }
 
                         if ($data['name'] ?? null) {
-                            $indicators[] = 'Name: ' . $data['name'];
+                            $indicators[] = 'Name: '.$data['name'];
                         }
 
                         if ($data['specification'] ?? null) {
-                            $indicators[] = 'Specification: ' . $data['specification'];
+                            $indicators[] = 'Specification: '.$data['specification'];
                         }
 
                         if ($data['equipment_no'] ?? null) {
-                            $indicators[] =  'Equipment No.: ' . $data['equipment_no'];
+                            $indicators[] = 'Equipment No.: '.$data['equipment_no'];
                         }
 
                         if ($data['workshop_id'] ?? null) {
                             // $workshopName = Workshop::find($data['workshop_id'])?->name;
                             $workshopName = Workshop::whereIn('id', $data['workshop_id'])->pluck('name')->implode(', ');
-                            $indicators[] = 'Workshop: ' . $workshopName;
+                            $indicators[] = 'Workshop: '.$workshopName;
                         }
 
                         if ($data['tonnage_id'] ?? null) {
                             $tonnageName = Tonnage::find($data['tonnage_id'])?->name;
-                            $indicators[] = 'Tonnage: ' . ($tonnageName ?? $data['tonnage_id']);
+                            $indicators[] = 'Tonnage: '.($tonnageName ?? $data['tonnage_id']);
                         }
 
                         if ($data['brand'] ?? null) {
-                            $indicators[] = 'Brand: ' . $data['brand'];
+                            $indicators[] = 'Brand: '.$data['brand'];
                         }
 
                         if ($data['model_number'] ?? null) {
-                            $indicators[] = 'Model No.: ' . $data['model_number'];
+                            $indicators[] = 'Model No.: '.$data['model_number'];
                         }
 
                         if ($data['serial_number'] ?? null) {
-                            $indicators[] = 'Serial No.: ' . $data['serial_number'];
+                            $indicators[] = 'Serial No.: '.$data['serial_number'];
                         }
 
                         if ($data['status'] ?? null) {
-                            $indicators[] = 'Status: ' . $data['status'];
+                            $indicators[] = 'Status: '.$data['status'];
                         }
 
                         if ($data['machine_rate'] ?? null) {
-                            $indicators[] = 'Machine Rate: ' . $data['machine_rate'];
+                            $indicators[] = 'Machine Rate: '.$data['machine_rate'];
                         }
 
                         if ($data['description'] ?? null) {
-                            $indicators[] = 'Description: ' . $data['description'];
+                            $indicators[] = 'Description: '.$data['description'];
                         }
 
                         return $indicators;
@@ -384,7 +382,7 @@ class EquipmentsTable
             ->filtersLayout(FiltersLayout::Modal)
             ->filtersFormWidth('5xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel)
@@ -399,11 +397,11 @@ class EquipmentsTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
-                    ->exporter(EquipmentExporter::class)
+                    ->exporter(EquipmentExporter::class),
                 // ->columnMapping(false)
             ]);
     }

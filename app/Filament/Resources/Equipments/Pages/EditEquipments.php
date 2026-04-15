@@ -28,25 +28,48 @@ class EditEquipments extends EditRecord
                 ->tooltip('Go to first data')
                 ->icon(Heroicon::OutlinedChevronDoubleLeft)
                 ->url(function () {
+                    $currentRecord = $this->record;
+
+                    if (!$currentRecord instanceof Equipment) return null;
+
                     $firstRecord = Equipment::orderBy('code', 'asc')->first();
 
-                    return ($firstRecord && $firstRecord->id !== $this->record->id)
+                    return ($firstRecord && $firstRecord->id !== $currentRecord->id)
                         ? EquipmentsResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => !Equipment::where('code', '<', $this->record->code)->exists()),
+                ->disabled(function () {
+                    $currentRecord = $this->record;
+
+                    if (!$currentRecord instanceof Equipment) return true;
+
+                    return ! Equipment::where('code', '<', $currentRecord)->exists();
+                }),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
                 ->tooltip('Previous')
                 ->icon(Heroicon::OutlinedChevronLeft)
                 ->url(function () {
-                    $prevRecord = Equipment::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
+                    $currentRecord = $this->record;
+
+                    if (!$currentRecord instanceof Equipment) return null;
+
+                    $prevRecord = Equipment::where('code', '<', $currentRecord->code)
+                        ->orderBy('code', 'desc')
+                        ->first();
 
                     return $prevRecord
-                        ? EquipmentsResource::getUrl('edit', ['record' => $prevRecord]) : null;
+                        ? EquipmentsResource::getUrl('edit', ['record' => $prevRecord])
+                        : null;
                 })
-                ->hidden(fn() => !Equipment::where('code', '<', $this->record->code)->exists()),
+                ->hidden(function () {
+                    $currentRecord = $this->record;
+
+                    if (!$currentRecord instanceof Equipment) return true;
+
+                    return ! Equipment::where('code', '<', $currentRecord->code)->exists();
+                }),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -54,13 +77,25 @@ class EditEquipments extends EditRecord
                 ->icon(Heroicon::OutlinedChevronRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $nextRecord = Equipment::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
+                    $currentRecord = $this->record;
+
+                    if (!$currentRecord instanceof Equipment) return null;
+
+                    $nextRecord = Equipment::where('code', '>', $currentRecord->code)
+                        ->orderBy('code', 'asc')
+                        ->first();
 
                     return $nextRecord
                         ? EquipmentsResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => !Equipment::where('code', '>', $this->record->code)->exists()),
+                ->hidden(function () {
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof Equipment) return true;
+
+                    return ! Equipment::where('code', '>', $currentRecord->code)
+                        ->exists();
+                }),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -68,14 +103,23 @@ class EditEquipments extends EditRecord
                 ->icon(Heroicon::OutlinedChevronDoubleRight)
                 ->iconPosition('after')
                 ->url(function () {
+                    $currentRecord = $this->record;
+
+                    if (!$currentRecord instanceof Equipment) return null;
+
                     $lastRecord = Equipment::orderBy('code', 'desc')->first();
 
                     // Jangan redirect kalau kita sudah di record terakhir
-                    return ($lastRecord && $lastRecord->id !== $this->record->id)
+                    return ($lastRecord && $lastRecord->id !== $currentRecord->id)
                         ? EquipmentsResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => !Equipment::where('code', '>', $this->record->code)->exists())
+                ->disabled(function () {
+                    $currentRecord = $this->record;
+                    if (!$currentRecord instanceof Equipment) return true;
+
+                    return ! Equipment::where('code', '>', $currentRecord->code)->exists();
+                }),
         ];
     }
 }

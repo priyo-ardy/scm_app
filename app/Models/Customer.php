@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Customer extends Model
 {
-    use SoftDeletes,HasFactory,HasRoles,HasCodeGenerator;
+    use HasCodeGenerator,HasFactory,HasRoles,SoftDeletes;
 
     protected $fillable = [
         'code',

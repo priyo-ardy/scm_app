@@ -20,10 +20,15 @@ class TonnageResource extends Resource
     protected static ?string $model = Tonnage::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+
     protected static ?int $navigationSort = 5;
+
     protected static ?string $pluralLabel = 'List of Tonnage';
+
     protected static ?string $label = 'Tonnage';
+
     protected static ?string $recordTitleAttribute = 'List of Tonnage';
 
     public static function form(Schema $schema): Schema

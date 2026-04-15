@@ -2,27 +2,30 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Exports\UsersExporter;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
-use Filament\Tables\Table;
-use App\Models\User;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\QueryBuilder\Constraints\DateConstraint;
+use Filament\QueryBuilder\Constraints\SelectConstraint;
+use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\View;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
@@ -87,86 +90,29 @@ class UsersTable
 
             ])
             ->filters([
-                Filter::make('user_filter')
-                    ->columns(3)
-                    ->schema([
-                        TextInput::make('name')->label('Full Name')->placeholder('Search with full name ...')->autocomplete(false),
-                        TextInput::make('email')->label('User Email')->placeholder('Search with email address ...')->autocomplete(false),
-                        TextInput::make('phone')->label('User Phone')->placeholder('Search with phone number ...')->autocomplete(false),
-                        Select::make('role')
-                            ->label('User Role')
-                            ->relationship('roles', 'name')
-                            ->native()
-                            ->searchable()
-                            ->preload()
-                            ->multiple(),
-                        Select::make('is_locked')
-                            ->label('Locked Status')
-                            ->options([
-                                'true' => 'Locked',
-                                'false' => 'Unlocked',
-                            ])
-                            ->native()
-                            ->searchable(),
-                        Grid::make(2)
-                            ->schema([
-                                DatePicker::make('created_from')
-                                    ->label('Created From')
-                                    ->placeholder('Dari Tanggal'),
+                QueryBuilder::make()
+                    ->constraints([
+                        // Text
+                        TextConstraint::make('name')->label('Full Name'),
+                        TextConstraint::make('email')->label('Email Address'),
+                        TextConstraint::make('phone')->label('Phone No.'),
 
-                                DatePicker::make('created_until')
-                                    ->label('Created Until')
-                                    ->placeholder('Sampai Tanggal'),
-                            ])->columnSpan(3)
-                    ])->columns(3)
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['name'],
-                                fn(Builder $query, $name): Builder => $query->where('name', 'like', "%{$name}%"),
-                            )
-                            ->when(
-                                $data['email'],
-                                fn(Builder $query, $email): Builder => $query->where('email', 'like', "%{$email}%"),
-                            )
-                            ->when(
-                                $data['phone'],
-                                fn(Builder $query, $phone): Builder => $query->where('phone', 'like', "%{$phone}%"),
-                            )
-                            ->when(
-                                $data['is_locked'],
-                                fn(Builder $query, $is_locked): Builder => $query->where('is_locked', $is_locked),
-                            )
-                            ->when(
-                                $data['role'],
-                                fn(Builder $query, $role): Builder => $query->where('role', $role),
-                            )
-                            ->when(
-                                $data['created_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-                        if ($data['name'] ?? null) {
-                            $indicators[] = 'Name: ' . $data['name'];
-                        }
-                        if ($data['email'] ?? null) {
-                            $indicators[] = 'Email: ' . $data['email'];
-                        }
-                        if ($data['phone'] ?? null) {
-                            $indicators[] = 'Phone: ' . $data['phone'];
-                        }
-                        return $indicators;
-                    })
-            ])
-            ->filtersLayout(FiltersLayout::Modal)
-            // ->filtersFormColumns(3)
+                        // Select
+                        SelectConstraint::make('is_locked')
+                            ->options([
+                                '0' => 'No',
+                                '1' => 'Yes'
+                            ])->searchable(),
+
+                        // Date
+                        DateConstraint::make('last_login')
+                            ->label('Last Login')
+                    ])
+                    ->constraintPickerColumns(1)
+            ], layout: FiltersLayout::Modal)
+            ->filtersFormColumns(1)
             ->filtersFormWidth('4xl')
+            ->persistFiltersInSession()
             ->filtersTriggerAction(
                 fn($action) => $action
                     ->button()
@@ -176,7 +122,7 @@ class UsersTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make()
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -184,6 +130,14 @@ class UsersTable
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
+                Action::make('refresh')
+                    ->label('Refresh')
+                    ->icon(Heroicon::OutlinedArrowPath)
+                    ->action(fn() => null),
+                ExportAction::make('export')
+                    ->label('Export')
+                    ->icon(Heroicon::OutlinedArrowDownTray)
+                    ->exporter(UsersExporter::class)
             ]);
     }
 }

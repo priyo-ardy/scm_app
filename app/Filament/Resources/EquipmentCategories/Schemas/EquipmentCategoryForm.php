@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\EquipmentCategories\Schemas;
 
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -31,21 +30,18 @@ class EquipmentCategoryForm
                         TextInput::make('prefix')
                             ->label('Prefix')
                             ->maxLength(10)
-                            ->unique(ignoreRecord: false)
+                            ->unique(ignoreRecord: true)
                             ->autocomplete(false)
-                            ->validationMessages([
-                                'This prefix already registered'
-                            ])
                             ->placeholder('Prefix for this category')
                             ->columnSpan(3),
                         Textarea::make('description')
                             ->label('Remark')
                             ->placeholder('Add additional information here')
                             ->rows(3)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

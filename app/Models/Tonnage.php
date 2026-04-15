@@ -16,7 +16,7 @@ class Tonnage extends Model
         'clamping_force_kn',
         'remark',
         'is_active',
-        'std_dbugging'
+        'std_dbugging',
     ];
 
     protected function casts(): array

@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\Tonnages\Schemas;
 
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -20,7 +19,7 @@ class TonnageForm
                             ->label('Tonnage Code')
                             ->unique(ignoreRecord: false)
                             ->validationMessages([
-                                'This tonnage code already registered'
+                                'This tonnage code already registered',
                             ])
                             ->maxLength(20)
                             ->required()
@@ -53,7 +52,7 @@ class TonnageForm
                             ->columnSpanFull(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

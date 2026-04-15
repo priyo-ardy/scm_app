@@ -3,16 +3,12 @@
 namespace App\Filament\Resources\Branches\Schemas;
 
 use Dotswan\MapPicker\Fields\Map;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-
-use function Laravel\Prompts\textarea;
 
 class BranchForm
 {
@@ -50,7 +46,7 @@ class BranchForm
                             ->options([
                                 'plant' => 'Production Plan',
                                 'warehouse' => 'Warehouse',
-                                'office' => 'Office'
+                                'office' => 'Office',
                             ])->columnSpan(2)
                             ->required(),
                         TextInput::make('phone_ext')
@@ -85,14 +81,14 @@ class BranchForm
                             ->default('1')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->searchable()
                             ->columnSpan(2),
                         Map::make('map_url')
                             ->label('Choose Location')
                             ->columnSpanFull()
-                            ->formatStateUsing(fn($record) => $record ? [
+                            ->formatStateUsing(fn ($record) => $record ? [
                                 'lat' => $record->latitude,
                                 'lng' => $record->longitude,
                             ] : null)
@@ -102,7 +98,7 @@ class BranchForm
                                 }
                             })
                             ->afterStateUpdated(function (Set $set, ?array $state): void {
-                                $set('latitude',  $state['lat'] ?? null);
+                                $set('latitude', $state['lat'] ?? null);
                                 $set('longitude', $state['lng'] ?? null);
                             })
                             ->extraControl([
@@ -112,7 +108,7 @@ class BranchForm
                             ->live(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

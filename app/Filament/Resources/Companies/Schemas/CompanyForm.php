@@ -4,14 +4,10 @@ namespace App\Filament\Resources\Companies\Schemas;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid as ComponentsGrid;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use GuzzleHttp\Psr7\UploadedFile;
-use Laravel\Prompts\Grid;
 
 class CompanyForm
 {
@@ -38,7 +34,7 @@ class CompanyForm
                                     ->columnSpanFull()
                                     ->imagePreviewHeight('350px')
                                     ->removeUploadedFileButtonPosition('right')
-                                    ->saveRelationshipsUsing(null)
+                                    ->saveRelationshipsUsing(null),
                             ])->columnSpanFull(),
                         Section::make()
                             ->description('Company Favicon')
@@ -55,7 +51,7 @@ class CompanyForm
                                     ->columnSpanFull()
                                     ->imagePreviewHeight('350px')
                                     ->removeUploadedFileButtonPosition('right')
-                                    ->saveRelationshipsUsing(null)
+                                    ->saveRelationshipsUsing(null),
                             ])->columnSpanFull(),
                     ])->columnSpan(1),
                 Section::make()
@@ -170,7 +166,7 @@ class CompanyForm
                             ->searchable()
                             ->preload()
                             ->relationship('timezone', 'name')
-                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->name} ({$record->offset})"),
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->name} ({$record->offset})"),
                     ])
                     ->columns(12)
                     ->columnSpan(2),

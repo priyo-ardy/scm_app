@@ -6,20 +6,18 @@ use App\Blameable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
 
 class ExchangeRate extends Model
 {
-    use HasRoles, HasFactory, Blameable;
+    use Blameable, HasFactory, HasRoles;
 
     protected $fillable = [
         'currency_id',
         'rate_date',
         'rates',
         'note',
-        'updated_by'
+        'updated_by',
     ];
 
     protected function casts(): array

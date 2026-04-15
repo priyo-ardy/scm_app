@@ -6,14 +6,13 @@ use App\HasCodeGenerator;
 use App\LogsAllActivities;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
 class Supplier extends Authenticatable
 {
-    use SoftDeletes, HasFactory, HasRoles, HasCodeGenerator;
+    use HasCodeGenerator, HasFactory, HasRoles, SoftDeletes;
     // use LogsAllActivities;
 
     protected $fillable = [

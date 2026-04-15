@@ -3,9 +3,8 @@
 namespace App\Filament\Resources\MaterialCategories\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -19,7 +18,7 @@ class MaterialCategoryForm
                     ->schema([
                         Select::make('parent_id')
                             ->label('Category Header')
-                            ->relationship('header', 'name', fn($query) => $query->orderBy('code', 'asc'))
+                            ->relationship('header', 'name', fn ($query) => $query->orderBy('code', 'asc'))
                             ->getOptionLabelFromRecordUsing(function ($record) {
                                 $depth = substr_count($record->code, '.');
                                 $indent = str_repeat('   ', $depth);
@@ -49,13 +48,13 @@ class MaterialCategoryForm
                             }),
                         TextInput::make('code')
                             ->label('Material Category Code')
-                            ->placeholder(fn($get) => $get('parent_id') ? 'Automatically generate after save' : 'Input code manually')
-                            ->disabled(fn($get) => filled($get('parent_id')))
+                            ->placeholder(fn ($get) => $get('parent_id') ? 'Automatically generate after save' : 'Input code manually')
+                            ->disabled(fn ($get) => filled($get('parent_id')))
                             ->dehydrated()
-                            ->required(fn($get) => blank($get('parent_id')))
+                            ->required(fn ($get) => blank($get('parent_id')))
                             ->unique(ignoreRecord: true)
                             ->validationMessages([
-                                'This code already registered'
+                                'This code already registered',
                             ])
                             ->columnSpan(2),
                         TextInput::make('name')
@@ -71,7 +70,7 @@ class MaterialCategoryForm
                             ->columnSpanFull()->nullable(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

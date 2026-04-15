@@ -22,7 +22,9 @@ class ExchangeRateResource extends Resource
     protected static ?string $model = ExchangeRate::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
+
     protected static string|UnitEnum|null $navigationGroup = 'Application Setup';
+
     protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'Exchange Rates';

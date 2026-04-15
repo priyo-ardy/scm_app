@@ -20,16 +20,16 @@ class TonnageExporter extends Exporter
             ExportColumn::make('clamping_force_kn')->label('Clamping Force KN')->suffix(' kN'),
             ExportColumn::make('std_dbugging')->label('Standart Debugging')->suffix(' Kg'),
             ExportColumn::make('remark')->label('Remark'),
-            ExportColumn::make('is_active')->formatStateUsing(fn($state) => $state ? 'Active' : 'Deactive'),
+            ExportColumn::make('is_active')->formatStateUsing(fn ($state) => $state ? 'Active' : 'Deactive'),
         ];
     }
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your tonnage export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your tonnage export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -37,6 +37,6 @@ class TonnageExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'tonnage_' . now()->format('YmdHis');
+        return 'tonnage_'.now()->format('YmdHis');
     }
 }

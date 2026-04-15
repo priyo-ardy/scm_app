@@ -38,8 +38,9 @@ class CustomerExporter extends Exporter
                 'term_30' => '30 Days after delivery',
                 'term_60' => '60 Days after delivery',
                 'term_90' => '90 Days after delivery',
+                default => $state
             }),
-            ExportColumn::make('remark')
+            ExportColumn::make('remark'),
         ];
     }
 
