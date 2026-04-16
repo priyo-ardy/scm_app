@@ -78,6 +78,9 @@ class UsersTable
                     ->badge()
                     ->color(fn(bool $state): string => $state ? 'danger' : 'success')
                     ->alignCenter(),
+                TextColumn::make('companyList.name')
+                    ->label('Assign to Company')
+                    ->searchable(),
                 TextColumn::make('last_login')
                     ->dateTime('D, jS M Y, h:i:s')
                     ->sortable()

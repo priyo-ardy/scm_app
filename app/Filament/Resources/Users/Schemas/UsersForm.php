@@ -34,6 +34,13 @@ class UsersForm
                     ])->columnSpan(1),
                 Section::make()
                     ->schema([
+                        Select::make('assign_company')
+                            ->label('Assign to Company')
+                            ->required()
+                            ->relationship('companyList', 'name')
+                            ->searchable(['slug', 'name'])
+                            ->preload()
+                            ->nullable(),
                         TextInput::make('name')
                             ->label('Full Name')
                             ->required()
@@ -64,9 +71,9 @@ class UsersForm
                             ->label('Password')
                             ->password()
                             ->revealable()
-                            ->required(fn ($context) => $context === 'create')
-                            ->dehydrated(fn ($state) => filled($state))
-                            ->mutateDehydratedStateUsing(fn ($state) => Hash::make($state))
+                            ->required(fn($context) => $context === 'create')
+                            ->dehydrated(fn($state) => filled($state))
+                            ->mutateDehydratedStateUsing(fn($state) => Hash::make($state))
                             ->columnSpanFull(),
                         Select::make('role')
                             ->label('User Role')

@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\HasCodeGenerator;
 use App\LogsAllActivities;
+use App\Models\Scopes\CompanyScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
@@ -16,6 +18,7 @@ class Supplier extends Authenticatable
     // use LogsAllActivities;
 
     protected $fillable = [
+        'company_id',
         'code',
         'name',
         'address',
@@ -29,16 +32,20 @@ class Supplier extends Authenticatable
         'registration_no',
         'tax_no',
         'vat',
-        'avatar',
         'bank_name',
         'bank_account_no',
         'bank_account_name',
-        'payment_method',
+        'avatar',
+        'payment_term_id',
+        'is_active',
+        'category',
         'remark',
+        'default_currency',
     ];
 
     protected $casts = [
         'vat' => 'integer',
+        'is_active' => 'boolean'
     ];
 
     public function getCreatedAtAttribute($value)
@@ -61,16 +68,38 @@ class Supplier extends Authenticatable
         ];
     }
 
+    public function companyList(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id')->where('deleted_at', null)->orderBy('name', 'asc');
+    }
+
+    public function paymentList(): BelongsTo
+    {
+        return $this->belongsTo(PaymentTerm::class, 'payment_term_id');
+    }
+
+    public function currencyList(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'default_currency')->where('is_active', '1')->orderBy('code', 'asc');
+    }
+
     protected static function booted()
     {
-        static::creating(function ($supplier) {
-            $supplier->code = self::generateAutoCode(
-                tableName: 'suppliers',
-                columnName: 'code',
-                prefix: 'SUP',
-                digits: 5,
-                separator: '-'
-            );
+        static::creating(function ($model) {
+            $companyId = $model->company_id;
+
+            if ($companyId) {
+                $model->code = self::generateCodeBasedOnCompany(
+                    tableName: 'suppliers',
+                    columnName: 'code',
+                    prefix: 'SUP',
+                    digits: 6,
+                    separator: '-',
+                    companyId: $companyId
+                );
+            }
         });
+
+        static::addGlobalScope(new CompanyScope);
     }
 }

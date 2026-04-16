@@ -42,6 +42,7 @@ class User extends Authenticatable
         'last_login_from',
         'avatar',
         'is_active',
+        'assign_company',
         'remark',
         'role',
     ];
@@ -100,5 +101,10 @@ class User extends Authenticatable
                 Storage::disk('public')->delete($user->avatar);
             }
         });
+    }
+
+    public function companyList(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'assign_company');
     }
 }

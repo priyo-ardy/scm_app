@@ -15,6 +15,7 @@ class SupplierExporter extends Exporter
     public static function getColumns(): array
     {
         return [
+            ExportColumn::make('companyList.name')->label('Company'),
             ExportColumn::make('code')->label('Supplier Code'),
             ExportColumn::make('name')->label('Supplier Name'),
             ExportColumn::make('address')->label('Supplier Address'),
@@ -31,16 +32,9 @@ class SupplierExporter extends Exporter
             ExportColumn::make('bank_name')->label('Bank Name'),
             ExportColumn::make('bank_account_no')->label('Bank Account No'),
             ExportColumn::make('bank_account_name')->label('Bank Account Name'),
-            ExportColumn::make('payment_method')
-                ->formatStateUsing(fn(string $state): string => match ($state) {
-                    'cash' => 'Cash',
-                    'bank' => 'Bank Transfer',
-                    'cheque' => 'Cheque',
-                    '30' => '30 Days after delivery',
-                    '60' => '60 Days after delivery',
-                    '90' => '90 Days after delivery',
-                    default => $state
-                }),
+            ExportColumn::make('paymentList.name')->label('Payment Terms'),
+            ExportColumn::make('category')->formatStateUsing(fn(string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas')->label('Supplier Category'),
+            ExportColumn::make('currencyList.code')->label('Default Currency'),
             ExportColumn::make('remark')->label('Remark'),
         ];
     }

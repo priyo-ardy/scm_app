@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Suppliers\Tables;
 
 use App\Filament\Exports\SupplierExporter;
+use App\Models\Currency;
+use App\Models\PaymentTerm;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -13,10 +15,17 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\QueryBuilder\Constraints\BooleanConstraint;
+use Filament\QueryBuilder\Constraints\NumberConstraint;
+use Filament\QueryBuilder\Constraints\SelectConstraint;
+use Filament\QueryBuilder\Constraints\TextConstraint;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Actions\Action as TableAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,6 +40,8 @@ class SuppliersTable
                     ->circular()
                     ->disk('public')
                     ->visibility('public'),
+                TextColumn::make('companyList.slug')
+                    ->label('Company'),
                 TextColumn::make('code')
                     ->label('Supplier Code')
                     ->searchable()
@@ -95,52 +106,72 @@ class SuppliersTable
                     ->label('Bank Account Name')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('payment_method')
+                TextColumn::make('paymentList.name')
                     ->label('Payment Method')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'cash' => 'Cash',
-                        'bank' => 'Bank Transfer',
-                        'cheque' => 'Cheque',
-                        '30' => '30 Days after delivery',
-                        '60' => '60 Days after delivery',
-                        '90' => '90 Days after delivery',
-                    })
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('is_active')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable')
+                    ->color(fn(bool $state): string => $state ? 'success' : 'gray'),
+                TextColumn::make('category')
+                    ->label('Supplier Category')
+                    ->searchable()
+                    ->formatStateUsing(fn(string $state): string => ($state = 'local') ? 'Domestic' : 'Overseas'),
+                TextColumn::make('currencyList.code')
+                    ->label('Default Currency')
+                    ->searchable(['code', 'name', 'symbol']),
                 TextColumn::make('remark')
                     ->label('Remark'),
             ])
             ->filters([
-                TrashedFilter::make(),
-                Filter::make('created_at')
-                    ->form([
-                        DatePicker::make('created_from'),
-                        DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    }),
-            ])
-            ->filtersFormColumns(2)
-            // ->filtersTriggerAction(
-            //     fn(TableAction $action) => $action
-            //         ->button()
-            //         ->label('Filter'),
-            // )
+                QueryBuilder::make()
+                    ->constraints([
+                        TextConstraint::make('code')->label('Code'),
+                        TextConstraint::make('nake')->label('Name'),
+                        TextConstraint::make('address')->label('Address'),
+                        TextConstraint::make('email')->label('Email Address'),
+                        TextConstraint::make('phone')->label('Phone Number'),
+                        TextConstraint::make('fax')->label('Fax'),
+                        TextConstraint::make('website')->label('Website'),
+                        TextConstraint::make('contact_person')->label('Contact Person'),
+                        TextConstraint::make('contact_person_email')->label('Contact Person Email'),
+                        TextConstraint::make('contact_person_phone')->label('Contact Person Phone'),
+                        TextConstraint::make('registration_no')->label('Company Registration No.'),
+                        TextConstraint::make('tax_no')->label('Tax Registration No.'),
+                        TextConstraint::make('bank_name')->label('Bank Name'),
+                        TextConstraint::make('bank_account_no')->label('Bank Account No.'),
+                        TextConstraint::make('bank_account_name')->label('Bank Account Name'),
+                        TextConstraint::make('remark')->label('Remark'),
+                        NumberConstraint::make('vat')->label('VAT %'),
+                        SelectConstraint::make('payment_terms_id')
+                            ->label('Payment Terms')
+                            ->options(PaymentTerm::pluck('name', 'id'))
+                            ->searchable(),
+                        SelectConstraint::make('category')
+                            ->label('Category')
+                            ->options([
+                                'local' => 'Domestic',
+                                'export' => 'Overseas'
+                            ]),
+                        SelectConstraint::make('default_currency ')
+                            ->label('Default Currency')
+                            ->options(Currency::pluck('code', 'id')),
+                        BooleanConstraint::make('is_active')
+                            ->label('Status'),
+                    ])->constraintPickerColumns(3)
+            ], layout: FiltersLayout::Modal)
+            ->filtersFormColumns(1)
+            ->filtersFormWidth('4xl')
+            ->filtersTriggerAction(
+                fn($action) => $action
+                    ->button()
+                    ->label('Filter')
+                    ->icon(Heroicon::OutlinedFunnel),
+            )
             ->persistFiltersInSession()
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
+            ->recordActions([])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
@@ -150,7 +181,7 @@ class SuppliersTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
-                    ->action(fn () => null),
+                    ->action(fn() => null),
                 ExportAction::make()
                     ->exporter(SupplierExporter::class)
                     ->icon('heroicon-o-arrow-down-tray'),

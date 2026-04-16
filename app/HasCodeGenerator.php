@@ -82,4 +82,48 @@ trait HasCodeGenerator
             return $prefix . $separator . $datePart . $separator . $formattedNumber;
         });
     }
+
+    public static function generateCodeBasedOnCompany(
+        string $tableName,
+        string $columnName,
+        string $prefix,
+        int $digits = 6,
+        string $separator = '',
+        int $companyId
+    ): string {
+        return DB::transaction(function () use ($tableName, $columnName, $prefix, $digits, $separator, $companyId) {
+
+            // Cek apakah company_id yang dikirim user itu valid & aktif
+            $company = DB::table('companies')
+                ->where('id', $companyId)
+                ->where('is_default', 1)
+                ->lockForUpdate() // Kunci row company biar gak berubah status pas kita proses
+                ->first();
+
+            if (!$company) {
+                throw new \Exception("Perusahaan tidak ditemukan atau sedang tidak aktif.");
+            }
+
+            // Cari nomor terakhir KHUSUS untuk company tersebut
+            $lastRecord = DB::table($tableName)
+                ->where('company_id', $companyId)
+                ->where($columnName, 'like', $prefix . $separator . '%')
+                ->orderBy($columnName, 'desc')
+                ->lockForUpdate() // Kunci tabel agar user lain di company yang sama harus antri
+                ->first();
+
+            if (!$lastRecord || empty($lastRecord->$columnName)) {
+                $number = 1;
+            } else {
+                $lastCode = (string) $lastRecord->$columnName;
+                // Ambil angka setelah separator terakhir
+                $lastNumber = (int) Str::afterLast($lastCode, $separator ?: $prefix);
+                $number = $lastNumber + 1;
+            }
+
+            $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
+
+            return $prefix . $separator . $formattedNumber;
+        });
+    }
 }
