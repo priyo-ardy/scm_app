@@ -66,14 +66,14 @@ class SuppliersForm
                         TextInput::make('name')
                             ->label('Supplier Name')
                             ->live()
-                            ->afterStateUpdated(fn($set, $state) => $set('name', ucwords($state)))
+                            ->afterStateUpdated(fn($set, $state) => $set('name', strtoupper($state)))
                             ->required()
                             ->maxLength(150)
                             ->autocomplete(false)
                             ->autofocus()
                             ->placeholder('Supplier Name')
                             ->columnSpan(4)
-                            ->dehydrateStateUsing(fn($state) => ucwords(strtolower($state))),
+                            ->dehydrateStateUsing(fn($state) => strtoupper(strtolower($state))),
                         Textarea::make('address')
                             ->label('Supplier Address')
                             ->rows(1)
