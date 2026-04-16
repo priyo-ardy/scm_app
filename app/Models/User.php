@@ -8,10 +8,12 @@ use Database\Factories\UserFactory;
 use Filament\Notifications\Notification;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -39,6 +41,7 @@ class User extends Authenticatable
         'last_login',
         'last_login_from',
         'avatar',
+        'is_active',
         'remark',
         'role',
     ];
@@ -63,8 +66,16 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
+            'is_locked' => 'boolean',
+            'login_attempt' => 'integer',
         ];
     }
+
+    // public function roles(): BelongsTo
+    // {
+    //     return $this->belongsTo(Role::class, 'role');
+    // }
 
     public function canAccessPanel(Panel $panel): bool
     {

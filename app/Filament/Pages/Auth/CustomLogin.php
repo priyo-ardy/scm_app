@@ -9,6 +9,7 @@ use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Notifications\Notification;
+use Illuminate\Validation\ValidationException;
 
 class CustomLogin extends BaseLogin
 {
@@ -18,14 +19,28 @@ class CustomLogin extends BaseLogin
 
         // 1. Cek apakah user terkunci sebelum memanggil fitur rate limiter
         $user = User::where('email', $data['email'])->first();
+        if ($user && !$user->is_active) {
+            throw ValidationException::withMessages([
+                'data.email' => 'Sorry, your account is not yet active. Please contact the administrator.'
+            ]);
+            // Notification::make()
+            //     ->title('Access Denied')
+            //     ->body('Your account is not active yet, please contact your administrator')
+            //     ->danger()
+            //     ->persistent()
+            //     ->send();
+        }
 
         if ($user && $user->is_locked) {
-            Notification::make()
-                ->title('Access Denied')
-                ->body('Your account is locked, please contact your system administrator')
-                ->danger()
-                ->persistent()
-                ->send();
+            throw ValidationException::withMessages([
+                'data.email' => 'Your account is locked, please contact your system administrator'
+            ]);
+            // Notification::make()
+            //     ->title('Access Denied')
+            //     ->body('Your account is locked, please contact your system administrator')
+            //     ->danger()
+            //     ->persistent()
+            //     ->send();
 
             // Melempar pesan error validasi juga berfungsi untuk benar-benar menghentikan flow
             // throw \Illuminate\Validation\ValidationException::withMessages([
