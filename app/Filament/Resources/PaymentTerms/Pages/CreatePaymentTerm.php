@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Filament\Resources\PaymentTerms\Pages;
+
+use App\Filament\Resources\PaymentTerms\PaymentTermResource;
+use Filament\Actions\Action;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreatePaymentTerm extends CreateRecord
+{
+    protected static string $resource = PaymentTermResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('back')
+                ->label('Back to List')
+                ->icon('heroicon-m-arrow-left')
+                ->color('gray')
+                ->url(static::getResource()::getUrl('index')),
+        ];
+    }
+}

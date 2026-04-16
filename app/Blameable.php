@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 trait Blameable
@@ -12,13 +13,16 @@ trait Blameable
             // $model->created_by = Auth::id();
             if (Auth::check()) {
                 $model->created_by = Auth::id();
+                $model->created_at = Carbon::now();
                 $model->updated_by = Auth::id();
+                $model->updated_at = Carbon::now();
             }
         });
 
         static::updating(function ($model) {
             if (Auth::check()) {
                 $model->updated_by = Auth::id();
+                $model->updated_at = Carbon::now();
             }
         });
     }

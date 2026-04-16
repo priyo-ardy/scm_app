@@ -15,23 +15,33 @@ trait HasCodeGenerator
         string $separator = ''
     ): string {
         // $lastRecord = DB::table($tableName)->latest('id')->first();
-        $lastRecord = DB::table($tableName)
-            ->where($columnName, 'like', $prefix.$separator.'%')
-            ->orderBy($columnName, 'desc')
-            ->lockForUpdate()
-            ->first();
+        return DB::transaction(function () use ($tableName, $columnName, $prefix, $digits, $separator) {
 
-        if (! $lastRecord || empty(($lastRecord->$columnName))) {
-            $number = 1;
-        } else {
-            $lastCode = $lastRecord->$columnName;
-            $lastNumber = (int) Str::after($lastCode, $prefix.$separator);
-            $number = $lastNumber + 1;
-        }
+            $lastRecord = DB::table($tableName)
+                // Filter hanya yang depannya sama persis dengan prefix + separator
+                ->where($columnName, 'like', $prefix . $separator . '%')
+                // Urutkan berdasarkan kolom itu sendiri secara DESC
+                ->orderBy($columnName, 'desc')
+                // Paksa DB buat nahan row ini sampai transaksi selesai
+                ->lockForUpdate()
+                ->first();
 
-        $formattedNumber = str_pad($number, $digits, '0', STR_PAD_LEFT);
+            if (! $lastRecord || empty($lastRecord->$columnName)) {
+                $number = 1;
+            } else {
+                $lastCode = (string) $lastRecord->$columnName;
 
-        return $prefix.$separator.$formattedNumber;
+                // Ambil bagian angkanya saja
+                $onlyNumber = Str::after($lastCode, $prefix . $separator);
+
+                // Casting ke int biar aman (Larastan bakal seneng)
+                $number = ((int) $onlyNumber) + 1;
+            }
+
+            $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
+
+            return $prefix . $separator . $formattedNumber;
+        });
     }
 
     public static function generateCodeWithDate(
@@ -41,33 +51,35 @@ trait HasCodeGenerator
         int $digits = 6,
         string $separator = ''
     ): string {
-        $now = now(); // Pakai helper now() lebih simpel
-        $datePart = $now->format('Ymd');
-        $yearPart = $now->format('Y');
+        // Jalankan dalam transaksi agar lockForUpdate benar-benar mengunci tabel
+        return DB::transaction(function () use ($tableName, $columnName, $prefix, $digits, $separator) {
+            $now = now();
+            $datePart = $now->format('Ymd');
+            $yearPart = $now->format('Y');
 
-        // 1. Cari record terakhir berdasarkan TAHUN saja agar sequence
-        // tetap berlanjut walau ganti hari, tapi reset saat ganti tahun.
-        // Atau kalau mau reset tiap hari, ganti $yearPart jadi $datePart.
-        $lastRecord = DB::table($tableName)
-            ->where($columnName, 'like', $prefix.$separator.$yearPart.'%')
-            ->orderBy($columnName, 'desc') // Lebih akurat cari angka terbesar
-            ->lockForUpdate()
-            ->first();
+            // 1. Cari record terakhir berdasarkan TAHUN (reset tiap tahun)
+            // Gunakan lockForUpdate agar proses lain mengantri sampai transaksi ini selesai
+            $lastRecord = DB::table($tableName)
+                ->where($columnName, 'like', $prefix . $separator . $yearPart . '%')
+                ->orderBy($columnName, 'desc')
+                ->lockForUpdate()
+                ->first();
 
-        if (! $lastRecord || empty(($lastRecord->$columnName))) {
-            $number = 1;
-        } else {
-            $lastCode = $lastRecord->$columnName;
+            if (! $lastRecord || empty($lastRecord->$columnName)) {
+                $number = 1;
+            } else {
+                $lastCode = (string) $lastRecord->$columnName;
 
-            // 2. Ambil angka paling ujung setelah separator terakhir
-            // Misal: WO-20240325-000001 -> ambil 000001
-            $lastNumber = (int) Str::afterLast($lastCode, $separator);
-            $number = $lastNumber + 1;
-        }
+                // 2. Ambil angka paling ujung setelah separator terakhir
+                // Misal: WO-20240325-000001 -> ambil 000001
+                $lastNumber = (int) Str::afterLast($lastCode, $separator);
+                $number = $lastNumber + 1;
+            }
 
-        $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
+            $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
 
-        // Hasil: PREFIX-20240325-000001
-        return $prefix.$separator.$datePart.$separator.$formattedNumber;
+            // Hasil: PREFIX-20240325-000001
+            return $prefix . $separator . $datePart . $separator . $formattedNumber;
+        });
     }
 }

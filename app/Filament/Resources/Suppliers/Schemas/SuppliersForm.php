@@ -45,14 +45,14 @@ class SuppliersForm
                         TextInput::make('name')
                             ->label('Supplier Name')
                             ->live()
-                            ->afterStateUpdated(fn ($set, $state) => $set('name', ucwords($state)))
+                            ->afterStateUpdated(fn($set, $state) => $set('name', ucwords($state)))
                             ->required()
                             ->maxLength(150)
                             ->autocomplete(false)
                             ->autofocus()
                             ->placeholder('Supplier Name')
                             ->columnSpan(4)
-                            ->dehydrateStateUsing(fn ($state) => ucwords(strtolower($state))),
+                            ->dehydrateStateUsing(fn($state) => ucwords(strtolower($state))),
                         Textarea::make('address')
                             ->label('Supplier Address')
                             ->rows(1)
@@ -171,7 +171,9 @@ class SuppliersForm
                                 'cash' => 'Cash',
                                 'bank' => 'Bank Trasfer',
                                 'cheque' => 'Cheque',
+                                'advance' => 'Advance Payment',
                                 '30' => '30 Days After Delivery',
+                                '45' => '45 Days After Deivery',
                                 '60' => '60 Days After Delivery',
                                 '90' => '90 Days After Delivery',
                             ])
