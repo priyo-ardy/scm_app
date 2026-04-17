@@ -15,32 +15,28 @@ class CustomerExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('name'),
-            ExportColumn::make('address'),
-            ExportColumn::make('email'),
-            ExportColumn::make('phone'),
-            ExportColumn::make('fax'),
-            ExportColumn::make('website'),
-            ExportColumn::make('contact_person'),
-            ExportColumn::make('contact_person_email'),
-            ExportColumn::make('contact_person_phone'),
-            ExportColumn::make('registration_no'),
-            ExportColumn::make('tax_no'),
-            ExportColumn::make('vat'),
-            ExportColumn::make('bank_name'),
-            ExportColumn::make('bank_account_no'),
-            ExportColumn::make('bank_account_name'),
-            ExportColumn::make('avatar'),
-            ExportColumn::make('payment_method')->formatStateUsing(fn(string $state): string => match ($state) {
-                'cash' => 'Cash',
-                'bank' => 'Bank Transfer',
-                'cheque' => 'Cheque',
-                'term_30' => '30 Days after delivery',
-                'term_60' => '60 Days after delivery',
-                'term_90' => '90 Days after delivery',
-                default => $state
-            }),
-            ExportColumn::make('remark'),
+            ExportColumn::make('companyList.name')->label('Company'),
+            ExportColumn::make('category')->label('Category')->formatStateUsing(fn(string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas'),
+            ExportColumn::make('code')->label('Customer Code'),
+            ExportColumn::make('name')->label('Customer Name'),
+            ExportColumn::make('address')->label('Address'),
+            ExportColumn::make('email')->label('Email Address'),
+            ExportColumn::make('phone')->label('Phone No.'),
+            ExportColumn::make('fax')->label('Fax No.'),
+            ExportColumn::make('website')->label('Website'),
+            ExportColumn::make('contact_person')->label('Contact Person'),
+            ExportColumn::make('contact_person_email')->label('Contact Person Email'),
+            ExportColumn::make('contact_person_phone')->label('Contact Person Phone No.'),
+            ExportColumn::make('registration_no')->label('Company Registration No.'),
+            ExportColumn::make('tax_no')->label('Tax Registration No.'),
+            ExportColumn::make('vat')->label('VAT'),
+            ExportColumn::make('bank_name')->label('Bank Name'),
+            ExportColumn::make('bank_account_no')->label('Bank Account No.'),
+            ExportColumn::make('bank_account_name')->label('Bank Acoount Name'),
+            ExportColumn::make('is_active')->label('Status')->formatStateUsing(fn(string $state): string => $state ? 'Enable' : 'Disable'),
+            ExportColumn::make('paymentList.name')->label('Payment Terms'),
+            ExportColumn::make('currencyList.code')->label('Default Currency'),
+            ExportColumn::make('remark')->label('Remark'),
         ];
     }
 
@@ -57,6 +53,6 @@ class CustomerExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'customer-' . now()->format('YmdHis');
+        return 'customer_list_' . now()->format('YmdHis');
     }
 }

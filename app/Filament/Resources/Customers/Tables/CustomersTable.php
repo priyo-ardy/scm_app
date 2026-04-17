@@ -4,23 +4,28 @@ namespace App\Filament\Resources\Customers\Tables;
 
 use App\Filament\Exports\CustomerExporter;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\QueryBuilder\Constraints\BooleanConstraint;
+use Filament\QueryBuilder\Constraints\NumberConstraint;
+use Filament\QueryBuilder\Constraints\SelectConstraint;
+use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class CustomersTable
 {
@@ -28,40 +33,89 @@ class CustomersTable
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar')
+                    ->circular()
+                    ->disk('public')
+                    ->visibility('public'),
+                TextColumn::make('companyList.slug')
+                    ->label('Company')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('code')
+                    ->label('Supplier Code')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('category')
+                    ->label('Category')
+                    ->formatStateUsing(fn(string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('email')
                     ->label('Email address')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('phone')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('fax')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('website')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('contact_person')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('contact_person_email')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('contact_person_phone')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('registration_no')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('tax_no')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('vat')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('bank_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('bank_account_no')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('bank_account_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('avatar')
-                    ->searchable(),
-                TextColumn::make('payment_method')
-                    ->badge(),
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('paymentList.name')
+                    ->label('Payment Terms')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('currencyList.code')
+                    ->label('Default Currency')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('is_active')
+                    ->label('Status')
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Active' : 'Not Active')
+                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
+                    ->alignCenter()
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('remark')
+                    ->label('Remark')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -76,140 +130,117 @@ class CustomersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Filter::make('customer_filter')
-                    ->columns(3)
-                    ->schema([
-                        TextInput::make('code')->label('Customer Code')->placeholder('Search with customer coode ...')->autocomplete(false),
-                        TextInput::make('name')->label('Cutomer Name')->placeholder('Search with customer name ...')->autocomplete(false),
-                        TextInput::make('email')->label('Email Address')->placeholder('Search with customer official email ...')->email()->autocomplete(false),
-                        TextInput::make('phone')->label('Phone Number')->placeholder('Search with customer officila phone number')->tel()->autocomplete(false),
-                        TextInput::make('fax')->label('Fax')->placeholder('Search with customer official fax number ...')->tel()->autocomplete(false),
-                        TextInput::make('contact_person')->label('Contact Person')->placeholder('Contact person ...')->autocomplete(false),
-                        TextInput::make('contact_person_email')->label('Contact Person Email')->email()->autocomplete(false),
-                        TextInput::make('contact_person_phone')->label('Contact Person Phone No.')->tel()->autocomplete(false),
-                        Select::make('payment_method')
-                            ->label('Payment Term')
+                QueryBuilder::make()
+                    ->constraints([
+                        SelectConstraint::make('company_id')
+                            ->label('Company')
+                            ->relationship('companyList', 'name')
+                            ->searchable(),
+                        SelectConstraint::make('category')
+                            ->label('Category')
                             ->options([
-                                'cash' => 'Cash',
-                                'bank' => 'Bank Transfer',
-                                'cheque' => 'Cheque',
-                                '30' => '30 days after delivery',
-                                '60' => '60 days after delivery',
-                                '90' => '90 days afted delivery',
+                                'local' => 'Domestic',
+                                'overseas' => 'Overseas'
                             ])
-                            ->native(),
-                        Grid::make(2)
-                            ->schema([
-                                DatePicker::make('created_from')
-                                    ->label('Created From'),
-                                DatePicker::make('created_until')
-                                    ->label('Created Until'),
-                            ])->columnSpan(3),
-                    ])->columns(3)
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['code'],
-                                fn (Builder $query, $code): Builder => $query->where('code', 'like', "%$code%")
-                            )
-                            ->when(
-                                $data['name'],
-                                fn (Builder $query, $name): Builder => $query->where('code', 'like', "%$name%")
-                            )
-                            ->when(
-                                $data['email'],
-                                fn (Builder $query, $email): Builder => $query->where('code', 'like', "%$email%")
-                            )
-                            ->when(
-                                $data['phone'],
-                                fn (Builder $query, $phone): Builder => $query->where('code', 'like', "%$phone%")
-                            )
-                            ->when(
-                                $data['fax'],
-                                fn (Builder $query, $fax): Builder => $query->where('code', 'like', "%$fax%")
-                            )
-                            ->when(
-                                $data['contact_person'],
-                                fn (Builder $query, $contact_person): Builder => $query->where('code', 'like', "%$contact_person%")
-                            )
-                            ->when(
-                                $data['contact_person_email'],
-                                fn (Builder $query, $contact_person_email): Builder => $query->where('code', 'like', "%$contact_person_email%")
-                            )
-                            ->when(
-                                $data['contact_person_phone'],
-                                fn (Builder $query, $contact_person_phone): Builder => $query->where('code', 'like', "%$contact_person_phone%")
-                            )
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-
-                        if ($data['code'] ?? null) {
-                            $indicators[] = 'Code: '.$data['code'];
-                        }
-
-                        if ($data['name'] ?? null) {
-                            $indicators[] = 'Name: '.$data['name'];
-                        }
-
-                        if ($data['email'] ?? null) {
-                            $indicators[] = 'Email: '.$data['email'];
-                        }
-
-                        if ($data['phone'] ?? null) {
-                            $indicators[] = 'Phone: '.$data['phone'];
-                        }
-
-                        if ($data['fax'] ?? null) {
-                            $indicators[] = 'Fax: '.$data['fax'];
-                        }
-
-                        if ($data['contact_person'] ?? null) {
-                            $indicators[] = 'Contact Person: '.$data['contact_person'];
-                        }
-
-                        if ($data['contact_person_email'] ?? null) {
-                            $indicators[] = 'Contact Person Email: '.$data['contact_person_email'];
-                        }
-
-                        if ($data['contact_person_phone'] ?? null) {
-                            $indicators[] = 'Contact Person Phone: '.$data['contact_person_phone'];
-                        }
-
-                        return $indicators;
-                    }),
-            ])
-            ->filtersLayout(FiltersLayout::Modal)
+                            ->searchable(),
+                        BooleanConstraint::make('is_active')->label('Status'),
+                        TextConstraint::make('code')->label('Code'),
+                        TextConstraint::make('name')->label('Name'),
+                        NumberConstraint::make('vat')->label('VAT'),
+                        SelectConstraint::make('payment_term_id')
+                            ->label('Payment Terms')
+                            ->relationship('paymentList', 'name')
+                            ->searchable(),
+                        SelectConstraint::make('currency_id')
+                            ->label('Default Currency')
+                            ->relationship('currencyList', 'code')
+                            ->searchable()
+                    ])
+                    ->constraintPickerColumns(3)
+            ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersTriggerAction(
-                fn ($action) => $action
+                fn($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon('heroicon-o-funnel')
             )
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
+            ->persistFiltersInSession()
+            ->recordActions([])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
+                    BulkAction::make('bulkEdit')
+                        ->label('Mass Edit')
+                        ->color('warning')
+                        ->icon(Heroicon::OutlinedPencilSquare)
+                        ->modalWidth('2xl')
+                        ->schema([
+                            Grid::make(3)
+                                ->schema([
+                                    Select::make('column_to_update')
+                                        ->label('Edit field name')
+                                        ->searchable()
+                                        ->live()
+                                        ->options([
+                                            'is_active' => 'Status',
+                                            'vat' => 'VAT',
+                                            'payment_term_id' => 'Payment Terms',
+                                            'currency_id' => 'Default Currency'
+                                        ])
+                                        ->columnSpan(1),
+                                    Select::make('value_is_active')
+                                        ->options([
+                                            '0' => 'Disable',
+                                            '1' => 'Enable'
+                                        ])
+                                        ->required()
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('column_to_update' === 'is_active')),
+                                    TextInput::make('value_vat')
+                                        ->numeric()
+                                        ->required()
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('column_to_update' === 'vat')),
+                                    Select::make('value_payment_term')
+                                        ->relationship('paymentList', 'name')
+                                        ->searchable()
+                                        ->preload()
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('column_to_update' === 'payment_term_id')),
+                                    Select::make('value_currency_id')
+                                        ->relationship('currencyList', 'code')
+                                        ->searchable()
+                                        ->preload()
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('column_to_update' === 'currency_id')),
+                                ])
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $column = $data['column_to_update'];
+
+                            $newValue = match (true) {
+                                ($column === 'is_active') => $data['value_is_active'],
+                                ($column === 'vat') => $data['value_vat'],
+                                ($column === 'value_payment_term') => $data['value_payment_term'],
+                                ($column === 'value_currency_id') => $data['value_currency_id'],
+                            };
+
+                            $records->each->update([$column => $newValue]);
+
+                            Notification::make()
+                                ->title('Mass edit success')
+                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->success()
+                                ->send();
+                        })
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
-                    ->action(fn () => null),
+                    ->action(fn() => null),
                 ExportAction::make()
                     ->exporter(CustomerExporter::class)
                     ->label('Export')

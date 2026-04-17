@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers\Schemas;
 
+use App\Models\Company;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -31,6 +32,26 @@ class CustomerForm
                             ->imagePreviewHeight('350px')
                             ->removeUploadedFileButtonPosition('right')
                             ->saveRelationshipsUsing(null),
+                        Select::make('company_id')
+                            ->label('Company')
+                            ->relationship('companyList', 'name')
+                            ->searchable(['slug', 'name'])
+                            ->preload()
+                            ->required()
+                            ->default(function () {
+                                $sessionCompanyId = session('active_company');
+
+                                // 2. Jika session tidak null, jadikan itu sebagai default
+                                if ($sessionCompanyId) {
+                                    return $sessionCompanyId;
+                                }
+
+                                // 3. Jika session null (Super Admin), ambil company default dari DB
+                                return Company::where('is_default', 1)->first()?->id;
+                            })
+                            ->disabled(fn() => session('active_company') !== null)
+                            ->dehydrated(true)
+                            ->columnSpanFull()
                     ])->columnSpan(1),
                 Section::make()
                     ->description('Basic Information')
@@ -45,13 +66,13 @@ class CustomerForm
                             ->label('Customer Name')
                             ->required()
                             ->live()
-                            ->afterStateUpdated(fn ($set, $state) => $set('name', ucwords($state)))
+                            ->afterStateUpdated(fn($set, $state) => $set('name', strtoupper($state)))
                             ->maxLength(150)
                             ->autocomplete(false)
                             ->autofocus()
                             ->placeholder('Customer Name')
                             ->columnSpan(4)
-                            ->dehydrateStateUsing(fn ($state) => ucwords(strtolower($state))),
+                            ->dehydrateStateUsing(fn($state) => strtoupper(strtolower($state))),
                         Textarea::make('address')
                             ->label('Customer Address')
                             ->rows(1)
@@ -99,7 +120,6 @@ class CustomerForm
                     ->columns(12)
                     ->columnSpan(2)
                     ->collapsed(false),
-
                 Section::make()
                     ->description('Contact Person Information')
                     ->components([
@@ -126,7 +146,36 @@ class CustomerForm
                     ->columns(12)
                     ->columnSpanFull()
                     ->collapsed(false),
-
+                Section::make()
+                    ->schema([
+                        Select::make('category')
+                            ->label('Category')
+                            ->options([
+                                'local' => 'Domestic',
+                                'overseas' => 'Overseas'
+                            ])
+                            ->required()
+                            ->columnSpan(3)
+                            ->searchable(),
+                        Select::make('currency_id')
+                            ->label('Default Currency')
+                            ->required()
+                            ->relationship('currencyList', 'code')
+                            ->searchable(['code', 'name'])
+                            ->preload()
+                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name} ({$record->symbol})")
+                            ->columnSpan(3),
+                        Select::make('payment_term_id')
+                            ->label('Payment Method')
+                            ->relationship('paymentList', 'name')
+                            ->placeholder('Payment Method')
+                            ->preload()
+                            ->searchable()
+                            ->columnSpan(4)
+                            ->required(),
+                    ])
+                    ->columns(12)
+                    ->columnSpanFull(),
                 Section::make()
                     ->description('Bank, Tax and Payment Information')
                     ->components([
@@ -166,20 +215,6 @@ class CustomerForm
                             ->label('Bank Account Name')
                             ->placeholder('Bank Account Name')
                             ->maxLength(255)
-                            ->columnSpan(3),
-                        Select::make('payment_method')
-                            ->label('Payment Method')
-                            ->options([
-                                'cash' => 'Cash',
-                                'bank' => 'Bank Trasfer',
-                                'cheque' => 'Cheque',
-                                'term_30' => '30 Days After Delivery',
-                                'term_60' => '60 Days After Delivery',
-                                'term_90' => '90 Days After Delivery',
-                            ])
-                            ->native(false)
-                            ->placeholder('Payment Method')
-                            ->searchable()
                             ->columnSpan(3),
                     ])
                     ->columns(12)
