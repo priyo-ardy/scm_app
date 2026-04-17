@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreignId('payment_term_id')->nullable()->after('avatar')->constrained('payment_terms')->restrictOnDelete();
             $table->foreignId('created_by')->nullable()->after('created_at')->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->after('updated_at')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('short_name', 150)->nullable()->after('payment_term_id');
+            $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->restrictOnDelete();
         });
     }
 
@@ -34,8 +36,9 @@ return new class extends Migration
             $table->dropForeign(['payment_term_id']);
             $table->dropForeign(['created_by']);
             $table->dropForeign(['updated_by']);
+            $table->dropForeign(['payment_method_id']);
 
-            $table->dropColumn(['company_id', 'category', 'is_active', 'currency_id', 'payment_term_id', 'created_by', 'updated_by']);
+            $table->dropColumn(['company_id', 'category', 'is_active', 'currency_id', 'payment_term_id', 'short_name', 'created_by', 'updated_by', 'payment_method_id']);
 
             $table->enum('payment_method', ['cash', 'bank', 'cheque', 'term_30', 'term_60', 'term_90'])->default('term_30');
         });

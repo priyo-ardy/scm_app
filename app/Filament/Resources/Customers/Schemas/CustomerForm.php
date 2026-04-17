@@ -61,7 +61,7 @@ class CustomerForm
                             ->placeholder('Automatically generated after saving')
                             ->readOnly(true)
                             ->dehydrated(false)
-                            ->columnSpan(2),
+                            ->columnSpan(3),
                         TextInput::make('name')
                             ->label('Customer Name')
                             ->required()
@@ -71,13 +71,19 @@ class CustomerForm
                             ->autocomplete(false)
                             ->autofocus()
                             ->placeholder('Customer Name')
-                            ->columnSpan(4)
+                            ->columnSpan(6)
                             ->dehydrateStateUsing(fn($state) => strtoupper(strtolower($state))),
+                        TextInput::make('short_name')
+                            ->label('Short Name')
+                            ->maxLength(150)
+                            ->placeholder('Short Name')
+                            ->autocomplete(false)
+                            ->columnSpan(3),
                         Textarea::make('address')
                             ->label('Customer Address')
-                            ->rows(1)
-                            ->placeholder('Supplier Address')
-                            ->columnSpan(6),
+                            ->placeholder('Customer Address')
+                            ->rows(3)
+                            ->columnSpanFull(),
                         TextInput::make('email')
                             ->label('Email Address')
                             ->email()
