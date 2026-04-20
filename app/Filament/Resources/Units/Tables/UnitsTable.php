@@ -34,6 +34,12 @@ class UnitsTable
     {
         return $table
             ->columns([
+                TextColumn::make('category')
+                    ->label('Unit Category')
+                    ->searchable()
+                    ->sortable()
+                    ->formatStateUsing(fn($state) => ucwords($state))
+                    ->toggleable(),
                 TextColumn::make('code')
                     ->label('Symbol')
                     ->searchable()
@@ -41,11 +47,6 @@ class UnitsTable
                     ->toggleable(),
                 TextColumn::make('name')
                     ->label('Unit Name')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
-                TextColumn::make('category')
-                    ->label('Unit Category')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
