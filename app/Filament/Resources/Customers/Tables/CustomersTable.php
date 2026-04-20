@@ -53,6 +53,9 @@ class CustomersTable
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('short_name')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable()
@@ -105,8 +108,14 @@ class CustomersTable
                     ->label('Default Currency')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('paymentMethodList.name')
+                    ->label('Payment Method')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('is_active')
                     ->label('Status')
+                    ->badge()
                     ->formatStateUsing(fn(bool $state): string => $state ? 'Active' : 'Not Active')
                     ->color(fn(bool $state): string => $state ? 'success' : 'danger')
                     ->alignCenter()

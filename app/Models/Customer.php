@@ -32,13 +32,17 @@ class Customer extends Model
         'registration_no',
         'tax_no',
         'vat',
-        'avatar',
-        'currency_id',
         'bank_name',
         'bank_account_no',
         'bank_account_name',
+        'avatar',
         'payment_term_id',
+        'short_name',
+        'currency_id',
+        'payment_method_id',
         'remark',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
@@ -80,6 +84,11 @@ class Customer extends Model
     public function currencyList(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'currency_id')->where('is_active', '1')->orderBy('code', 'asc');
+    }
+
+    public function paymentMethodList(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id')->where('deleted_at', null)->where('is_active', 1);
     }
 
     protected static function booted()

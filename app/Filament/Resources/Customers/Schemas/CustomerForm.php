@@ -177,8 +177,14 @@ class CustomerForm
                             ->placeholder('Payment Method')
                             ->preload()
                             ->searchable()
-                            ->columnSpan(4)
+                            ->columnSpan(3)
                             ->required(),
+                        Select::make('payment_method_id')
+                            ->label('Payment Method')
+                            ->relationship('paymentMethodList', 'name')
+                            ->searchable(['name'])
+                            ->preload()
+                            ->columnSpan(3)
                     ])
                     ->columns(12)
                     ->columnSpanFull(),
@@ -195,8 +201,7 @@ class CustomerForm
                             ->placeholder('Tax Registration No.')
                             ->maxLength(50)
                             ->columnSpan(3)
-                            ->nullable()
-                            ->numeric(),
+                            ->nullable(),
                         TextInput::make('vat')
                             ->label('VAT (%)')
                             ->placeholder('VAT (%)')

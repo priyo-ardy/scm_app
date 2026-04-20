@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Filament\Resources\Customers\Pages;
+namespace App\Filament\Resources\SetllementCategories\Pages;
 
-use App\Filament\Resources\Customers\CustomerResource;
-use App\Models\Customer;
+use App\Filament\Resources\SetllementCategories\SetllementCategoryResource;
+use App\Models\SettlementCategory;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 
-class EditCustomer extends EditRecord
+class EditSetllementCategory extends EditRecord
 {
-    protected static string $resource = CustomerResource::class;
+    protected static string $resource = SetllementCategoryResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -21,6 +22,7 @@ class EditCustomer extends EditRecord
             // DeleteAction::make(),
             // ForceDeleteAction::make(),
             // RestoreAction::make(),
+
             Action::make('back')
                 ->label('Back to List')
                 ->icon('heroicon-m-arrow-left')
@@ -32,33 +34,31 @@ class EditCustomer extends EditRecord
                 ->color('success')
                 ->url(fn() => $this->getResource()::getUrl('create')),
             DeleteAction::make()->icon(Heroicon::OutlinedTrash),
-            ForceDeleteAction::make(),
-            RestoreAction::make(),
             Action::make('first')
                 ->label('First')
                 ->color('gray')
                 ->tooltip('Go to first data')
                 ->icon(Heroicon::OutlinedChevronDoubleLeft)
                 ->url(function () {
-                    $firstRecord = Customer::orderBy('code', 'asc')->first();
+                    $firstRecord = SettlementCategory::orderBy('code', 'asc')->first();
 
                     return ($firstRecord && $firstRecord->id !== $this->record->id)
-                        ? CustomerResource::getUrl('edit', ['record' => $firstRecord])
+                        ? SetllementCategoryResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => ! Customer::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn() => ! SettlementCategory::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
                 ->tooltip('Previous')
                 ->icon(Heroicon::OutlinedChevronLeft)
                 ->url(function () {
-                    $prevRecord = Customer::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
+                    $prevRecord = SettlementCategory::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
 
                     return $prevRecord
-                        ? CustomerResource::getUrl('edit', ['record' => $prevRecord]) : null;
+                        ? SetllementCategoryResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn() => ! Customer::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn() => ! SettlementCategory::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -66,13 +66,13 @@ class EditCustomer extends EditRecord
                 ->icon(Heroicon::OutlinedChevronRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $nextRecord = Customer::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
+                    $nextRecord = SettlementCategory::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
 
                     return $nextRecord
-                        ? CustomerResource::getUrl('edit', ['record' => $nextRecord])
+                        ? SetllementCategoryResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => ! Customer::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn() => ! SettlementCategory::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -80,14 +80,14 @@ class EditCustomer extends EditRecord
                 ->icon(Heroicon::OutlinedChevronDoubleRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $lastRecord = Customer::orderBy('code', 'desc')->first();
+                    $lastRecord = SettlementCategory::orderBy('code', 'desc')->first();
 
                     // Jangan redirect kalau kita sudah di record terakhir
                     return ($lastRecord && $lastRecord->id !== $this->record->id)
-                        ? CustomerResource::getUrl('edit', ['record' => $lastRecord])
+                        ? SetllementCategoryResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => ! Customer::where('code', '>', $this->record->code)->exists()),
+                ->disabled(fn() => ! SettlementCategory::where('code', '>', $this->record->code)->exists()),
         ];
     }
 }

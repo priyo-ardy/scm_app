@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Customers\Pages;
+namespace App\Filament\Resources\SetllementCategories\Pages;
 
-use App\Filament\Resources\Customers\CustomerResource;
+use App\Filament\Resources\SetllementCategories\SetllementCategoryResource;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateCustomer extends CreateRecord
+class CreateSetllementCategory extends CreateRecord
 {
-    protected static string $resource = CustomerResource::class;
+    protected static string $resource = SetllementCategoryResource::class;
 
     protected function getHeaderActions(): array
     {

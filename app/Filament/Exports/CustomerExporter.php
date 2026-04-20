@@ -19,6 +19,7 @@ class CustomerExporter extends Exporter
             ExportColumn::make('category')->label('Category')->formatStateUsing(fn(string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas'),
             ExportColumn::make('code')->label('Customer Code'),
             ExportColumn::make('name')->label('Customer Name'),
+            ExportColumn::make('short_name')->label('Short Name'),
             ExportColumn::make('address')->label('Address'),
             ExportColumn::make('email')->label('Email Address'),
             ExportColumn::make('phone')->label('Phone No.'),
@@ -36,6 +37,7 @@ class CustomerExporter extends Exporter
             ExportColumn::make('is_active')->label('Status')->formatStateUsing(fn(string $state): string => $state ? 'Enable' : 'Disable'),
             ExportColumn::make('paymentList.name')->label('Payment Terms'),
             ExportColumn::make('currencyList.code')->label('Default Currency'),
+            ExportColumn::make('paymentMethodList.name')->label('Payment Method'),
             ExportColumn::make('remark')->label('Remark'),
         ];
     }

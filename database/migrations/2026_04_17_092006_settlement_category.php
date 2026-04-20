@@ -11,18 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_methods', function (Blueprint $table) {
+        Schema::create('settlement_categories', function (Blueprint $table) {
             $table->id();
             $table->string('code', 20)->unique();
             $table->string('name', 150);
-            $table->foreignId('category_id')->constrained('settlement_categories')->restrictOnDelete();
-            $table->string('type', 150)->nullable();
-            $table->boolean('commission_fee')->default(false);
-            $table->string('payment_mode')->nullable();
             $table->boolean('is_active')->default(true);
             $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->foreignId('created_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->restrictOnDelete();
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payment_methods');
+        Schema::dropIfExists('settlement_categories');
     }
 };

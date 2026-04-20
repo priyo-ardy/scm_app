@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\Customers\Pages;
+namespace App\Filament\Resources\PaymentMethods\Pages;
 
-use App\Filament\Resources\Customers\CustomerResource;
-use App\Models\Customer;
+use App\Filament\Resources\PaymentMethods\PaymentMethodResource;
+use App\Models\PaymentMethod;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -11,9 +11,9 @@ use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 
-class EditCustomer extends EditRecord
+class EditPaymentMethod extends EditRecord
 {
-    protected static string $resource = CustomerResource::class;
+    protected static string $resource = PaymentMethodResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -40,25 +40,25 @@ class EditCustomer extends EditRecord
                 ->tooltip('Go to first data')
                 ->icon(Heroicon::OutlinedChevronDoubleLeft)
                 ->url(function () {
-                    $firstRecord = Customer::orderBy('code', 'asc')->first();
+                    $firstRecord = PaymentMethod::orderBy('code', 'asc')->first();
 
                     return ($firstRecord && $firstRecord->id !== $this->record->id)
-                        ? CustomerResource::getUrl('edit', ['record' => $firstRecord])
+                        ? PaymentMethodResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => ! Customer::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn() => ! PaymentMethod::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
                 ->tooltip('Previous')
                 ->icon(Heroicon::OutlinedChevronLeft)
                 ->url(function () {
-                    $prevRecord = Customer::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
+                    $prevRecord = PaymentMethod::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
 
                     return $prevRecord
-                        ? CustomerResource::getUrl('edit', ['record' => $prevRecord]) : null;
+                        ? PaymentMethodResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn() => ! Customer::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn() => ! PaymentMethod::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -66,13 +66,13 @@ class EditCustomer extends EditRecord
                 ->icon(Heroicon::OutlinedChevronRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $nextRecord = Customer::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
+                    $nextRecord = PaymentMethod::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
 
                     return $nextRecord
-                        ? CustomerResource::getUrl('edit', ['record' => $nextRecord])
+                        ? PaymentMethodResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => ! Customer::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn() => ! PaymentMethod::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -80,14 +80,14 @@ class EditCustomer extends EditRecord
                 ->icon(Heroicon::OutlinedChevronDoubleRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $lastRecord = Customer::orderBy('code', 'desc')->first();
+                    $lastRecord = PaymentMethod::orderBy('code', 'desc')->first();
 
                     // Jangan redirect kalau kita sudah di record terakhir
                     return ($lastRecord && $lastRecord->id !== $this->record->id)
-                        ? CustomerResource::getUrl('edit', ['record' => $lastRecord])
+                        ? PaymentMethodResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => ! Customer::where('code', '>', $this->record->code)->exists()),
+                ->disabled(fn() => ! PaymentMethod::where('code', '>', $this->record->code)->exists()),
         ];
     }
 }

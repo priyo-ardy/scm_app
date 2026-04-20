@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Customers\Pages;
+namespace App\Filament\Resources\PaymentMethods\Pages;
 
-use App\Filament\Resources\Customers\CustomerResource;
+use App\Filament\Resources\PaymentMethods\PaymentMethodResource;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateCustomer extends CreateRecord
+class CreatePaymentMethod extends CreateRecord
 {
-    protected static string $resource = CustomerResource::class;
+    protected static string $resource = PaymentMethodResource::class;
 
     protected function getHeaderActions(): array
     {
