@@ -3,22 +3,34 @@
 namespace App\Filament\Resources\Tonnages\Tables;
 
 use App\Filament\Exports\TonnageExporter;
+use App\Models\Company;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\QueryBuilder\Constraints\NumberConstraint;
+use Filament\QueryBuilder\Constraints\SelectConstraint;
+use Filament\QueryBuilder\Constraints\TextConstraint;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class TonnagesTable
 {
@@ -26,130 +38,177 @@ class TonnagesTable
     {
         return $table
             ->columns([
+                TextColumn::make('companyList.slug')
+                    ->label('Company')
+                    ->searchable(['name', 'slug'])
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('code')
                     ->label('Tonnage Code')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('name')
                     ->label('Tonnage Name')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('clamping_force_kn')
                     ->label('Clamping Force KN')
                     ->numeric()
                     ->sortable()
                     ->searchable()
                     ->suffix(' kN')
-                    ->alignRight(),
+                    ->alignRight()
+                    ->toggleable(),
                 TextColumn::make('std_dbugging')
                     ->label('Standart Debugging')
                     ->numeric()
                     ->sortable()
                     ->searchable()
                     ->suffix(' Kg')
-                    ->alignRight(),
+                    ->alignRight()
+                    ->toggleable(),
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Active' : 'Deactive')
-                    ->color(fn (bool $state): string => $state ? 'danger' : 'success')
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Enable' : 'Disable')
+                    ->color(fn(bool $state): string => $state ? 'success' : 'gray')
                     ->alignCenter()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('remark')
                     ->label('Remark')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->filters([
-                Filter::make('filter')
-                    ->columns(3)
-                    ->schema([
-                        TextInput::make('code')->label('Tonnage Code')->placeholder('Search with code ...')->autocomplete(false),
-                        TextInput::make('name')->label('Tonnage Name')->placeholder('Search with name ...')->autocomplete(false),
-                        TextInput::make('clamping_force_kn')->label('Clamping Force KN')->numeric()->placeholder('Search with clamping force ...')->autocomplete(false),
-                        Select::make('is_active')->options(['0' => 'Deactive', '1' => 'Active'])->native()->searchable(),
-                        TextInput::make('std_dbugging')->numeric()->placeholder('Search with debugging'),
-                        Textarea::make('remark')->label('Remark')->placeholder('Search with remark')->autocomplete(false),
+                QueryBuilder::make()
+                    ->constraints([
+                        TextConstraint::make('code')
+                            ->label('Code'),
+                        TextConstraint::make('name')
+                            ->label('Name'),
+                        TextConstraint::make('remark')
+                            ->label('Remarks'),
+                        NumberConstraint::make('clamping_force_kn')
+                            ->label('Clamping Force KN'),
+                        NumberConstraint::make('std_dbugging')
+                            ->label('Standart Debugging'),
+                        SelectConstraint::make('company_id')
+                            ->label('Company')
+                            ->options(fn() => Company::query()->pluck('name', 'id'))
+                            ->searchable(),
+                        SelectConstraint::make('is_active')
+                            ->label('Status')
+                            ->options([
+                                '0' => 'Disable',
+                                '1' => 'Enable'
+                            ])
+                            ->searchable(),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['code'],
-                                fn (Builder $query, $code): Builder => $query->where('code', 'LIKE', "%$code%")
-                            )
-                            ->when(
-                                $data['name'],
-                                fn (Builder $query, $name): Builder => $query->where('name', 'LIKE', "%$name%")
-                            )
-                            ->when(
-                                $data['clamping_force_kn'],
-                                fn (Builder $query, $clamping_force_kn): Builder => $query->where('clamping_force_kn', 'LIKE', "%$clamping_force_kn%")
-                            )
-                            ->when(
-                                $data['is_active'],
-                                fn (Builder $query, $is_active): Builder => $query->where('is_active', "$is_active")
-                            )
-                            ->when(
-                                $data['remark'],
-                                fn (Builder $query, $remark): Builder => $query->where('remark', 'LIKE', "%$remark%")
-                            )
-                            ->when(
-                                $data['std_dbugging'],
-                                fn (Builder $query, $std_dbugging): Builder => $query->where('std_dbugging', 'LIKE', "%$std_dbugging%")
-                            );
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-
-                        if ($data['code'] ?? null) {
-                            $indicators[] = 'Workshop Code: '.$data['code'];
-                        }
-
-                        if ($data['name'] ?? null) {
-                            $indicators[] = 'Workshop Name: '.$data['name'];
-                        }
-
-                        if ($data['clamping_force_kn'] ?? null) {
-                            $indicators[] = 'Clamping Force Kn: '.$data['clamping_force_kn'];
-                        }
-
-                        if ($data['is_active'] ?? null) {
-                            $status = ($data['is_active'] == '1') ? 'Active' : 'Deactive';
-                            $indicators[] = 'Status: '.($status ?? $data['is_active']);
-                        }
-
-                        if ($data['remark'] ?? null) {
-                            $indicators[] = 'Remark: '.$data['remark'];
-                        }
-
-                        if ($data['std_dbugging'] ?? null) {
-                            $indicators[] = 'Standart Debugging: '.$data['std_dbugging'];
-                        }
-
-                        return $indicators;
-                    }),
-            ])
-            ->filtersLayout(FiltersLayout::Modal)
+                    ->constraintPickerColumns(2)
+            ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersTriggerAction(
-                fn ($action) => $action
+                fn($action) => $action
                     ->button()
                     ->label('Filter')
-                    ->icon(Heroicon::Funnel)
+                    ->icon(Heroicon::OutlinedFunnel)
             )
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                // ViewAction::make(),
+                // EditAction::make(),
+                // DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                    BulkAction::make('bilkEdit')
+                        ->label('Mass Edit')
+                        ->color('warning')
+                        ->icon(Heroicon::OutlinedPencilSquare)
+                        ->modalWidth('3xl')
+                        ->schema([
+                            Grid::make(3)
+                                ->schema([
+                                    Select::make('column_to_update')
+                                        ->label('Edit field name')
+                                        ->searchable()
+                                        ->options([
+                                            'company_id' => 'Company',
+                                            'clamping_force_kn' => 'Clamping Force KN',
+                                            'std_dbugging' => 'Standart Debugging',
+                                            'is_active' => 'Status',
+                                            'remark' => 'Remark'
+                                        ])
+                                        ->live()
+                                        ->columnSpan(1),
+                                    Select::make('value_company_id')
+                                        ->label('Company')
+                                        ->options(fn() => Company::pluck('name', 'id'))
+                                        ->searchable()
+                                        ->required()
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'company_id'),
+                                    TextInput::make('value_clamping_force_kn')
+                                        ->label('Clamping Force KN')
+                                        ->numeric()
+                                        ->required()
+                                        ->placeholder('Edit Clamping Force KN')
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'clamping_force_kn'),
+                                    TextInput::make('value_std_dbugging')
+                                        ->label('Standart Debugging Qty')
+                                        ->numeric()
+                                        ->required()
+                                        ->columnSpan(2)
+                                        ->placeholder('Edit Standart Debugging Qty')
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'std_dbugging'),
+                                    Select::make('value_is_active')
+                                        ->label('Status')
+                                        ->options([
+                                            '0' => 'Disable',
+                                            '1' => 'Enable'
+                                        ])
+                                        ->searchable()
+                                        ->columnSpan(2)
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active'),
+                                    TextInput::make('value_remark')
+                                        ->label('Remark')
+                                        ->placeholder('Edit Remark')
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'remark'),
+                                ])
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $column = $data['column_to_update'];
+
+                            $newValue = match (true) {
+                                ($column === 'company_id') => $data['value_company_id'],
+                                ($column === 'clamping_force_kn') => $data['value_clamping_force_kn'],
+                                ($column === 'std_dbugging') => $data['value_std_dbugging'],
+                                ($column === 'is_active') => $data['value_is_active'],
+                                ($column === 'remark') => $data['value_remark'],
+                            };
+
+                            $records->each->update([$column => $newValue]);
+
+                            Notification::make()
+                                ->title('Mass edit success')
+                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->success()
+                                ->send();
+                        })
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn () => null),
+                    ->action(fn() => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)

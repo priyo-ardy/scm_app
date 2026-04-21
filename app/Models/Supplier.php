@@ -68,6 +68,12 @@ class Supplier extends Authenticatable
         ];
     }
 
+    protected $with = [
+        'companyList',
+        'paymentList',
+        'currencyList'
+    ];
+
     public function companyList(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id')->where('deleted_at', null)->orderBy('name', 'asc');

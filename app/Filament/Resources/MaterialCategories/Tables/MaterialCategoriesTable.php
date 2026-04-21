@@ -3,19 +3,26 @@
 namespace App\Filament\Resources\MaterialCategories\Tables;
 
 use App\Filament\Exports\MaterialCategoryExporter;
+use App\Models\Company;
+use App\Models\MaterialCategory;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\QueryBuilder\Constraints\SelectConstraint;
+use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -25,75 +32,83 @@ class MaterialCategoriesTable
     {
         return $table
             ->columns([
+                TextColumn::make('companyList.slug')
+                    ->label('Company')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('code')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Active' : 'deactive')
-                    ->color(fn (bool $state): string => $state ? 'danger' : 'success')
-                    ->alignCenter(),
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Enable' : 'Disable')
+                    ->color(fn(bool $state): string => $state ? 'success' : 'gray')
+                    ->alignCenter()
+                    ->toggleable(),
             ])
             ->defaultSort('code', 'asc')
             ->filters([
-                Filter::make('filter')
-                    ->columns(3)
-                    ->schema([
-                        TextInput::make('name')->placeholder('Search with name ...')->autocomplete(false),
-                        TextInput::make('prefix')->placeholder('Search with prefix ...')->autocomplete(false),
-                        Select::make('is_active')->label('Status')->options(['0' => 'Deactive', '1' => 'Active'])->native()->searchable(),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['name'],
-                                fn (Builder $query, $name): Builder => $query->where('name', 'LIKE', "%$name%")
+                QueryBuilder::make()
+                    ->constraints([
+                        SelectConstraint::make('company_id')
+                            ->label('Company')
+                            ->options(fn() => Company::pluck('name', 'id'))
+                            ->searchable(),
+                        SelectConstraint::make('parent_id')
+                            ->label('Parent Group')
+                            ->options(
+                                fn() => MaterialCategory::whereNull('parent_id')
+                                    ->orderBy('code', 'asc')
+                                    ->get()
+                                    ->mapWithKeys(function ($item) {
+                                        // Menggabungkan code dan name: "CODE - NAME"
+                                        return [$item->id => "{$item->code} - {$item->name}"];
+                                    })
                             )
-                            ->when(
-                                $data['is_active'],
-                                fn (Builder $query, $is_active): Builder => $query->where('is_active', "%$is_active%")
-                            );
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-
-                        if ($data['name'] ?? null) {
-                            $indicators[] = 'Name: '.$data['name'];
-                        }
-
-                        if ($data['is_active'] ?? null) {
-                            $status = ($data['is_active'] == '1') ? 'Active' : 'Deactive';
-                            $indicators[] = 'Status: '.($status ?? $data['is_active']);
-                        }
-
-                        return $indicators;
-                    }),
-            ])
-            ->filtersLayout(FiltersLayout::Modal)
-            ->filtersFormWidth('4xl')
+                            ->searchable(),
+                        SelectConstraint::make('is_active')
+                            ->label('Status')
+                            ->options([
+                                '0' => 'Disable',
+                                '1' => 'Enable'
+                            ])
+                            ->searchable(),
+                        TextConstraint::make('name')
+                            ->label('Name'),
+                        TextConstraint::make('remark')
+                            ->label('Remark')
+                    ])
+                    ->constraintPickerColumns(1)
+            ], layout: FiltersLayout::Modal)
+            ->filtersFormWidth('3xl')
             ->filtersTriggerAction(
-                fn ($action) => $action
+                fn($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::Funnel)
             )
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                // ViewAction::make(),
+                // EditAction::make(),
+                // DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make()
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn () => null),
+                    ->action(fn() => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)

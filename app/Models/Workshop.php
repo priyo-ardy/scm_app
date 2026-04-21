@@ -2,17 +2,21 @@
 
 namespace App\Models;
 
+use App\Blameable;
 use App\HasCodeGenerator;
+use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
 class Workshop extends Model
 {
-    use HasCodeGenerator, HasFactory, HasRoles;
+    use HasCodeGenerator, HasFactory, HasRoles, Blameable, SoftDeletes;
 
     protected $fillable = [
+        'company_id',
         'code',
         'name',
         'branch_id',
@@ -21,7 +25,14 @@ class Workshop extends Model
         'phone',
         'remarks',
         'is_active',
+        'created_by',
+        'updated_by'
     ];
+
+    // protected $with = [
+    //     'branch',
+    //     'user'
+    // ];
 
     public function branch(): BelongsTo
     {
@@ -43,6 +54,7 @@ class Workshop extends Model
 
     protected static function booted()
     {
+        static::addGlobalScope(new CompanyScope);
         static::creating(function ($workshop) {
             $workshop->code = self::generateAutoCode(
                 tableName: 'workshops',
@@ -52,5 +64,20 @@ class Workshop extends Model
                 separator: '-'
             );
         });
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

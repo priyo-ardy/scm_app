@@ -5,6 +5,7 @@ namespace App\Filament\Resources\MaterialCategories\Pages;
 use App\Filament\Resources\MaterialCategories\MaterialCategoryResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Icons\Heroicon;
 
 class ListMaterialCategories extends ListRecords
 {
@@ -13,7 +14,7 @@ class ListMaterialCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle)->label('New'),
         ];
     }
 }

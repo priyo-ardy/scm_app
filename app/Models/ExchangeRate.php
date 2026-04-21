@@ -30,6 +30,8 @@ class ExchangeRate extends Model
         ];
     }
 
+    protected $with = ['currency', 'user'];
+
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'currency_id');

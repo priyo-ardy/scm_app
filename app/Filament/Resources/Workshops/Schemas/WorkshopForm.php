@@ -6,7 +6,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class WorkshopForm
 {
@@ -16,6 +19,24 @@ class WorkshopForm
             ->components([
                 Section::make()
                     ->schema([
+                        Select::make('company_id')
+                            ->label('Company')
+                            ->relationship('company', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->live()
+                            ->autofocus()
+                            ->afterStateUpdated(fn(Set $set) => $set('branch_id', null))
+                            ->columnSpan(3),
+                        Select::make('branch_id')
+                            ->label('Branch')
+                            ->required()
+                            ->relationship('branch', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('company_id', $get('company_id')))
+                            ->native(false)
+                            ->preload()
+                            ->searchable()
+                            ->columnSpan(3),
                         TextInput::make('code')
                             ->label('Workshop Code')
                             ->readOnly()
@@ -25,27 +46,15 @@ class WorkshopForm
                             ->label('Workshop Name')
                             ->maxLength(150)
                             ->placeholder('Workshop name')
-                            ->autofocus()
                             ->autocomplete(false)
                             ->required()
-                            ->live()
-                            ->afterStateUpdated(fn ($set, $state) => $set('name', ucwords($state)))
-                            ->dehydrateStateUsing(fn ($state) => ucwords(strtolower($state)))
                             ->columnSpan(4),
-                        Select::make('branch_id')
-                            ->label('Branch')
-                            ->required()
-                            ->relationship('branch', 'name')
-                            ->native()
-                            ->preload()
-                            ->searchable()
-                            ->columnSpan(3),
                         Textarea::make('location_detail')
                             ->label('Location Details')
                             ->placeholder('Please specify which floor or which building.')
                             ->nullable()
                             ->rows(2)
-                            ->columnSpan(3),
+                            ->columnSpan(6),
                         Select::make('pic_id')
                             ->label('Workshop PIC')
                             ->required()
@@ -63,7 +72,7 @@ class WorkshopForm
                         Textarea::make('remarks')
                             ->label('Additional Information')
                             ->rows(2)
-                            ->columnSpan(6)
+                            ->columnSpanFull()
                             ->placeholder('Describe additional information here')
                             ->nullable(),
                     ])

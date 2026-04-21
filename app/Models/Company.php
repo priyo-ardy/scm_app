@@ -14,6 +14,8 @@ class Company extends Model
 {
     use HasCodeGenerator, HasFactory, HasRoles, SoftDeletes;
 
+    // protected $with = ['currency', 'timezone'];
+
     protected $fillable = [
         'code',
         'name',

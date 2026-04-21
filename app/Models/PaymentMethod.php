@@ -47,6 +47,11 @@ class PaymentMethod extends Model
         });
     }
 
+    protected $with = [
+        'creatorList',
+        'updaterList',
+        'categoryList'
+    ];
     public function creatorList(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

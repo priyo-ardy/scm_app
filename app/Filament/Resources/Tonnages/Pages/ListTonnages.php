@@ -14,7 +14,7 @@ class ListTonnages extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle)->label('New Tonnage'),
+            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle)->label('New'),
         ];
     }
 }

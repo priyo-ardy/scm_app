@@ -6,6 +6,8 @@ use App\Filament\Resources\EquipmentCategories\EquipmentCategoryResource;
 use App\Models\EquipmentCategory;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 
@@ -21,7 +23,14 @@ class EditEquipmentCategory extends EditRecord
                 ->icon('heroicon-m-arrow-left')
                 ->color('gray')
                 ->url(static::getResource()::getUrl('index')),
+            Action::make('add')
+                ->label('New')
+                ->icon(Heroicon::OutlinedPlusCircle)
+                ->color('success')
+                ->url(fn() => $this->getResource()::getUrl('create')),
             DeleteAction::make()->icon(Heroicon::OutlinedTrash),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
             Action::make('first')
                 ->label('First')
                 ->color('gray')

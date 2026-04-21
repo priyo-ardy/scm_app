@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Blameable;
 use App\HasCodeGenerator;
+use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -107,9 +108,22 @@ class Material extends Model
         ];
     }
 
+    // protected $with = [
+    //     'companyList',
+    //     'categoryList',
+    //     'workshopList',
+    //     'unitList',
+    //     'purchaseUnitList',
+    //     'dimensionUnitList',
+    //     'supplierList',
+    //     'tonnageList',
+    //     'creator',
+    //     'updater'
+    // ];
+
     public function companyList(): BelongsTo
     {
-        return $this->belongsTo(Company::class, 'company_id')->where('deleted_at', null)->orderBy('name', 'asc');
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     public function categoryList(): BelongsTo
@@ -156,4 +170,9 @@ class Material extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    // protected static function boot()
+    // {
+    //     static::addGlobalScope(new CompanyScope);
+    // }
 }

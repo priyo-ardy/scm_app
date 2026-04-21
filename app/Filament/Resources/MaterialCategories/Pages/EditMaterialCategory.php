@@ -6,6 +6,8 @@ use App\Filament\Resources\MaterialCategories\MaterialCategoryResource;
 use App\Models\MaterialCategory;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 
@@ -16,7 +18,19 @@ class EditMaterialCategory extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('back')
+                ->label('Back to List')
+                ->icon('heroicon-m-arrow-left')
+                ->color('gray')
+                ->url(static::getResource()::getUrl('index')),
+            Action::make('add')
+                ->label('New')
+                ->icon(Heroicon::OutlinedPlusCircle)
+                ->color('success')
+                ->url(fn() => $this->getResource()::getUrl('create')),
             DeleteAction::make()->icon(Heroicon::OutlinedTrash)->tooltip('Delete this records'),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
             Action::make('first')
                 ->label('First')
                 ->color('gray')
@@ -29,7 +43,7 @@ class EditMaterialCategory extends EditRecord
                         ? MaterialCategoryResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn () => ! MaterialCategory::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn() => ! MaterialCategory::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
@@ -41,7 +55,7 @@ class EditMaterialCategory extends EditRecord
                     return $prevRecord
                         ? MaterialCategoryResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn () => ! MaterialCategory::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn() => ! MaterialCategory::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -55,7 +69,7 @@ class EditMaterialCategory extends EditRecord
                         ? MaterialCategoryResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn () => ! MaterialCategory::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn() => ! MaterialCategory::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -70,7 +84,7 @@ class EditMaterialCategory extends EditRecord
                         ? MaterialCategoryResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn () => ! MaterialCategory::where('code', '>', $this->record->code)->exists()),
+                ->disabled(fn() => ! MaterialCategory::where('code', '>', $this->record->code)->exists()),
         ];
     }
 }

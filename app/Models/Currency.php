@@ -12,6 +12,8 @@ class Currency extends Model
 {
     use HasFactory, HasRoles, SoftDeletes;
 
+    // protected $with = ['exchangeRates'];
+
     protected $fillable = [
         'code',
         'name',

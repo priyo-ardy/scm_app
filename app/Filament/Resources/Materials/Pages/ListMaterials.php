@@ -14,7 +14,7 @@ class ListMaterials extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle),
+            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle)->label('New'),
         ];
     }
 }

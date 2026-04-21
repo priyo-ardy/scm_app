@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\HasCodeGenerator;
+use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,8 @@ class Equipment extends Model
     use HasCodeGenerator, HasFactory, HasPermissions;
 
     protected $table = 'equipments';
+
+    // protected $with = ['companyList', 'category', 'branchList', 'tonnageList', 'workshopList'];
 
     protected $fillable = [
         'company_id',      // Baru ditambahkan
@@ -92,6 +95,7 @@ class Equipment extends Model
 
     protected static function booted()
     {
+        static::addGlobalScope(new CompanyScope);
         static::creating(function ($model) {
             DB::transaction(function () use ($model) {
                 $category = EquipmentCategory::find($model->category_id);

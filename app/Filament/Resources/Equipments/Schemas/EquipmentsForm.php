@@ -30,12 +30,12 @@ class EquipmentsForm
                             ->preload()
                             ->required()
                             ->live()
-                            ->afterStateUpdated(fn (Set $set) => $set('branch_id', null))
+                            ->afterStateUpdated(fn(Set $set) => $set('branch_id', null))
                             ->searchable()
                             ->columnSpan(4),
                         Select::make('branch_id')
                             ->label('Branch')
-                            ->relationship('branchList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $get('company_id')))
+                            ->relationship('branchList', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('company_id', $get('company_id')))
                             ->native(false)
                             ->preload()
                             ->required()
@@ -92,7 +92,7 @@ class EquipmentsForm
                             ->autocomplete(false),
                         Select::make('workshop_id')
                             ->label('Workshop')
-                            ->relationship('workshopList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('branch_id', $get('branch_id')))
+                            ->relationship('workshopList', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('branch_id', $get('branch_id')))
                             ->native(false)
                             ->preload()
                             ->searchable()

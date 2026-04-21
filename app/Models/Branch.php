@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\HasCodeGenerator;
+use App\Models\Scopes\CompanyScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,8 @@ use Spatie\Permission\Traits\HasRoles;
 class Branch extends Model
 {
     use HasCodeGenerator, HasFactory, HasRoles, SoftDeletes;
+
+    // protected $with = ['company'];
 
     protected $fillable = [
         'company_id',
@@ -53,8 +56,9 @@ class Branch extends Model
 
     protected static function booted()
     {
-        static::creating(function ($supplier) {
-            $supplier->code = self::generateAutoCode(
+        static::addGlobalScope(new CompanyScope);
+        static::creating(function ($model) {
+            $model->code = self::generateAutoCode(
                 tableName: 'branches',
                 columnName: 'code',
                 prefix: 'PLT',

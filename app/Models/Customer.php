@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Blameable;
 use App\HasCodeGenerator;
+use App\Models\Scopes\CompanyScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,8 @@ use Spatie\Permission\Traits\HasRoles;
 class Customer extends Model
 {
     use HasCodeGenerator, HasFactory, HasRoles, SoftDeletes, Blameable;
+
+    // protected $with = ['companyList', 'paymentList', 'currencyList', 'paymentMethodList'];
 
     protected $fillable = [
         'company_id',
@@ -93,6 +96,7 @@ class Customer extends Model
 
     protected static function booted()
     {
+        static::addGlobalScope(new CompanyScope);
         static::creating(function ($supplier) {
             $supplier->code = self::generateAutoCode(
                 tableName: 'customers',

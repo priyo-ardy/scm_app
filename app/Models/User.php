@@ -103,6 +103,9 @@ class User extends Authenticatable
         });
     }
 
+    // protected $with = [
+    //     'companyList'
+    // ];
     public function companyList(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'assign_company');

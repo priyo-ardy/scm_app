@@ -2,23 +2,29 @@
 
 namespace App\Models;
 
+use App\Blameable;
 use App\HasCodeGenerator;
+use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasPermissions;
 
 class MaterialCategory extends Model
 {
-    use HasCodeGenerator, HasFactory, HasPermissions;
+    use HasCodeGenerator, HasFactory, HasPermissions, Blameable, SoftDeletes;
 
     protected $fillable = [
+        'company_id',
         'code',
         'name',
         'parent_id',
         'sort_order',
         'remark',
         'is_active',
+        'created_by',
+        'updated_by'
     ];
 
     protected function casts(): array
@@ -29,13 +35,24 @@ class MaterialCategory extends Model
         ];
     }
 
+    // protected $with = [
+    //     'header'
+    // ];
+
     public function header(): BelongsTo
     {
         return $this->belongsTo(MaterialCategory::class, 'parent_id');
     }
 
+    public function companyList(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
     protected static function booted()
     {
+        static::addGlobalScope(new CompanyScope);
+
         static::saving(function ($category) {
             // Cek: Apakah parent_id berubah?
             // isDirty('parent_id') akan TRUE jika user mengganti parent di form.
@@ -65,7 +82,7 @@ class MaterialCategory extends Model
                 }
 
                 // Set kode baru: misal "2" + "." + "1" = "2.1"
-                $category->code = $parent->code.'.'.$nextNumber;
+                $category->code = $parent->code . '.' . $nextNumber;
             }
 
             // Jika parent_id tidak berubah, variabel $category->code tidak kita sentuh,

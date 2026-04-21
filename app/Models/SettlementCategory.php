@@ -45,6 +45,11 @@ class SettlementCategory extends Model
         });
     }
 
+    protected $with = [
+        'creatorList',
+        'updaterList'
+    ];
+
     public function creatorList(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
