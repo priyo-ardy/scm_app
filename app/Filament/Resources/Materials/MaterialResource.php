@@ -48,6 +48,19 @@ class MaterialResource extends Resource
         ];
     }
 
+    public static function getPluralLabel(): ?string
+    {
+        // return parent::getPluralLabel();
+        return 'List of Materials';
+    }
+
+
+    public static function getModelLabel(): string
+    {
+        // return parent::getModelLabel();
+        return 'Material';
+    }
+
     public static function getPages(): array
     {
         return [

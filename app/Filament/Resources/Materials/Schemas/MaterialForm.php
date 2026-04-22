@@ -32,7 +32,7 @@ class MaterialForm
                             ->columnSpan(3),
                         Select::make('category_id')
                             ->label('Category')
-                            ->relationship('categoryList', 'name', fn ($query) => $query->where('is_active', '1')->orderBy('code', 'asc'))
+                            ->relationship('categoryList', 'name', fn($query) => $query->where('is_active', '1')->orderBy('code', 'asc'))
                             ->getOptionLabelFromRecordUsing(function ($record) {
                                 $depth = substr_count($record->code, '.');
                                 $indent = str_repeat('   ', $depth);
@@ -53,7 +53,7 @@ class MaterialForm
                                 $category = MaterialCategory::find($state);
 
                                 if ($category) {
-                                    $set('code', $category->code.'.');
+                                    $set('code', $category->code . '.');
                                 }
                             })
                             ->columnSpan(4),
@@ -72,7 +72,7 @@ class MaterialForm
                                     return;
                                 }
 
-                                $categoryCode = MaterialCategory::find($categoryId)?->code.'.';
+                                $categoryCode = MaterialCategory::find($categoryId)?->code . '.';
 
                                 // Jika user mencoba menghapus atau merubah awalan kategori
                                 if (! str_starts_with($state, $categoryCode)) {
@@ -80,8 +80,15 @@ class MaterialForm
                                     $set('code', $categoryCode);
                                 }
                             })
+                            ->placeholder('Material code')
                             ->autocomplete(false)
-                            ->columnSpan(5),
+                            ->columnSpan(3),
+                        TextInput::make('short_code')
+                            ->label('Short Code')
+                            ->maxLength('150')
+                            ->placeholder('Material short code')
+                            ->columnSpan(2)
+                            ->autocomplete(false),
                         TextInput::make('name')
                             ->label('Material Name')
                             ->required()
@@ -236,14 +243,41 @@ class MaterialForm
                             ->extraAttributes([
                                 'class' => '[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none', // Untuk Chrome/Safari/Edge
                             ])
-                            ->default(0),
+                            ->default(0)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                $gross = (float) $get('gross_weight');
+                                $net = (float) $state;
+
+                                $sprue = max($gross - $net, 0);
+
+                                $set('sprue', $sprue);
+                            })
+                            ->rule(function (callable $get) {
+                                return function ($attribute, $value, $fail) use ($get) {
+                                    $gross = (float) $get('gross_weight');
+
+                                    if ($value > $gross) {
+                                        $fail('Net weight tidak boleh lebih besar dari gross weight.');
+                                    }
+                                };
+                            }),
                         TextInput::make('gross_weight')
                             ->label('Gross Weight')
                             ->numeric()
                             ->step('0.00001')
                             ->placeholder('Gross Weight')
                             ->default(0)
-                            ->columnSpan(2),
+                            ->columnSpan(2)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                $net = (float) $get('net_weight');
+                                $gross = (float) $state;
+
+                                $sprue = max($gross - $net, 0);
+
+                                $set('sprue', $sprue);
+                            }),
                         TextInput::make('sprue')
                             ->label('Sprue Weight')
                             ->numeric()
@@ -258,7 +292,8 @@ class MaterialForm
                             ->step('0.00')
                             ->placeholder('Cycle Time')
                             ->default(0)
-                            ->columnSpan(2),
+                            ->columnSpan(2)
+                            ->dehydrated(),
                         TextInput::make('shift_capacity')
                             ->label('Shift Capacity')
                             ->numeric()
@@ -454,7 +489,7 @@ class MaterialForm
                                 if (filled($materialCode)) {
                                     $safeCode = str_replace(['/', '\\', '?', '*', ':', '|', '"', '<', '>', ' '], '-', $materialCode);
 
-                                    return (string) str($safeCode.'-'.now()->timestamp.'-'.uniqid().'.'.$file->getClientOriginalExtension());
+                                    return (string) str($safeCode . '-' . now()->timestamp . '-' . uniqid() . '.' . $file->getClientOriginalExtension());
                                 }
 
                                 return $file->hashName();
