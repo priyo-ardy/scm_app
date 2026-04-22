@@ -22,7 +22,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 
@@ -45,8 +44,8 @@ class SetllementCategoriesTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(string $state) => $state ? 'Enable' : 'Disable')
-                    ->color(fn(string $state) => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn (string $state) => $state ? 'Enable' : 'Disable')
+                    ->color(fn (string $state) => $state ? 'success' : 'gray')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('description')
@@ -65,7 +64,7 @@ class SetllementCategoriesTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updaterList.name')
                     ->label('Updated By')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 QueryBuilder::make()
@@ -84,7 +83,7 @@ class SetllementCategoriesTable
                             ->label('Status')
                             ->options([
                                 '0' => 'Disable',
-                                '1' => 'Enable'
+                                '1' => 'Enable',
                             ])
                             ->searchable(),
                         SelectConstraint::make('created_by')
@@ -94,12 +93,12 @@ class SetllementCategoriesTable
                         SelectConstraint::make('updated_by')
                             ->label('Updated By')
                             ->relationship('updaterList', 'name')
-                            ->searchable()
-                    ])
+                            ->searchable(),
+                    ]),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('3xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel)
@@ -125,22 +124,22 @@ class SetllementCategoriesTable
                                         ->searchable()
                                         ->live()
                                         ->options([
-                                            'is_active' => 'Status'
+                                            'is_active' => 'Status',
                                         ])
                                         ->default('is_active')
                                         ->columnSpan(1),
 
                                     Select::make('value_is_active')
                                         ->label('Status')
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'is_active')
                                         ->options([
                                             '0' => 'Disable',
                                             '1' => 'Enable',
                                         ])
                                         ->searchable()
                                         ->required()
-                                        ->columnSpan(2)
-                                ])
+                                        ->columnSpan(2),
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -154,20 +153,20 @@ class SetllementCategoriesTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
                         })
-                        ->deselectRecordsAfterCompletion()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
-                    ->exporter(SettlementCategoryExporter::class)
+                    ->exporter(SettlementCategoryExporter::class),
             ]);
     }
 }

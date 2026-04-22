@@ -11,10 +11,11 @@ class ListEquipments extends ListRecords
 {
     protected static string $resource = EquipmentsResource::class;
 
+
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle),
+            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle)->label('New'),
         ];
     }
 }

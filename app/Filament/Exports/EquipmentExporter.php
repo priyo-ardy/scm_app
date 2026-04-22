@@ -37,7 +37,7 @@ class EquipmentExporter extends Exporter
                     return Carbon::parse($state)->format('d-M-Y');
                 }),
             ExportColumn::make('machine_rate')->label('Machine/Equipment Rate'),
-            ExportColumn::make('status')->formatStateUsing(fn(string $state): string => match ($state) {
+            ExportColumn::make('status')->formatStateUsing(fn (string $state): string => match ($state) {
                 'standby' => 'Standby',
                 'running' => 'Running',
                 'breakdown' => 'Breakdown',
@@ -71,10 +71,10 @@ class EquipmentExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your equipment export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your equipment export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -82,6 +82,6 @@ class EquipmentExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'equipment_list_' . now()->format('YmdHis');
+        return 'equipment_list_'.now()->format('YmdHis');
     }
 }

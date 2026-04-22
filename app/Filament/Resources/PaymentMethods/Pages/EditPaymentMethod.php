@@ -30,7 +30,7 @@ class EditPaymentMethod extends EditRecord
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->color('success')
-                ->url(fn() => $this->getResource()::getUrl('create')),
+                ->url(fn () => $this->getResource()::getUrl('create')),
             DeleteAction::make()->icon(Heroicon::OutlinedTrash),
             ForceDeleteAction::make(),
             RestoreAction::make(),
@@ -46,7 +46,7 @@ class EditPaymentMethod extends EditRecord
                         ? PaymentMethodResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => ! PaymentMethod::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn () => ! PaymentMethod::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
@@ -58,7 +58,7 @@ class EditPaymentMethod extends EditRecord
                     return $prevRecord
                         ? PaymentMethodResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn() => ! PaymentMethod::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn () => ! PaymentMethod::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -72,7 +72,7 @@ class EditPaymentMethod extends EditRecord
                         ? PaymentMethodResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => ! PaymentMethod::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn () => ! PaymentMethod::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -87,7 +87,7 @@ class EditPaymentMethod extends EditRecord
                         ? PaymentMethodResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => ! PaymentMethod::where('code', '>', $this->record->code)->exists()),
+                ->disabled(fn () => ! PaymentMethod::where('code', '>', $this->record->code)->exists()),
         ];
     }
 }

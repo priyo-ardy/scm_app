@@ -15,7 +15,6 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\QueryBuilder\Constraints\NumberConstraint;
@@ -26,10 +25,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class TonnagesTable
@@ -72,8 +69,8 @@ class TonnagesTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Enable' : 'Disable')
-                    ->color(fn(bool $state): string => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Enable' : 'Disable')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
                     ->alignCenter()
                     ->sortable()
                     ->toggleable(),
@@ -98,21 +95,21 @@ class TonnagesTable
                             ->label('Standart Debugging'),
                         SelectConstraint::make('company_id')
                             ->label('Company')
-                            ->options(fn() => Company::query()->pluck('name', 'id'))
+                            ->options(fn () => Company::query()->pluck('name', 'id'))
                             ->searchable(),
                         SelectConstraint::make('is_active')
                             ->label('Status')
                             ->options([
                                 '0' => 'Disable',
-                                '1' => 'Enable'
+                                '1' => 'Enable',
                             ])
                             ->searchable(),
                     ])
-                    ->constraintPickerColumns(2)
+                    ->constraintPickerColumns(2),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel)
@@ -143,47 +140,47 @@ class TonnagesTable
                                             'clamping_force_kn' => 'Clamping Force KN',
                                             'std_dbugging' => 'Standart Debugging',
                                             'is_active' => 'Status',
-                                            'remark' => 'Remark'
+                                            'remark' => 'Remark',
                                         ])
                                         ->live()
                                         ->columnSpan(1),
                                     Select::make('value_company_id')
                                         ->label('Company')
-                                        ->options(fn() => Company::pluck('name', 'id'))
+                                        ->options(fn () => Company::pluck('name', 'id'))
                                         ->searchable()
                                         ->required()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'company_id'),
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'company_id'),
                                     TextInput::make('value_clamping_force_kn')
                                         ->label('Clamping Force KN')
                                         ->numeric()
                                         ->required()
                                         ->placeholder('Edit Clamping Force KN')
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'clamping_force_kn'),
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'clamping_force_kn'),
                                     TextInput::make('value_std_dbugging')
                                         ->label('Standart Debugging Qty')
                                         ->numeric()
                                         ->required()
                                         ->columnSpan(2)
                                         ->placeholder('Edit Standart Debugging Qty')
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'std_dbugging'),
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'std_dbugging'),
                                     Select::make('value_is_active')
                                         ->label('Status')
                                         ->options([
                                             '0' => 'Disable',
-                                            '1' => 'Enable'
+                                            '1' => 'Enable',
                                         ])
                                         ->searchable()
                                         ->columnSpan(2)
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active'),
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'is_active'),
                                     TextInput::make('value_remark')
                                         ->label('Remark')
                                         ->placeholder('Edit Remark')
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'remark'),
-                                ])
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'remark'),
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -200,15 +197,15 @@ class TonnagesTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
-                        })
+                        }),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)

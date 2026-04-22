@@ -71,9 +71,9 @@ class UsersForm
                             ->label('Password')
                             ->password()
                             ->revealable()
-                            ->required(fn($context) => $context === 'create')
-                            ->dehydrated(fn($state) => filled($state))
-                            ->mutateDehydratedStateUsing(fn($state) => Hash::make($state))
+                            ->required(fn ($context) => $context === 'create')
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->mutateDehydratedStateUsing(fn ($state) => Hash::make($state))
                             ->columnSpanFull(),
                         Select::make('role')
                             ->label('User Role')

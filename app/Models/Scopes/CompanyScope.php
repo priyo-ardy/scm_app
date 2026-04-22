@@ -13,7 +13,7 @@ class CompanyScope implements Scope
     {
         $companyId = Session::get('active_company');
 
-        if (!is_null($companyId)) {
+        if (! is_null($companyId)) {
             $builder->where('company_id', $companyId);
         }
     }

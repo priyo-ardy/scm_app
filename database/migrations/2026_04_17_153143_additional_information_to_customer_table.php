@@ -15,7 +15,6 @@ return new class extends Migration
             $table->dropColumn('payment_method');
         });
 
-
         Schema::table('customers', function (Blueprint $table) {
             $table->foreignId('company_id')->after('id')->nullable()->constrained('companies')->restrictOnDelete();
             $table->enum('category', ['local', 'overseas'])->after('company_id')->nullable();
@@ -53,7 +52,7 @@ return new class extends Migration
                 'short_name',
                 'created_by',
                 'updated_by',
-                'payment_method_id'
+                'payment_method_id',
             ]);
             $table->enum('payment_method', ['cash', 'bank', 'cheque', 'term_30', 'term_60', 'term_90'])->default('term_30');
         });

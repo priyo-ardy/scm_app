@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(Failed::class, HandleUserLoginAttempts::class);
         Event::listen(Login::class, HandleUserLoginAttempts::class);
         Event::listen(Authenticated::class, function ($event) {
-            if (!Session::has('active_company')) {
+            if (! Session::has('active_company')) {
                 Session::put('active_company', $event->user->assign_company);
             }
         });

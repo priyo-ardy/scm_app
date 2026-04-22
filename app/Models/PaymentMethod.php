@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class PaymentMethod extends Model
 {
-    use HasFactory, HasPermissions, SoftDeletes, HasCodeGenerator, Blameable;
+    use Blameable, HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes;
 
     protected $fillable = [
         'code',
@@ -24,13 +24,13 @@ class PaymentMethod extends Model
         'is_active',
         'description',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function casts()
     {
         return [
-            'commission_fee' => 'boolean'
+            'commission_fee' => 'boolean',
         ];
     }
 
@@ -47,11 +47,11 @@ class PaymentMethod extends Model
         });
     }
 
-    protected $with = [
-        'creatorList',
-        'updaterList',
-        'categoryList'
-    ];
+    // protected $with = [
+    //     'creatorList',
+    //     'updaterList',
+    //     'categoryList'
+    // ];
     public function creatorList(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -62,7 +62,7 @@ class PaymentMethod extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function categoryList(): belongsTo
+    public function categoryList(): BelongsTo
     {
         return $this->belongsTo(SettlementCategory::class, 'category_id')->where('deleted_at', null)->where('is_active', 1)->orderBy('name', 'asc');
     }

@@ -21,7 +21,7 @@ class UsersExporter extends Exporter
             ExportColumn::make('role')->label('Role'),
             ExportColumn::make('is_locked')
                 ->label('Locked Status')
-                ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No'),
+                ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No'),
             ExportColumn::make('last_login')->label('Last Login'),
             ExportColumn::make('last_login_from')->label('Last Login From'),
             ExportColumn::make('remark')->label('Remark'),
@@ -31,10 +31,10 @@ class UsersExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your users export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your users export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -42,6 +42,6 @@ class UsersExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'list_of_users_' . now()->format('YmdHis');
+        return 'list_of_users_'.now()->format('YmdHis');
     }
 }

@@ -24,7 +24,7 @@ class CreateUsers extends CreateRecord
                 ->label('Back to List')
                 ->icon(Heroicon::OutlinedArrowLeft)
                 ->color('gray')
-                ->url(static::getResource()::getUrl('index'))
+                ->url(static::getResource()::getUrl('index')),
         ];
     }
 }

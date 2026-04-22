@@ -50,9 +50,9 @@ class SuppliersForm
                                 // 3. Jika session null (Super Admin), ambil company default dari DB
                                 return Company::where('is_default', 1)->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(fn () => session('active_company') !== null)
                             ->dehydrated(true)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ])->columnSpan(1),
                 Section::make()
                     ->description('Base Information')
@@ -66,14 +66,14 @@ class SuppliersForm
                         TextInput::make('name')
                             ->label('Supplier Name')
                             ->live()
-                            ->afterStateUpdated(fn($set, $state) => $set('name', strtoupper($state)))
+                            ->afterStateUpdated(fn ($set, $state) => $set('name', strtoupper($state)))
                             ->required()
                             ->maxLength(150)
                             ->autocomplete(false)
                             ->autofocus()
                             ->placeholder('Supplier Name')
                             ->columnSpan(4)
-                            ->dehydrateStateUsing(fn($state) => strtoupper(strtolower($state))),
+                            ->dehydrateStateUsing(fn ($state) => strtoupper(strtolower($state))),
                         Textarea::make('address')
                             ->label('Supplier Address')
                             ->rows(1)
@@ -154,7 +154,7 @@ class SuppliersForm
                             ->label('Category')
                             ->options([
                                 'local' => 'Domestic',
-                                'export' => 'Overseas'
+                                'export' => 'Overseas',
                             ])
                             ->searchable()
                             ->columnSpan(3)
@@ -203,7 +203,7 @@ class SuppliersForm
                             ->relationship('currencyList', 'code')
                             ->searchable(['code', 'name'])
                             ->preload()
-                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name} ({$record->symbol})")
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name} ({$record->symbol})")
                             ->columnSpan(3),
                         Select::make('payment_term_id')
                             ->label('Payment Method')

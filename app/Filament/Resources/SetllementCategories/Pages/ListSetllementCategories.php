@@ -5,7 +5,6 @@ namespace App\Filament\Resources\SetllementCategories\Pages;
 use App\Filament\Resources\SetllementCategories\SetllementCategoryResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Icons\Heroicon;
 
 class ListSetllementCategories extends ListRecords

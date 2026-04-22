@@ -30,16 +30,21 @@ class EditPaymentTerm extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof PaymentTerm) return null;
+                    if (! $currentRecord instanceof PaymentTerm) {
+                        return null;
+                    }
 
                     $firstRecord = PaymentTerm::orderBy('code', 'asc')->first();
+
                     return ($firstRecord && $firstRecord->id !== $currentRecord->id)
                         ? PaymentTermResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
                 ->disabled(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof PaymentTerm) return true;
+                    if (! $currentRecord instanceof PaymentTerm) {
+                        return true;
+                    }
 
                     return ! PaymentTerm::where('code', '<', $currentRecord->code)->exists();
                 }),
@@ -50,7 +55,9 @@ class EditPaymentTerm extends EditRecord
                 ->icon(Heroicon::OutlinedChevronLeft)
                 ->url(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof PaymentTerm) return null;
+                    if (! $currentRecord instanceof PaymentTerm) {
+                        return null;
+                    }
 
                     $prevRecord = PaymentTerm::where('code', '<', $currentRecord->code)
                         ->orderBy('code', 'desc')
@@ -62,7 +69,9 @@ class EditPaymentTerm extends EditRecord
                 })
                 ->hidden(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof PaymentTerm) return true;
+                    if (! $currentRecord instanceof PaymentTerm) {
+                        return true;
+                    }
 
                     return ! PaymentTerm::where('code', '<', $currentRecord->code)->exists();
                 }),
@@ -74,7 +83,9 @@ class EditPaymentTerm extends EditRecord
                 ->iconPosition('after')
                 ->url(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof PaymentTerm) return null;
+                    if (! $currentRecord instanceof PaymentTerm) {
+                        return null;
+                    }
 
                     $nextRecord = PaymentTerm::where('code', '>', $currentRecord->code)
                         ->orderBy('code', 'asc')
@@ -86,7 +97,9 @@ class EditPaymentTerm extends EditRecord
                 })
                 ->hidden(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof PaymentTerm) return true;
+                    if (! $currentRecord instanceof PaymentTerm) {
+                        return true;
+                    }
 
                     return ! PaymentTerm::where('code', '>', $currentRecord->code)->exists();
                 }),
@@ -98,7 +111,9 @@ class EditPaymentTerm extends EditRecord
                 ->iconPosition('after')
                 ->url(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof PaymentTerm) return null;
+                    if (! $currentRecord instanceof PaymentTerm) {
+                        return null;
+                    }
 
                     $lastRecord = PaymentTerm::orderBy('code', 'desc')->first();
 
@@ -108,7 +123,9 @@ class EditPaymentTerm extends EditRecord
                 })
                 ->disabled(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof PaymentTerm) return true;
+                    if (! $currentRecord instanceof PaymentTerm) {
+                        return true;
+                    }
 
                     return ! PaymentTerm::where('code', '>', $currentRecord->code)->exists();
                 }),

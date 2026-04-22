@@ -45,7 +45,7 @@ class Supplier extends Authenticatable
 
     protected $casts = [
         'vat' => 'integer',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
     ];
 
     public function getCreatedAtAttribute($value)
@@ -68,11 +68,11 @@ class Supplier extends Authenticatable
         ];
     }
 
-    protected $with = [
-        'companyList',
-        'paymentList',
-        'currencyList'
-    ];
+    // protected $with = [
+    //     'companyList',
+    //     'paymentList',
+    //     'currencyList'
+    // ];
 
     public function companyList(): BelongsTo
     {

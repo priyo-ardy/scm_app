@@ -14,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Customer extends Model
 {
-    use HasCodeGenerator, HasFactory, HasRoles, SoftDeletes, Blameable;
+    use Blameable, HasCodeGenerator, HasFactory, HasRoles, SoftDeletes;
 
     // protected $with = ['companyList', 'paymentList', 'currencyList', 'paymentMethodList'];
 

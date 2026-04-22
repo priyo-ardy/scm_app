@@ -61,7 +61,7 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->spa()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
             ->brandName($brandName)
             ->favicon($logoUrl)
@@ -127,6 +127,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Application Setup')
                     ->icon(null)
                     ->collapsed(),
-            ]);
+            ])
+            ->globalSearch();
     }
 }

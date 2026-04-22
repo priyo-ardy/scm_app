@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use App\Blameable;
 use App\HasCodeGenerator;
 use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasPermissions;
 
 class Equipment extends Model
 {
-    use HasCodeGenerator, HasFactory, HasPermissions;
+    use HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes, Blameable;
 
     protected $table = 'equipments';
 
@@ -72,6 +74,16 @@ class Equipment extends Model
     public function workshopList(): BelongsTo
     {
         return $this->belongsTo(Workshop::class, 'workshop_id')->where('is_active', 1)->orderBy('name', 'asc');
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     public static function generateCurrentCode($categoryId)

@@ -32,10 +32,10 @@ class SetllementCategoryForm
                             ->placeholder('Additional information')
                             ->nullable()
                             ->rows(3)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -17,17 +17,17 @@ class SettlementCategoryExporter extends Exporter
         return [
             ExportColumn::make('code')->label('Code'),
             ExportColumn::make('name')->label('Name'),
-            ExportColumn::make('is_active')->formatStateUsing(fn(string $state) => $state ? 'Enable' : 'Disable')->label('Status'),
+            ExportColumn::make('is_active')->formatStateUsing(fn (string $state) => $state ? 'Enable' : 'Disable')->label('Status'),
             ExportColumn::make('description')->label('Remarks'),
         ];
     }
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your settlement category export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your settlement category export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -35,6 +35,6 @@ class SettlementCategoryExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return "settlement_category_list_" . date("Ymdhis");
+        return 'settlement_category_list_'.date('Ymdhis');
     }
 }

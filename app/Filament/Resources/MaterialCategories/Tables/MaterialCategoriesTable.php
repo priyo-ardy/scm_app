@@ -14,17 +14,13 @@ use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\QueryBuilder\Constraints\SelectConstraint;
 use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class MaterialCategoriesTable
 {
@@ -48,8 +44,8 @@ class MaterialCategoriesTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Enable' : 'Disable')
-                    ->color(fn(bool $state): string => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Enable' : 'Disable')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
                     ->alignCenter()
                     ->toggleable(),
             ])
@@ -59,12 +55,12 @@ class MaterialCategoriesTable
                     ->constraints([
                         SelectConstraint::make('company_id')
                             ->label('Company')
-                            ->options(fn() => Company::pluck('name', 'id'))
+                            ->options(fn () => Company::pluck('name', 'id'))
                             ->searchable(),
                         SelectConstraint::make('parent_id')
                             ->label('Parent Group')
                             ->options(
-                                fn() => MaterialCategory::whereNull('parent_id')
+                                fn () => MaterialCategory::whereNull('parent_id')
                                     ->orderBy('code', 'asc')
                                     ->get()
                                     ->mapWithKeys(function ($item) {
@@ -77,19 +73,19 @@ class MaterialCategoriesTable
                             ->label('Status')
                             ->options([
                                 '0' => 'Disable',
-                                '1' => 'Enable'
+                                '1' => 'Enable',
                             ])
                             ->searchable(),
                         TextConstraint::make('name')
                             ->label('Name'),
                         TextConstraint::make('remark')
-                            ->label('Remark')
+                            ->label('Remark'),
                     ])
-                    ->constraintPickerColumns(1)
+                    ->constraintPickerColumns(1),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('3xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::Funnel)
@@ -103,12 +99,12 @@ class MaterialCategoriesTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make()
+                    RestoreBulkAction::make(),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)

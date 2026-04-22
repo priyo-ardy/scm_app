@@ -8,7 +8,6 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
-use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 
@@ -32,7 +31,7 @@ class EditSetllementCategory extends EditRecord
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->color('success')
-                ->url(fn() => $this->getResource()::getUrl('create')),
+                ->url(fn () => $this->getResource()::getUrl('create')),
             DeleteAction::make()->icon(Heroicon::OutlinedTrash),
             Action::make('first')
                 ->label('First')
@@ -46,7 +45,7 @@ class EditSetllementCategory extends EditRecord
                         ? SetllementCategoryResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => ! SettlementCategory::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn () => ! SettlementCategory::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
@@ -58,7 +57,7 @@ class EditSetllementCategory extends EditRecord
                     return $prevRecord
                         ? SetllementCategoryResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn() => ! SettlementCategory::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn () => ! SettlementCategory::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -72,7 +71,7 @@ class EditSetllementCategory extends EditRecord
                         ? SetllementCategoryResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => ! SettlementCategory::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn () => ! SettlementCategory::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -87,7 +86,7 @@ class EditSetllementCategory extends EditRecord
                         ? SetllementCategoryResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => ! SettlementCategory::where('code', '>', $this->record->code)->exists()),
+                ->disabled(fn () => ! SettlementCategory::where('code', '>', $this->record->code)->exists()),
         ];
     }
 }

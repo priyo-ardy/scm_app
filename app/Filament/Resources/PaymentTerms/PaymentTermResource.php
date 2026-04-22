@@ -22,8 +22,11 @@ class PaymentTermResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'PaymentTerm';
+
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+
     protected static ?int $navigationSort = 10;
+
     protected static ?string $pluralLabel = 'Payment Terms';
 
     public static function form(Schema $schema): Schema

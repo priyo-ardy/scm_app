@@ -17,7 +17,6 @@ use Filament\Notifications\Notification;
 use Filament\QueryBuilder\Constraints\SelectConstraint;
 use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
@@ -51,8 +50,8 @@ class EquipmentCategoriesTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable')
-                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn ($state) => $state ? 'Enable' : 'Disable')
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
                     ->toggleable(),
                 TextColumn::make('description')
                     ->label('Remark')
@@ -70,21 +69,21 @@ class EquipmentCategoriesTable
                             ->label('Prefix'),
                         SelectConstraint::make('company_id')
                             ->label('Company')
-                            ->options(fn() => Company::pluck('name', 'id'))
+                            ->options(fn () => Company::pluck('name', 'id'))
                             ->searchable(),
                         SelectConstraint::make('is_active')
                             ->label('Status')
                             ->options([
                                 '0' => 'Disable',
-                                '1' => 'Enable'
+                                '1' => 'Enable',
                             ])
-                            ->searchable()
-                    ])
+                            ->searchable(),
+                    ]),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('3xl')
             ->persistFiltersInSession()
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::Funnel)
@@ -133,7 +132,7 @@ class EquipmentCategoriesTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)

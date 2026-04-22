@@ -3,9 +3,8 @@
 namespace App\Filament\Resources\PaymentMethods\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -42,7 +41,7 @@ class PaymentMethodForm
                                 'cash' => 'Cash',
                                 'banking' => 'Banking',
                                 'bill_transaction' => 'Bill Transaction',
-                                'internal_settlement' => 'Internal Settlement'
+                                'internal_settlement' => 'Internal Settlement',
                             ])
                             ->searchable()
                             ->default(null)
@@ -51,7 +50,7 @@ class PaymentMethodForm
                             ->label('Commission Fee')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->searchable()
                             ->required()
@@ -59,7 +58,7 @@ class PaymentMethodForm
                         Select::make('payment_mode')
                             ->label('Payment Mode')
                             ->options([
-                                'directly_withheld' => 'Directly Withheld'
+                                'directly_withheld' => 'Directly Withheld',
                             ])
                             ->searchable()
                             ->default(null)
@@ -70,7 +69,7 @@ class PaymentMethodForm
                             ->nullable(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

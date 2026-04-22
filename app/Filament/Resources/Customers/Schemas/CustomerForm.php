@@ -49,9 +49,9 @@ class CustomerForm
                                 // 3. Jika session null (Super Admin), ambil company default dari DB
                                 return Company::where('is_default', 1)->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(fn () => session('active_company') !== null)
                             ->dehydrated(true)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ])->columnSpan(1),
                 Section::make()
                     ->description('Basic Information')
@@ -66,13 +66,13 @@ class CustomerForm
                             ->label('Customer Name')
                             ->required()
                             ->live()
-                            ->afterStateUpdated(fn($set, $state) => $set('name', strtoupper($state)))
+                            ->afterStateUpdated(fn ($set, $state) => $set('name', strtoupper($state)))
                             ->maxLength(150)
                             ->autocomplete(false)
                             ->autofocus()
                             ->placeholder('Customer Name')
                             ->columnSpan(6)
-                            ->dehydrateStateUsing(fn($state) => strtoupper(strtolower($state))),
+                            ->dehydrateStateUsing(fn ($state) => strtoupper(strtolower($state))),
                         TextInput::make('short_name')
                             ->label('Short Name')
                             ->maxLength(150)
@@ -158,7 +158,7 @@ class CustomerForm
                             ->label('Category')
                             ->options([
                                 'local' => 'Domestic',
-                                'overseas' => 'Overseas'
+                                'overseas' => 'Overseas',
                             ])
                             ->required()
                             ->columnSpan(3)
@@ -169,7 +169,7 @@ class CustomerForm
                             ->relationship('currencyList', 'code')
                             ->searchable(['code', 'name'])
                             ->preload()
-                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name} ({$record->symbol})")
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name} ({$record->symbol})")
                             ->columnSpan(3),
                         Select::make('payment_term_id')
                             ->label('Payment Method')
@@ -184,7 +184,7 @@ class CustomerForm
                             ->relationship('paymentMethodList', 'name')
                             ->searchable(['name'])
                             ->preload()
-                            ->columnSpan(3)
+                            ->columnSpan(3),
                     ])
                     ->columns(12)
                     ->columnSpanFull(),

@@ -30,7 +30,7 @@ class EditCustomer extends EditRecord
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->color('success')
-                ->url(fn() => $this->getResource()::getUrl('create')),
+                ->url(fn () => $this->getResource()::getUrl('create')),
             DeleteAction::make()->icon(Heroicon::OutlinedTrash),
             ForceDeleteAction::make(),
             RestoreAction::make(),
@@ -40,13 +40,19 @@ class EditCustomer extends EditRecord
                 ->tooltip('Go to first data')
                 ->icon(Heroicon::OutlinedChevronDoubleLeft)
                 ->url(function () {
+                    $currentRecord = $this->record;
+
+                    if (! $currentRecord instanceof Customer) {
+                        return null;
+                    }
+
                     $firstRecord = Customer::orderBy('code', 'asc')->first();
 
-                    return ($firstRecord && $firstRecord->id !== $this->record->id)
+                    return ($firstRecord && $firstRecord->id !== $currentRecord->id)
                         ? CustomerResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => ! Customer::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn () => ! Customer::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
@@ -58,7 +64,7 @@ class EditCustomer extends EditRecord
                     return $prevRecord
                         ? CustomerResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn() => ! Customer::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn () => ! Customer::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -66,13 +72,19 @@ class EditCustomer extends EditRecord
                 ->icon(Heroicon::OutlinedChevronRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $nextRecord = Customer::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
+                    $currentRecord = $this->record;
+
+                    if (! $currentRecord instanceof Customer) {
+                        return null;
+                    }
+
+                    $nextRecord = Customer::where('code', '>', $currentRecord->code)->orderBy('code', 'asc')->first();
 
                     return $nextRecord
                         ? CustomerResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => ! Customer::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn () => ! Customer::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -80,14 +92,20 @@ class EditCustomer extends EditRecord
                 ->icon(Heroicon::OutlinedChevronDoubleRight)
                 ->iconPosition('after')
                 ->url(function () {
+                    $currentRecord = $this->record;
+
+                    if (! $currentRecord instanceof Customer) {
+                        return null;
+                    }
+
                     $lastRecord = Customer::orderBy('code', 'desc')->first();
 
                     // Jangan redirect kalau kita sudah di record terakhir
-                    return ($lastRecord && $lastRecord->id !== $this->record->id)
+                    return ($lastRecord && $lastRecord->id !== $currentRecord->id)
                         ? CustomerResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => ! Customer::where('code', '>', $this->record->code)->exists()),
+                ->disabled(fn () => ! Customer::where('code', '>', $this->record->code)->exists()),
         ];
     }
 }

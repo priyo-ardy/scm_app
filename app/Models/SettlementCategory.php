@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class SettlementCategory extends Model
 {
-    use HasFactory, HasPermissions, SoftDeletes, Blameable, HasCodeGenerator;
+    use Blameable, HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes;
 
     protected $fillable = [
         'code',
@@ -20,7 +20,7 @@ class SettlementCategory extends Model
         'is_active',
         'description',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function casts()
@@ -45,10 +45,10 @@ class SettlementCategory extends Model
         });
     }
 
-    protected $with = [
-        'creatorList',
-        'updaterList'
-    ];
+    // protected $with = [
+    //     'creatorList',
+    //     'updaterList'
+    // ];
 
     public function creatorList(): BelongsTo
     {

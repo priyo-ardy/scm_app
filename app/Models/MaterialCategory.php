@@ -13,7 +13,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class MaterialCategory extends Model
 {
-    use HasCodeGenerator, HasFactory, HasPermissions, Blameable, SoftDeletes;
+    use Blameable, HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes;
 
     protected $fillable = [
         'company_id',
@@ -24,7 +24,7 @@ class MaterialCategory extends Model
         'remark',
         'is_active',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     protected function casts(): array
@@ -82,7 +82,7 @@ class MaterialCategory extends Model
                 }
 
                 // Set kode baru: misal "2" + "." + "1" = "2.1"
-                $category->code = $parent->code . '.' . $nextNumber;
+                $category->code = $parent->code.'.'.$nextNumber;
             }
 
             // Jika parent_id tidak berubah, variabel $category->code tidak kita sentuh,

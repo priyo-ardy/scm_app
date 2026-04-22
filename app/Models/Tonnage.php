@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class Tonnage extends Model
 {
-    use HasFactory, HasPermissions, SoftDeletes, Blameable;
+    use Blameable, HasFactory, HasPermissions, SoftDeletes;
 
     protected $fillable = [
         'company_id',

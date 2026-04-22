@@ -13,23 +13,19 @@ use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\QueryBuilder\Constraints\DateConstraint;
 use Filament\QueryBuilder\Constraints\SelectConstraint;
 use Filament\QueryBuilder\Constraints\TextConstraint;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 
@@ -57,10 +53,10 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('roles.name')
                     ->label('User Role')
-                    ->formatStateUsing(fn(string $state): string => ucfirst($state))
-                    ->formatStateUsing(fn(string $state): string => Str::headline($state))
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                    ->formatStateUsing(fn (string $state): string => Str::headline($state))
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'super_admin' => 'danger',
                         'admin' => 'warning',
                         'manager' => 'success',
@@ -74,9 +70,9 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('is_locked')
                     ->label('Locked Status')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Locked' : 'Unlocked')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Locked' : 'Unlocked')
                     ->badge()
-                    ->color(fn(bool $state): string => $state ? 'danger' : 'success')
+                    ->color(fn (bool $state): string => $state ? 'danger' : 'success')
                     ->alignCenter(),
                 TextColumn::make('companyList.name')
                     ->label('Assign to Company')
@@ -97,10 +93,9 @@ class UsersTable
                 TextColumn::make('is_active')
                     ->badge()
                     ->label('Status')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Active' : 'Not Active')
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->alignCenter()
-
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Active' : 'Not Active')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->alignCenter(),
 
             ])
             ->filters([
@@ -115,20 +110,20 @@ class UsersTable
                         SelectConstraint::make('is_locked')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])->searchable(),
 
                         // Date
                         DateConstraint::make('last_login')
-                            ->label('Last Login')
+                            ->label('Last Login'),
                     ])
-                    ->constraintPickerColumns(1)
+                    ->constraintPickerColumns(1),
             ], layout: FiltersLayout::Modal)
             ->filtersFormColumns(1)
             ->filtersFormWidth('4xl')
             ->persistFiltersInSession()
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon('heroicon-o-funnel')
@@ -156,37 +151,37 @@ class UsersTable
                                     'login_attempt' => 'Login Attempts',
                                     'is_locked' => 'Locking Status',
                                     'role' => 'User Role',
-                                    'is_active' => 'Status'
+                                    'is_active' => 'Status',
                                 ]),
                             TextInput::make('value_login_attempt')
                                 ->label('Login attempts')
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'login_attempt')
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'login_attempt')
                                 ->numeric()
                                 ->placeholder('Change login failure attempt'),
                             Select::make('value_is_locked')
                                 ->label('Select locking status')
                                 ->options([
                                     '0' => 'No',
-                                    '1' => 'Locked'
+                                    '1' => 'Locked',
                                 ])->searchable()
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'is_locked'),
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'is_locked'),
                             Select::make('value_role')
                                 ->label('Select user role')
                                 ->relationship('roles', 'name')
                                 ->searchable()
                                 ->preload()
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'role'),
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'role'),
                             Select::make('value_is_active')
                                 ->label('Select status')
                                 ->options([
                                     '0' => 'No',
-                                    '1' => 'Active'
+                                    '1' => 'Active',
                                 ])->searchable()
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'is_active'),
+                                ->visible(fn (Get $get) => $get('column_to_update') === 'is_active'),
                             TextInput::make('value_string')
                                 ->label('New Text Value')
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['login_attempt']))
-                                ->required()
+                                ->visible(fn (Get $get) => in_array($get('column_to_update'), ['login_attempt']))
+                                ->required(),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -215,20 +210,20 @@ class UsersTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " records updated.")
+                                ->body(count($records).' records updated.')
                                 ->success()
                                 ->send();
                         })
-                        ->deselectRecordsAfterCompletion()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
-                    ->exporter(UsersExporter::class)
+                    ->exporter(UsersExporter::class),
             ]);
     }
 }

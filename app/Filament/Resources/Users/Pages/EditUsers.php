@@ -44,7 +44,9 @@ class EditUsers extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof User) return null;
+                    if (! $currentRecord instanceof User) {
+                        return null;
+                    }
 
                     $firstRecord = User::orderBy('id', 'asc')->first();
 
@@ -54,7 +56,9 @@ class EditUsers extends EditRecord
                 })
                 ->disabled(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof User) return true;
+                    if (! $currentRecord instanceof User) {
+                        return true;
+                    }
 
                     return ! User::where('id', '<', $currentRecord->id)->exists();
                 }),
@@ -65,7 +69,9 @@ class EditUsers extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof User) return null;
+                    if (! $currentRecord instanceof User) {
+                        return null;
+                    }
 
                     $prevRecord = User::where('id', '<', $currentRecord->id)
                         ->orderBy('id', 'desc')
@@ -77,7 +83,9 @@ class EditUsers extends EditRecord
                 })
                 ->hidden(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof User) return true;
+                    if (! $currentRecord instanceof User) {
+                        return true;
+                    }
 
                     return ! User::where('id', '<', $currentRecord->id)->exists();
                 }),
@@ -88,7 +96,9 @@ class EditUsers extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof User) return null;
+                    if (! $currentRecord instanceof User) {
+                        return null;
+                    }
 
                     $prevRecord = User::where('id', '>', $currentRecord->id)
                         ->orderBy('id', 'asc')
@@ -100,7 +110,9 @@ class EditUsers extends EditRecord
                 })
                 ->hidden(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof User) return true;
+                    if (! $currentRecord instanceof User) {
+                        return true;
+                    }
 
                     return ! User::where('id', '>', $currentRecord->id)->exists();
                 }),
@@ -132,7 +144,7 @@ class EditUsers extends EditRecord
 
                     // Cek apakah ada record dengan ID yang lebih besar dari sekarang
                     return ! User::where('id', '>', $currentRecord->id)->exists();
-                })
+                }),
         ];
     }
 }

@@ -22,17 +22,17 @@ class WorkshopExporter extends Exporter
             ExportColumn::make('location_detail')->label('Location Details'),
             ExportColumn::make('user.name')->label('Workshop PIC'),
             ExportColumn::make('phone')->label('Workhsop Ext. No.'),
-            ExportColumn::make('is_active')->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable'),
+            ExportColumn::make('is_active')->formatStateUsing(fn ($state) => $state ? 'Enable' : 'Disable'),
             ExportColumn::make('remarks')->label('Remark'),
         ];
     }
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your workshop export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your workshop export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -40,6 +40,6 @@ class WorkshopExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'workshop_' . now()->format('YmdHis');
+        return 'workshop_'.now()->format('YmdHis');
     }
 }

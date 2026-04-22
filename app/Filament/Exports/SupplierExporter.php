@@ -33,7 +33,7 @@ class SupplierExporter extends Exporter
             ExportColumn::make('bank_account_no')->label('Bank Account No'),
             ExportColumn::make('bank_account_name')->label('Bank Account Name'),
             ExportColumn::make('paymentList.name')->label('Payment Terms'),
-            ExportColumn::make('category')->formatStateUsing(fn(string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas')->label('Supplier Category'),
+            ExportColumn::make('category')->formatStateUsing(fn (string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas')->label('Supplier Category'),
             ExportColumn::make('currencyList.code')->label('Default Currency'),
             ExportColumn::make('remark')->label('Remark'),
         ];
@@ -41,10 +41,10 @@ class SupplierExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your supplier export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your supplier export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -52,6 +52,6 @@ class SupplierExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'supplier-' . now()->format('YmdHis');
+        return 'supplier-'.now()->format('YmdHis');
     }
 }

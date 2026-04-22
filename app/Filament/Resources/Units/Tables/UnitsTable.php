@@ -26,8 +26,6 @@ use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 
-use function Laravel\Prompts\select;
-
 class UnitsTable
 {
     public static function configure(Table $table): Table
@@ -38,7 +36,7 @@ class UnitsTable
                     ->label('Unit Category')
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state) => ucwords($state))
+                    ->formatStateUsing(fn ($state) => ucwords($state))
                     ->toggleable(),
                 TextColumn::make('code')
                     ->label('Symbol')
@@ -65,8 +63,8 @@ class UnitsTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Enable' : 'Disable')
-                    ->color(fn(bool $state): string => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Enable' : 'Disable')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
                     ->alignCenter()
                     ->toggleable(),
             ])
@@ -91,11 +89,11 @@ class UnitsTable
                             ->relationship('baseUnit', 'name')
                             ->searchable(),
                     ])
-                    ->constraintPickerColumns(2)
+                    ->constraintPickerColumns(2),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('3xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel),
@@ -125,7 +123,7 @@ class UnitsTable
                                             'category' => 'Unit Category',
                                             'base_unit_id' => 'Base Unit',
                                             'conversion_factor' => 'Conversion Rate',
-                                            'is_active' => 'Status'
+                                            'is_active' => 'Status',
                                         ])
                                         ->columnSpan(1),
                                     Select::make('value_category')
@@ -137,7 +135,7 @@ class UnitsTable
                                             'other' => 'Others',
                                         ])
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'category')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'category')
                                         ->columnSpan(2)
                                         ->searchable(),
                                     Select::make('value_base_unit')
@@ -145,25 +143,25 @@ class UnitsTable
                                         ->required()
                                         ->relationship('baseUnit', 'name')
                                         ->searchable()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'base_unit_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'base_unit_id')
                                         ->columnSpan(2),
                                     TextInput::make('value_conversion_factor')
                                         ->label('Conversion')
                                         ->required()
                                         ->numeric()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'conversion_factor')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'conversion_factor')
                                         ->placeholder('Unit Conversion Rate')
                                         ->columnSpan(2),
                                     Select::make('value_is_active')
                                         ->label('Status')
                                         ->options([
                                             '0' => 'Disable',
-                                            '1' => 'Enable'
+                                            '1' => 'Enable',
                                         ])
                                         ->searchable()
                                         ->required()
-                                        ->columnSpan(2)
-                                ])
+                                        ->columnSpan(2),
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -179,15 +177,15 @@ class UnitsTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
-                        })
+                        }),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->exporter(UnitExporter::class)
                     ->label('Export')

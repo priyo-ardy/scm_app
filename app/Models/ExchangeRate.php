@@ -30,7 +30,7 @@ class ExchangeRate extends Model
         ];
     }
 
-    protected $with = ['currency', 'user'];
+    // protected $with = ['currency', 'user'];
 
     public function currency(): BelongsTo
     {

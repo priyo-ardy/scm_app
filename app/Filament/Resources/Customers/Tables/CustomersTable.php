@@ -149,7 +149,7 @@ class CustomersTable
                             ->label('Category')
                             ->options([
                                 'local' => 'Domestic',
-                                'overseas' => 'Overseas'
+                                'overseas' => 'Overseas',
                             ])
                             ->searchable(),
                         BooleanConstraint::make('is_active')->label('Status'),
@@ -163,9 +163,9 @@ class CustomersTable
                         SelectConstraint::make('currency_id')
                             ->label('Default Currency')
                             ->relationship('currencyList', 'code')
-                            ->searchable()
+                            ->searchable(),
                     ])
-                    ->constraintPickerColumns(3)
+                    ->constraintPickerColumns(3),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersTriggerAction(
@@ -197,13 +197,13 @@ class CustomersTable
                                             'is_active' => 'Status',
                                             'vat' => 'VAT',
                                             'payment_term_id' => 'Payment Terms',
-                                            'currency_id' => 'Default Currency'
+                                            'currency_id' => 'Default Currency',
                                         ])
                                         ->columnSpan(1),
                                     Select::make('value_is_active')
                                         ->options([
                                             '0' => 'Disable',
-                                            '1' => 'Enable'
+                                            '1' => 'Enable',
                                         ])
                                         ->required()
                                         ->columnSpan(2)
@@ -225,7 +225,7 @@ class CustomersTable
                                         ->preload()
                                         ->columnSpan(2)
                                         ->visible(fn(Get $get) => $get('column_to_update' === 'currency_id')),
-                                ])
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -244,7 +244,7 @@ class CustomersTable
                                 ->body(count($records) . " Records updated on field: {$column}")
                                 ->success()
                                 ->send();
-                        })
+                        }),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')

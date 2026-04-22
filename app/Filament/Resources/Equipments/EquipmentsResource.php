@@ -23,11 +23,11 @@ class EquipmentsResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'List of Equipments';
+    protected static ?string $navigationLabel = 'Machine & Equipments';
 
     protected static ?int $navigationSort = 8;
 
-    protected static ?string $recordTitleAttribute = 'Equipment';
+    protected static ?string $recordTitleAttribute = 'Machine & Equpment';
 
     public static function form(Schema $schema): Schema
     {
@@ -53,5 +53,17 @@ class EquipmentsResource extends Resource
             'create' => CreateEquipments::route('/create'),
             'edit' => EditEquipments::route('/{record}/edit'),
         ];
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        // return parent::getPluralModelLabel();
+        return "List of Machine & Equipments";
+    }
+
+    public static function getModelLabel(): string
+    {
+        // return parent::getModelLabel();
+        return  'Machine & Equipments';
     }
 }

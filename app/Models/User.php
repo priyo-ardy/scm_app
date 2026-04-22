@@ -20,9 +20,9 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
     use HasRoles;
     use SoftDeletes;
-
     use SoftDeletes;
     // use LogsAllActivities;
 

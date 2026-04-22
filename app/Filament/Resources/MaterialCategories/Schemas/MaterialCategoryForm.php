@@ -34,12 +34,12 @@ class MaterialCategoryForm
                                 // 3. Jika session null (Super Admin), ambil company default dari DB
                                 return Company::where('is_default', 1)->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(fn () => session('active_company') !== null)
                             ->dehydrated(true)
                             ->columnSpanFull(),
                         Select::make('parent_id')
                             ->label('Category Header')
-                            ->relationship('header', 'name', fn($query) => $query->orderBy('code', 'asc'))
+                            ->relationship('header', 'name', fn ($query) => $query->orderBy('code', 'asc'))
                             ->getOptionLabelFromRecordUsing(function ($record) {
                                 $depth = substr_count($record->code, '.');
                                 $indent = str_repeat('   ', $depth);
@@ -69,10 +69,10 @@ class MaterialCategoryForm
                             }),
                         TextInput::make('code')
                             ->label('Material Category Code')
-                            ->placeholder(fn($get) => $get('parent_id') ? 'Automatically generate after save' : 'Input code manually')
-                            ->disabled(fn($get) => filled($get('parent_id')))
+                            ->placeholder(fn ($get) => $get('parent_id') ? 'Automatically generate after save' : 'Input code manually')
+                            ->disabled(fn ($get) => filled($get('parent_id')))
                             ->dehydrated()
-                            ->required(fn($get) => blank($get('parent_id')))
+                            ->required(fn ($get) => blank($get('parent_id')))
                             ->unique(ignoreRecord: true)
                             ->autocomplete(false)
                             ->validationMessages([

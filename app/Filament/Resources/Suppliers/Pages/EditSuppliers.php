@@ -6,8 +6,6 @@ use App\Filament\Resources\Suppliers\SuppliersResource;
 use App\Models\Supplier;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
@@ -28,7 +26,7 @@ class EditSuppliers extends EditRecord
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->color('success')
-                ->url(fn() => $this->getResource()::getUrl('create')),
+                ->url(fn () => $this->getResource()::getUrl('create')),
             Action::make('copy')
                 ->label('Copy')
                 ->icon(Heroicon::OutlinedDocumentDuplicate)
@@ -36,7 +34,7 @@ class EditSuppliers extends EditRecord
                 ->action(function ($record) {
                     $data = $record->toArray();
                     unset($data['id'], $data['created_at'], $data['updated_at']);
-                    $data['code'] = $record->code . '-COPY-' . uniqid();
+                    $data['code'] = $record->code.'-COPY-'.uniqid();
                     $newRecord = Supplier::create($data);
 
                     if ($newRecord) {
@@ -64,7 +62,7 @@ class EditSuppliers extends EditRecord
                         ? SuppliersResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn() => ! Supplier::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn () => ! Supplier::where('code', '<', $this->record->code)->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
@@ -76,7 +74,7 @@ class EditSuppliers extends EditRecord
                     return $prevRecord
                         ? SuppliersResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn() => ! Supplier::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn () => ! Supplier::where('code', '<', $this->record->code)->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -90,7 +88,7 @@ class EditSuppliers extends EditRecord
                         ? SuppliersResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn() => ! Supplier::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn () => ! Supplier::where('code', '>', $this->record->code)->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -105,7 +103,7 @@ class EditSuppliers extends EditRecord
                         ? SuppliersResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn() => ! Supplier::where('code', '>', $this->record->code)->exists()),
+                ->disabled(fn () => ! Supplier::where('code', '>', $this->record->code)->exists()),
         ];
     }
 }

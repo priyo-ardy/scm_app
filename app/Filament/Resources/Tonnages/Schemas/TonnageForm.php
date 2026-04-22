@@ -35,7 +35,7 @@ class TonnageForm
                             ->placeholder('Tonnage Code')
                             ->validationMessages([
                                 'required' => 'This field is required',
-                                'unique' => 'This code already registered'
+                                'unique' => 'This code already registered',
                             ])
                             ->autocomplete(false),
                         TextInput::make('name')

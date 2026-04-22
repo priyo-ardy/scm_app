@@ -8,14 +8,10 @@ use App\Models\PaymentTerm;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\QueryBuilder\Constraints\BooleanConstraint;
@@ -25,15 +21,11 @@ use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Actions\Action as TableAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class SuppliersTable
@@ -119,12 +111,12 @@ class SuppliersTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable')
-                    ->color(fn(bool $state): string => $state ? 'success' : 'gray'),
+                    ->formatStateUsing(fn ($state) => $state ? 'Enable' : 'Disable')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray'),
                 TextColumn::make('category')
                     ->label('Supplier Category')
                     ->searchable()
-                    ->formatStateUsing(fn(string $state): string => ($state = 'local') ? 'Domestic' : 'Overseas'),
+                    ->formatStateUsing(fn (string $state): string => ($state = 'local') ? 'Domestic' : 'Overseas'),
                 TextColumn::make('currencyList.code')
                     ->label('Default Currency')
                     ->searchable(['code', 'name', 'symbol']),
@@ -159,18 +151,18 @@ class SuppliersTable
                             ->label('Category')
                             ->options([
                                 'local' => 'Domestic',
-                                'export' => 'Overseas'
+                                'export' => 'Overseas',
                             ]),
                         SelectConstraint::make('default_currency ')
                             ->label('Default Currency')
                             ->options(Currency::pluck('code', 'id')),
                         BooleanConstraint::make('is_active')
                             ->label('Status'),
-                    ])->constraintPickerColumns(3)
+                    ])->constraintPickerColumns(3),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel),
@@ -197,28 +189,28 @@ class SuppliersTable
                                         ->options([
                                             'is_active' => 'Disable Status',
                                             'category' => 'Category',
-                                            'default_currency' => 'Default Currency'
+                                            'default_currency' => 'Default Currency',
                                         ])->columnSpan(1),
 
                                     Select::make('value_is_active')
                                         ->options(['0' => 'Disable', '1' => 'Enable'])
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'is_active')
                                         ->required()
                                         ->columnSpan(2),
                                     Select::make('value_category')
                                         ->options(['local' => 'Domestic', 'export' => 'Overseas'])
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'category')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'category')
                                         ->required()
                                         ->columnSpan(2),
                                     Select::make('value_default_currency')
                                         ->relationship('currencyList', 'code')
                                         ->visible()
                                         ->searchable()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'default_currency')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'default_currency')
                                         ->preload()
                                         ->required()
-                                        ->columnSpan(2)
-                                ])
+                                        ->columnSpan(2),
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -233,16 +225,16 @@ class SuppliersTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
                         })
-                        ->deselectRecordsAfterCompletion()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->label('Export')
                     ->exporter(SupplierExporter::class)

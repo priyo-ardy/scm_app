@@ -9,13 +9,22 @@ use App\Models\EquipmentCategory;
 use App\Models\Tonnage;
 use App\Models\Workshop;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\QueryBuilder\Constraints\DateConstraint;
+use Filament\QueryBuilder\Constraints\NumberConstraint;
+use Filament\QueryBuilder\Constraints\SelectConstraint;
+use Filament\QueryBuilder\Constraints\TextConstraint;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -23,8 +32,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class EquipmentsTable
 {
@@ -35,369 +46,382 @@ class EquipmentsTable
                 TextColumn::make('companyList.name')
                     ->label('Company')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('branchList.name')
                     ->label('Branch')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('category.name')
                     ->label('Category')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('code')
                     ->label('Code')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('name')
                     ->label('Name')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('specification')
                     ->label('Specification')
                     ->sortable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('equipment_no')
                     ->label('Machine No.')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('workshopList.name')
                     ->label('Workshop')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('tonnageList.name')
                     ->label('Tonnage')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('brand')
                     ->label('Brand')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('model_number')
                     ->label('Model Number')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('serial_number')
                     ->label('Serial No.')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('machine_rate')
                     ->label('Machine Rate')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('purchase_date')
                     ->date('d-M-Y')
                     ->label('Purchase Date')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('installation_date')
                     ->label('Installation Date')
                     ->date('d-M-Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('last_maintenance')
                     ->label('Last Maintenance Date')
                     ->date('d-M-Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('total_shots')
                     ->label('Total Shots')
                     ->sortable()
-                    ->alignRight(),
+                    ->searchable()
+                    ->alignRight()
+                    ->toggleable(),
                 TextColumn::make('status')
+                    ->label('Machine/Equipment Status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'standby' => 'Standby',
                         'running' => 'Running',
                         'breakdown' => 'Breakdown',
                         'repair' => 'Repair',
                         default => ucfirst($state), // Fallback kalau ada data lain
                     })
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'standby' => 'info',      // Biru: Sedang bersiap/menunggu
                         'running' => 'success',   // Hijau: Aman dan beroperasi normal
                         'breakdown' => 'danger',  // Merah: Rusak parah/berhenti beroperasi
                         'repair' => 'warning',    // Kuning/Oranye: Sedang dalam perbaikan
                         default => 'gray',        // Abu-abu: Default
                     })
-                    ->icon(fn (string $state): string => match ($state) {
+                    ->icon(fn(string $state): string => match ($state) {
                         'standby' => 'heroicon-m-pause-circle',
                         'running' => 'heroicon-m-play-circle',
                         'breakdown' => 'heroicon-m-exclamation-triangle',
                         'repair' => 'heroicon-m-wrench-screwdriver',
                         default => 'heroicon-m-question-mark-circle',
-                    }),
+                    })
+                    ->toggleable()
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('is_active')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable')
+                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('description')
                     ->label('Remark')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('created_at')
+                    ->label('Created Date')
+                    ->date("Y-m-d H:i:s")
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('creator.name')
+                    ->label('Created By')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label('Updated Date')
+                    ->date("Y-m-d H:i:s")
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updater.name')
+                    ->label('Updated By')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Filter::make('equipment_filter')
-                    ->schema([
-                        Section::make()
-                            ->schema([
-                                Select::make('company_id')
-                                    ->label('Company')
-                                    ->relationship('companyList', 'name')
-                                    ->native(false)
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(fn (Set $set) => $set('branch_id', null))
-                                    ->searchable()
-                                    ->columnSpan(5),
-                                Select::make('branch_id')
-                                    ->label('Branch')
-                                    ->relationship('branchList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $get('company_id')))
-                                    ->native(false)
-                                    ->preload()
-                                    ->live()
-                                    ->searchable()
-                                    ->columnSpan(4),
+                QueryBuilder::make()
+                    ->constraints([
+                        TextConstraint::make('code ')
+                            ->label('Code'),
+                        TextConstraint::make('equipment_no')
+                            ->label('Machine/Equipment No.'),
+                        TextConstraint::make('name')
+                            ->label('Name'),
+                        TextConstraint::make('specification')
+                            ->label('Specification'),
+                        TextConstraint::make('brand')
+                            ->label('Brand'),
+                        TextConstraint::make('model_number')
+                            ->label('Model No.'),
+                        TextConstraint::make('serial_number ')
+                            ->label('Serial No'),
+                        TextConstraint::make('machine_rate')
+                            ->label('Machine/Equipment Rate'),
+                        TextConstraint::make('description')
+                            ->label('Remark'),
+                        NumberConstraint::make('total_shots')
+                            ->label('Total Shots'),
+                        DateConstraint::make('purchase_date')
+                            ->label('Purchase Date'),
+                        DateConstraint::make('installation_date')
+                            ->label('Installation Date'),
+                        DateConstraint::make('last_maintenance')
+                            ->label('Last Maintenance Date'),
+                        DateConstraint::make('created_at')
+                            ->label('Created Date'),
+                        DateConstraint::make('updated_at')
+                            ->label('Updated Date'),
+                        SelectConstraint::make('company_id')
+                            ->label('Company')
+                            ->options(fn() => Company::pluck('name', 'id'))
+                            ->searchable(),
+                        SelectConstraint::make('Branch')
+                            ->label('Branch')
+                            ->options(fn() => Branch::pluck('name', 'id'))
+                            ->searchable(),
+                        SelectConstraint::make('category_id')
+                            ->label('Category')
+                            ->options(fn() => EquipmentCategory::pluck('name', 'id'))
+                            ->searchable(),
+                        SelectConstraint::make('tonnage_id')
+                            ->label('Tonnage')
+                            ->options(fn() => Tonnage::pluck('code', 'id'))
+                            ->searchable(),
+                        SelectConstraint::make('status')
+                            ->label('Machine Status')
+                            ->options([
+                                'standby' => 'Standby',
+                                'running' => 'Running',
+                                'breakdown' => 'Breakdown',
+                                'repair' => 'Repair'
                             ])
-                            ->columns(12)
-                            ->columnSpanFull(),
-                        Section::make()
-                            ->schema([
-                                Select::make('category_id')
-                                    ->label('Machine/Equipment Category')
-                                    ->relationship('category', 'name')
-                                    ->multiple()
-                                    ->native(false)
-                                    ->preload()
-                                    ->searchable()
-                                    ->columnSpan(3),
-                                TextInput::make('code')
-                                    ->label('Code')
-                                    ->placeholder('Search with code')
-                                    ->dehydrated()
-                                    ->columnSpan(2),
-                                TextInput::make('name')
-                                    ->label('Name')
-                                    ->maxLength(150)
-                                    ->placeholder('Equipment/Machine Name')
-                                    ->autocomplete(false)
-                                    ->columnSpan(7),
-                                Textarea::make('specification')
-                                    ->label('Specification')
-                                    ->placeholder('Equipment/Machine Specification')
-                                    ->columnSpanFull()
-                                    ->autocomplete(false)
-                                    ->rows(5),
-                                TextInput::make('equipment_no')
-                                    ->label('Machine/Equipment No.')
-                                    ->nullable()
-                                    ->placeholder('Machine/Equipment No.')
-                                    ->columnSpan(3)
-                                    ->autocomplete(false),
-                                Select::make('workshop_id')
-                                    ->label('Workshop')
-                                    ->relationship('workshopList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('branch_id', $get('branch_id')))
-                                    ->native(false)
-                                    ->multiple()
-                                    ->preload()
-                                    ->searchable()
-                                    ->columnSpan(3),
-                                Select::make('tonnage_id')
-                                    ->label('Tonnage')
-                                    ->relationship('tonnageList', 'name')
-                                    ->native(false)
-                                    ->preload()
-                                    ->nullable()
-                                    ->columnSpan(3)
-                                    ->searchable(),
-                                TextInput::make('brand')
-                                    ->label('Equipment/Machine Brand')
-                                    ->placeholder('Equipment/Machine Brand')
-                                    ->columnSpan(3)
-                                    ->autocomplete(false),
-                                TextInput::make('model_number')
-                                    ->label('Model Number')
-                                    ->maxLength(50)
-                                    ->placeholder('Model Number')
-                                    ->autocomplete(false)
-                                    ->columnSpan(3),
-                                TextInput::make('serial_number')
-                                    ->label('Serial No.')
-                                    ->placeholder('Serial No')
-                                    ->maxLength(50)
-                                    ->autocomplete(false)
-                                    ->columnSpan(3),
-                                TextInput::make('machine_rate')
-                                    ->label('Machine/Equipment Rate')
-                                    ->placeholder('Machine/Equipment Rate')
-                                    ->autocomplete(false)
-                                    ->columnSpan(3),
-                                Select::make('status')
-                                    ->label('Machine/Equipment Status')
-                                    ->options([
-                                        'standby' => 'Standby',
-                                        'running' => 'Running',
-                                        'breakdown' => 'Breakdown',
-                                        'repair' => 'Repair',
-                                    ])
-                                    ->searchable()
-                                    ->native(false)
-                                    ->columnSpan(3),
-                                Textarea::make('description')
-                                    ->label('Description')
-                                    ->placeholder('Additional information here')
-                                    ->rows(3)
-                                    ->columnSpanFull(),
+                            ->searchable(),
+                        SelectConstraint::make('is_active')
+                            ->label('Status')
+                            ->options([
+                                '0' => 'Disable',
+                                '1' => 'Enable'
                             ])
-                            ->columns(12)
-                            ->columnSpanFull(),
+                            ->searchable(),
+                        SelectConstraint::make('workshop_id ')
+                            ->label('Workshop')
+                            ->options(fn() => Workshop::pluck('name', 'id'))
+                            ->searchable(),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['company_id'],
-                                fn (Builder $query, $company_id): Builder => $query->where('company_id', "$company_id")
-                            )
-                            ->when(
-                                $data['branch_id'],
-                                fn (Builder $query, $branch_id): Builder => $query->where('branch_id', "$branch_id")
-                            )
-                            ->when(
-                                $data['category_id'],
-                                fn (Builder $query, $category_ids): Builder => $query->whereIn('category_id', $category_ids)
-                            )
-                            ->when(
-                                $data['code'],
-                                fn (Builder $query, $code): Builder => $query->where('code', 'LIKE', "%$code%")
-                            )
-                            ->when(
-                                $data['name'],
-                                fn (Builder $query, $name): Builder => $query->where('name', 'LIKE', "%$name%")
-                            )
-                            ->when(
-                                $data['specification'],
-                                fn (Builder $query, $specification): Builder => $query->where('specification', 'LIKE', "%$specification%")
-                            )
-                            ->when(
-                                $data['equipment_no'],
-                                fn (Builder $query, $equipment_no): Builder => $query->where('equipment_no', 'LIKE', "%$equipment_no%")
-                            )
-                            ->when(
-                                $data['workshop_id'],
-                                fn (Builder $query, $workshop_ids): Builder => $query->whereIn('workshop_id', $workshop_ids),
-                            )
-                            ->when(
-                                $data['tonnage_id'],
-                                fn (Builder $query, $tonnage_id): Builder => $query->where('tonnage_id', "$tonnage_id")
-                            )
-                            ->when(
-                                $data['brand'],
-                                fn (Builder $query, $brand): Builder => $query->where('brand', 'LIKE', "%$brand%")
-                            )
-                            ->when(
-                                $data['model_number'],
-                                fn (Builder $query, $model_number): Builder => $query->where('model_number', 'LIKE', "%$model_number%")
-                            )
-                            ->when(
-                                $data['serial_number'],
-                                fn (Builder $query, $serial_number): Builder => $query->where('serial_number', 'LIKE', "%$serial_number%")
-                            )
-                            ->when(
-                                $data['machine_rate'],
-                                fn (Builder $query, $machine_rate): Builder => $query->where('machine_rate', 'LIKE', "%$machine_rate%")
-                            )
-                            ->when(
-                                $data['status'],
-                                fn (Builder $query, $status): Builder => $query->where('status', "$status")
-                            )
-                            ->when(
-                                $data['description'],
-                                fn (Builder $query, $description): Builder => $query->where('description', 'LIKE', "%$description%")
-                            );
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-
-                        if ($data['company_id'] ?? null) {
-                            $companyName = Company::find($data['company_id'])?->name;
-                            $indicators[] = 'Company: '.($companyName ?? $data['company_id']);
-                        }
-
-                        if ($data['branch_id'] ?? null) {
-                            $branchName = Branch::find($data['branch_id'])?->name;
-                            $indicators[] = 'Branch: '.($branchName ?? $data['branch_id']);
-                        }
-
-                        if ($data['category_id'] ?? null) {
-                            $categoryNames = EquipmentCategory::whereIn('id', $data['category_id'])->pluck('name')->implode(', ');
-                            $indicators[] = 'Category: '.$categoryNames;
-                        }
-
-                        if ($data['code'] ?? null) {
-                            $indicators[] = 'Code: '.$data['code'];
-                        }
-
-                        if ($data['name'] ?? null) {
-                            $indicators[] = 'Name: '.$data['name'];
-                        }
-
-                        if ($data['specification'] ?? null) {
-                            $indicators[] = 'Specification: '.$data['specification'];
-                        }
-
-                        if ($data['equipment_no'] ?? null) {
-                            $indicators[] = 'Equipment No.: '.$data['equipment_no'];
-                        }
-
-                        if ($data['workshop_id'] ?? null) {
-                            // $workshopName = Workshop::find($data['workshop_id'])?->name;
-                            $workshopName = Workshop::whereIn('id', $data['workshop_id'])->pluck('name')->implode(', ');
-                            $indicators[] = 'Workshop: '.$workshopName;
-                        }
-
-                        if ($data['tonnage_id'] ?? null) {
-                            $tonnageName = Tonnage::find($data['tonnage_id'])?->name;
-                            $indicators[] = 'Tonnage: '.($tonnageName ?? $data['tonnage_id']);
-                        }
-
-                        if ($data['brand'] ?? null) {
-                            $indicators[] = 'Brand: '.$data['brand'];
-                        }
-
-                        if ($data['model_number'] ?? null) {
-                            $indicators[] = 'Model No.: '.$data['model_number'];
-                        }
-
-                        if ($data['serial_number'] ?? null) {
-                            $indicators[] = 'Serial No.: '.$data['serial_number'];
-                        }
-
-                        if ($data['status'] ?? null) {
-                            $indicators[] = 'Status: '.$data['status'];
-                        }
-
-                        if ($data['machine_rate'] ?? null) {
-                            $indicators[] = 'Machine Rate: '.$data['machine_rate'];
-                        }
-
-                        if ($data['description'] ?? null) {
-                            $indicators[] = 'Description: '.$data['description'];
-                        }
-
-                        return $indicators;
-                    }),
+                    ->constraintPickerColumns(3)
             ])
             ->filtersLayout(FiltersLayout::Modal)
-            ->filtersFormWidth('5xl')
+            ->filtersFormWidth('3xl')
+            ->persistFiltersInSession()
             ->filtersTriggerAction(
-                fn ($action) => $action
+                fn($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel)
             )
             ->recordActions([
-                EditAction::make(),
+                // EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                    BulkAction::make('bulkEdit')
+                        ->label('Mass Edit')
+                        ->color('warning')
+                        ->icon(Heroicon::OutlinedPencilSquare)
+                        ->modalWidth('3xl')
+                        ->schema([
+                            Grid::make(3)
+                                ->schema([
+                                    Select::make('column_to_update')
+                                        ->label('Edit field name')
+                                        ->options([
+                                            'branch_id' => 'Branch',
+                                            'equipment_no' => 'Machine/Equipment No.',
+                                            'specification' => 'Specification',
+                                            'tonnage_id' => 'Tonnage',
+                                            'brand' => 'Brand',
+                                            'model_number' => 'Model No.',
+                                            'purchase_date' => 'Purchase Date',
+                                            'machine_rate' => 'Machine/Equipment Rate',
+                                            'status' => 'Machine/Equipment Status',
+                                            'installation_date' => 'Installation Date',
+                                            'total_shots' => 'Total Shots',
+                                            'last_maintenance' => 'Last Maintenance Date',
+                                            'workshop_id' => 'Workshop',
+                                            'is_active' => 'Status'
+                                        ])
+                                        ->searchable()
+                                        ->live()
+                                        ->columnSpan(1),
+                                    Select::make('value_branch_id')
+                                        ->label('Branch')
+                                        ->options(fn() => Branch::pluck('name', 'id'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'branch_id')
+                                        ->required()
+                                        ->columnSpan(2),
+                                    Select::make('value_tonnage')
+                                        ->label('Branch')
+                                        ->options(fn() => Tonnage::pluck('code', 'id'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'tonnage_id')
+                                        ->required()
+                                        ->columnSpan(2),
+                                    Select::make('value_workshop_id')
+                                        ->label('Workshop')
+                                        ->options(fn() => Workshop::pluck('name', 'id'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'workshop_id')
+                                        ->required()
+                                        ->columnSpan(2),
+                                    Select::make('value_status')
+                                        ->label('Branch')
+                                        ->options([
+                                            'standby' => 'Standby',
+                                            'running' => 'Running',
+                                            'breakdown' => 'Breakdown',
+                                            'repair' => 'Repair'
+                                        ])
+                                        ->searchable()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'status')
+                                        ->required()
+                                        ->columnSpan(2),
+                                    Select::make('value_is_active')
+                                        ->label('Status')
+                                        ->options([
+                                            '0' => 'Disable',
+                                            '1' => 'Enable'
+                                        ])
+                                        ->searchable()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active')
+                                        ->required()
+                                        ->columnSpan(2),
+                                    TextInput::make('value_equipment_no')
+                                        ->label('Machine/Equipment No.')
+                                        ->placeholder('Edit Machine/Equipment No.')
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'equipment_no')
+                                        ->columnSpan(2),
+                                    TextInput::make('value_specification')
+                                        ->label('Specification')
+                                        ->placeholder('Edit specification')
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'specification')
+                                        ->columnSpan(2),
+                                    TextInput::make('value_brand')
+                                        ->label('Brand')
+                                        ->placeholder('Edit specification')
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'brand')
+                                        ->columnSpan(2),
+                                    TextInput::make('value_model_number')
+                                        ->label('Model Number')
+                                        ->placeholder('Edit model number')
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'model_number')
+                                        ->columnSpan(2),
+                                    TextInput::make('value_machine_rate')
+                                        ->label('Model Number')
+                                        ->placeholder('Edit machine rate')
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'machine_rate')
+                                        ->columnSpan(2),
+                                    TextInput::make('value_total_shots')
+                                        ->label('Total Shots')
+                                        ->placeholder('Edit total shots')
+                                        ->numeric()
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'total_shots')
+                                        ->columnSpan(2),
+                                    DatePicker::make('value_purchase_date')
+                                        ->label('Purchase Date')
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'purchase_date')
+                                        ->columnSpan(2),
+                                    DatePicker::make('value_installation_date')
+                                        ->label('Installation Date')
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'installation_date')
+                                        ->columnSpan(2),
+                                    DatePicker::make('value_last_maintenance')
+                                        ->label('Last Maintenance Date')
+                                        ->required()
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'last_maintenance')
+                                        ->columnSpan(2)
+                                ])
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            $column = $data['column_to_update'];
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->modalSubmitActionLabel('Update')
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn () => null),
+                    ->action(fn() => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)

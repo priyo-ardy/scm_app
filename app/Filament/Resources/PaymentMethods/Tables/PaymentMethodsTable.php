@@ -7,7 +7,6 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
@@ -20,11 +19,9 @@ use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -54,25 +51,25 @@ class PaymentMethodsTable
                     ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->formatStateUsing(fn(string $state) => ucwords(str_replace('_', ' ', $state))),
+                    ->formatStateUsing(fn (string $state) => ucwords(str_replace('_', ' ', $state))),
                 TextColumn::make('commission_fee')
                     ->label('Commission Fee')
                     ->badge()
                     ->sortable()
-                    ->formatStateUsing(fn(string $state) => $state ? 'Yes' : 'No')
-                    ->color(fn(string $state) => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn (string $state) => $state ? 'Yes' : 'No')
+                    ->color(fn (string $state) => $state ? 'success' : 'gray')
                     ->alignCenter()
                     ->toggleable(),
                 TextColumn::make('payment_mode')
                     ->label('Mode of Payment')
                     ->searchable()
-                    ->formatStateUsing(fn(string $state) => ucwords(str_replace('_', ' ', $state)))
+                    ->formatStateUsing(fn (string $state) => ucwords(str_replace('_', ' ', $state)))
                     ->toggleable(),
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(string $state): string => $state ? 'Enable' : 'Disable')
-                    ->color(fn(string $state): string => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn (string $state): string => $state ? 'Enable' : 'Disable')
+                    ->color(fn (string $state): string => $state ? 'success' : 'gray')
                     ->alignCenter(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -114,29 +111,29 @@ class PaymentMethodsTable
                                 'cash' => 'Cash',
                                 'banking' => 'Banking',
                                 'bill_transaction' => 'Bill Transaction',
-                                'internal_settlement' => 'Internal Settlement'
+                                'internal_settlement' => 'Internal Settlement',
                             ])
                             ->searchable(),
                         SelectConstraint::make('commission_fee')
                             ->label('Commission Fee')
                             ->options([
                                 '0' => 'No',
-                                '1' => 'Yes'
+                                '1' => 'Yes',
                             ])
                             ->searchable(),
                         SelectConstraint::make('payment_mode')
                             ->label('Payment Mode')
                             ->options([
-                                'directly_withheld' => 'Directly Withheld'
+                                'directly_withheld' => 'Directly Withheld',
                             ])
                             ->searchable(),
                         TextConstraint::make('description')
-                            ->label('Remarks')
-                    ])->constraintPickerColumns(3)
+                            ->label('Remarks'),
+                    ])->constraintPickerColumns(3),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('3xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel)
@@ -168,14 +165,14 @@ class PaymentMethodsTable
                                             'commission_fee' => 'Commission Fee',
                                             'payment_mode' => 'Mode of Payment',
                                             'description' => 'Remarks',
-                                            'is_active' => 'Status'
+                                            'is_active' => 'Status',
                                         ])
                                         ->columnSpan(1),
                                     Select::make('value_category_id')
                                         ->label('Settlement Category')
                                         ->relationship('categoryList', 'name')
                                         ->searchable()
-                                        ->visible(fn(Get $get) => $get('column_to_edit') === 'category_id')
+                                        ->visible(fn (Get $get) => $get('column_to_edit') === 'category_id')
                                         ->columnSpan(2)
                                         ->required(),
                                     Select::make('value_type')
@@ -184,48 +181,48 @@ class PaymentMethodsTable
                                             'cash' => 'Cash',
                                             'banking' => 'Banking',
                                             'bill_transaction' => 'Bill Transaction',
-                                            'internal_settlement' => 'Internal Settlement'
+                                            'internal_settlement' => 'Internal Settlement',
                                         ])
                                         ->searchable()
                                         ->required()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_edit') === 'type'),
+                                        ->visible(fn (Get $get) => $get('column_to_edit') === 'type'),
                                     Select::make('value_commission_fee')
                                         ->label('Commission Fee')
                                         ->options([
                                             '0' => 'No',
-                                            '1' => 'Yes'
+                                            '1' => 'Yes',
                                         ])
                                         ->searchable()
                                         ->required()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_edit') === 'commission_fee'),
+                                        ->visible(fn (Get $get) => $get('column_to_edit') === 'commission_fee'),
                                     Select::make('value_payment_mode')
                                         ->label('Payment Mode')
                                         ->options([
-                                            'directly_withheld' => 'Directly Withheld'
+                                            'directly_withheld' => 'Directly Withheld',
                                         ])
                                         ->searchable()
                                         ->columnSpan(2)
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_edit') === 'payment_mode'),
+                                        ->visible(fn (Get $get) => $get('column_to_edit') === 'payment_mode'),
                                     Select::make('value_is_active')
                                         ->label('Status')
                                         ->options([
-                                            '0' => "Disable",
-                                            '1' => "Enable"
+                                            '0' => 'Disable',
+                                            '1' => 'Enable',
                                         ])
                                         ->searchable()
                                         ->columnSpan(2)
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_edit') === 'is_active'),
+                                        ->visible(fn (Get $get) => $get('column_to_edit') === 'is_active'),
                                     Textarea::make('value_description')
                                         ->required()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_edit') === 'description')
-                                        ->nullable()
+                                        ->visible(fn (Get $get) => $get('column_to_edit') === 'description')
+                                        ->nullable(),
 
-                                ])
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_edit'];
@@ -243,20 +240,20 @@ class PaymentMethodsTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
                         })
-                        ->deselectRecordsAfterCompletion()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
-                    ->exporter(PaymentMethodExporter::class)
+                    ->exporter(PaymentMethodExporter::class),
             ]);
     }
 }

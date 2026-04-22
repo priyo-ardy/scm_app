@@ -7,19 +7,18 @@ use App\HasCodeGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasPermissions;
 
 class PaymentTerm extends Model
 {
-    use HasFactory, HasPermissions, HasCodeGenerator, Blameable, SoftDeletes;
+    use Blameable, HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes;
 
     protected $fillable = [
         'code',
         'bill_period_basis',
         'name',
         'description',
-        'is_active'
+        'is_active',
     ];
 
     protected function casts(): array

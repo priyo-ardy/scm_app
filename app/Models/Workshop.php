@@ -13,7 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Workshop extends Model
 {
-    use HasCodeGenerator, HasFactory, HasRoles, Blameable, SoftDeletes;
+    use Blameable, HasCodeGenerator, HasFactory, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'company_id',
@@ -26,7 +26,7 @@ class Workshop extends Model
         'remarks',
         'is_active',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     // protected $with = [

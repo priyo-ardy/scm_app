@@ -27,7 +27,7 @@ class EditEquipmentCategory extends EditRecord
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->color('success')
-                ->url(fn() => $this->getResource()::getUrl('create')),
+                ->url(fn () => $this->getResource()::getUrl('create')),
             DeleteAction::make()->icon(Heroicon::OutlinedTrash),
             ForceDeleteAction::make(),
             RestoreAction::make(),
@@ -39,16 +39,21 @@ class EditEquipmentCategory extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof EquipmentCategory) return null;
+                    if (! $currentRecord instanceof EquipmentCategory) {
+                        return null;
+                    }
 
                     $firstRecord = EquipmentCategory::orderBy('code', 'asc')->first();
+
                     return ($firstRecord && $firstRecord->id !== $currentRecord->id)
                         ? EquipmentCategoryResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
                 ->disabled(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof EquipmentCategory) return true;
+                    if (! $currentRecord instanceof EquipmentCategory) {
+                        return true;
+                    }
 
                     return ! EquipmentCategory::where('code', '<', $currentRecord->code)->exists();
                 }),
@@ -59,7 +64,9 @@ class EditEquipmentCategory extends EditRecord
                 ->icon(Heroicon::OutlinedChevronLeft)
                 ->url(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof EquipmentCategory) return null;
+                    if (! $currentRecord instanceof EquipmentCategory) {
+                        return null;
+                    }
 
                     $prevRecord = EquipmentCategory::where('code', '<', $currentRecord->code)
                         ->orderBy('code', 'desc')
@@ -71,7 +78,9 @@ class EditEquipmentCategory extends EditRecord
                 })
                 ->hidden(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof EquipmentCategory) return true;
+                    if (! $currentRecord instanceof EquipmentCategory) {
+                        return true;
+                    }
 
                     return ! EquipmentCategory::where('code', '<', $currentRecord->code)->exists();
                 }),
@@ -83,7 +92,9 @@ class EditEquipmentCategory extends EditRecord
                 ->iconPosition('after')
                 ->url(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof EquipmentCategory) return null;
+                    if (! $currentRecord instanceof EquipmentCategory) {
+                        return null;
+                    }
 
                     $nextRecord = EquipmentCategory::where('code', '>', $currentRecord->code)
                         ->orderBy('code', 'asc')
@@ -95,7 +106,9 @@ class EditEquipmentCategory extends EditRecord
                 })
                 ->hidden(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof EquipmentCategory) return true;
+                    if (! $currentRecord instanceof EquipmentCategory) {
+                        return true;
+                    }
 
                     return ! EquipmentCategory::where('code', '>', $currentRecord->code)->exists();
                 }),
@@ -107,7 +120,9 @@ class EditEquipmentCategory extends EditRecord
                 ->iconPosition('after')
                 ->url(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof EquipmentCategory) return null;
+                    if (! $currentRecord instanceof EquipmentCategory) {
+                        return null;
+                    }
 
                     $lastRecord = EquipmentCategory::orderBy('code', 'desc')->first();
 
@@ -117,7 +132,9 @@ class EditEquipmentCategory extends EditRecord
                 })
                 ->disabled(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof EquipmentCategory) return true;
+                    if (! $currentRecord instanceof EquipmentCategory) {
+                        return true;
+                    }
 
                     return ! EquipmentCategory::where('code', '>', $currentRecord->code)->exists();
                 }),

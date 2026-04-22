@@ -13,7 +13,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class EquipmentCategory extends Model
 {
-    use HasCodeGenerator, HasFactory, HasPermissions, Blameable, SoftDeletes;
+    use Blameable, HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes;
 
     protected $fillable = [
         'company_id',
@@ -24,7 +24,7 @@ class EquipmentCategory extends Model
         'description',
         'is_active',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     protected function casts(): array

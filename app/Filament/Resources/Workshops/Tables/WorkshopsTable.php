@@ -13,7 +13,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
-use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
@@ -27,10 +26,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class WorkshopsTable
@@ -81,8 +78,8 @@ class WorkshopsTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Enable' : 'Disable')
-                    ->color(fn(bool $state): string => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Enable' : 'Disable')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
                     ->alignCenter()
                     ->toggleable(),
                 TextColumn::make('created_at')
@@ -116,7 +113,7 @@ class WorkshopsTable
                         SelectConstraint::make('company_id')
                             ->label('Company')
                             ->options(
-                                fn() => Company::query()
+                                fn () => Company::query()
                                     ->where('deleted_at', null)
                                     ->pluck('name', 'id')
                             )
@@ -125,7 +122,7 @@ class WorkshopsTable
                             ->label('branch_id')
                             ->label('Branch')
                             ->options(
-                                fn() => Branch::query()
+                                fn () => Branch::query()
                                     ->where('is_active', true)
                                     ->where('deleted_at', null)
                                     ->pluck('name', 'id')
@@ -133,7 +130,7 @@ class WorkshopsTable
                             ->searchable(),
                         SelectConstraint::make('pic_id')
                             ->label('PIC')
-                            ->options(fn() => User::query()
+                            ->options(fn () => User::query()
                                 ->where('is_active', true)
                                 ->where('deleted_at', null)
                                 ->orderBy('name', 'asc')
@@ -143,15 +140,15 @@ class WorkshopsTable
                             ->label('Status')
                             ->options([
                                 '0' => 'Disable',
-                                '1' => 'Enable'
+                                '1' => 'Enable',
                             ])
-                            ->searchable()
+                            ->searchable(),
                     ])
-                    ->constraintPickerColumns(2)
+                    ->constraintPickerColumns(2),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('3xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::Funnel)
@@ -183,14 +180,14 @@ class WorkshopsTable
                                             'location_detail' => 'Location Detail',
                                             'pic_id' => 'PIC',
                                             'phone' => 'Extension No.',
-                                            'is_active' => 'Status'
+                                            'is_active' => 'Status',
                                         ])
                                         ->live()
                                         ->columnSpan(1),
                                     Select::make('value_branch')
                                         ->label('Branch')
                                         ->options(
-                                            fn() => Branch::query()
+                                            fn () => Branch::query()
                                                 ->where('is_active', true)
                                                 ->where('deleted_at', null)
                                                 ->orderByLeftPowerJoins('name', 'asc')
@@ -198,18 +195,18 @@ class WorkshopsTable
                                         )
                                         ->searchable()
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'branch_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'branch_id')
                                         ->columnSpan(2),
                                     TextInput::make('value_location_detail')
                                         ->label('Location Details')
                                         ->required()
                                         ->placeholder('Edit location details')
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'location_detail'),
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'location_detail'),
                                     Select::make('value_pic_id')
                                         ->label('PIC')
                                         ->options(
-                                            fn() => User::query()
+                                            fn () => User::query()
                                                 ->where('is_active', true)
                                                 ->where('deleted_at', null)
                                                 ->orderBy('name', 'asc')
@@ -218,24 +215,24 @@ class WorkshopsTable
                                         ->searchable()
                                         ->required()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'pic_id'),
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'pic_id'),
                                     TextInput::make('value_phone')
                                         ->label('Extension No.')
                                         ->required()
                                         ->placeholder('Edit extension no.')
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'phone'),
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'phone'),
                                     Select::make('value_is_active')
                                         ->label('Status')
                                         ->options([
                                             '0' => 'Disable',
-                                            '1' => 'Enable'
+                                            '1' => 'Enable',
                                         ])
                                         ->searchable()
                                         ->required()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active'),
-                                ])
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'is_active'),
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -252,15 +249,15 @@ class WorkshopsTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
-                        })
+                        }),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->label('Export')
                     ->exporter(WorkshopExporter::class)

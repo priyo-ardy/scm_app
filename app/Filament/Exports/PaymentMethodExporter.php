@@ -28,20 +28,20 @@ class PaymentMethodExporter extends Exporter
 
             ExportColumn::make('type')
                 ->label('Business Type')
-                ->formatStateUsing(fn($state) => $state ? ucwords(str_replace('_', ' ', $state)) : '-'),
+                ->formatStateUsing(fn ($state) => $state ? ucwords(str_replace('_', ' ', $state)) : '-'),
 
             ExportColumn::make('commission_fee')
                 ->label('Commission Fee')
                 // Pakai casting (bool) biar record 0/1 atau true/false kebaca bener
-                ->formatStateUsing(fn($state) => (bool)$state ? 'Yes' : 'No'),
+                ->formatStateUsing(fn ($state) => (bool) $state ? 'Yes' : 'No'),
 
             ExportColumn::make('payment_mode')
                 ->label('Mode of Payment')
-                ->formatStateUsing(fn($state) => $state ? ucwords(str_replace('_', ' ', $state)) : '-'),
+                ->formatStateUsing(fn ($state) => $state ? ucwords(str_replace('_', ' ', $state)) : '-'),
 
             ExportColumn::make('is_active')
                 ->label('Status')
-                ->formatStateUsing(fn($state) => (bool)$state ? 'Enable' : 'Disable'),
+                ->formatStateUsing(fn ($state) => (bool) $state ? 'Enable' : 'Disable'),
 
             ExportColumn::make('description')
                 ->label('Remarks')
@@ -51,10 +51,10 @@ class PaymentMethodExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your payment method export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your payment method export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -62,6 +62,6 @@ class PaymentMethodExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return "payment_method_list_" . date("YmdHis");
+        return 'payment_method_list_'.date('YmdHis');
     }
 }

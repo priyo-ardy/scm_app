@@ -16,7 +16,7 @@ class CustomerExporter extends Exporter
     {
         return [
             ExportColumn::make('companyList.name')->label('Company'),
-            ExportColumn::make('category')->label('Category')->formatStateUsing(fn(string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas'),
+            ExportColumn::make('category')->label('Category')->formatStateUsing(fn (string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas'),
             ExportColumn::make('code')->label('Customer Code'),
             ExportColumn::make('name')->label('Customer Name'),
             ExportColumn::make('short_name')->label('Short Name'),
@@ -34,7 +34,7 @@ class CustomerExporter extends Exporter
             ExportColumn::make('bank_name')->label('Bank Name'),
             ExportColumn::make('bank_account_no')->label('Bank Account No.'),
             ExportColumn::make('bank_account_name')->label('Bank Acoount Name'),
-            ExportColumn::make('is_active')->label('Status')->formatStateUsing(fn(string $state): string => $state ? 'Enable' : 'Disable'),
+            ExportColumn::make('is_active')->label('Status')->formatStateUsing(fn (string $state): string => $state ? 'Enable' : 'Disable'),
             ExportColumn::make('paymentList.name')->label('Payment Terms'),
             ExportColumn::make('currencyList.code')->label('Default Currency'),
             ExportColumn::make('paymentMethodList.name')->label('Payment Method'),
@@ -44,10 +44,10 @@ class CustomerExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your customer export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your customer export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -55,6 +55,6 @@ class CustomerExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'customer_list_' . now()->format('YmdHis');
+        return 'customer_list_'.now()->format('YmdHis');
     }
 }

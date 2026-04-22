@@ -30,7 +30,9 @@ class EditEquipments extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof Equipment) return null;
+                    if (! $currentRecord instanceof Equipment) {
+                        return null;
+                    }
 
                     $firstRecord = Equipment::orderBy('code', 'asc')->first();
 
@@ -41,7 +43,9 @@ class EditEquipments extends EditRecord
                 ->disabled(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof Equipment) return true;
+                    if (! $currentRecord instanceof Equipment) {
+                        return true;
+                    }
 
                     return ! Equipment::where('code', '<', $currentRecord)->exists();
                 }),
@@ -53,7 +57,9 @@ class EditEquipments extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof Equipment) return null;
+                    if (! $currentRecord instanceof Equipment) {
+                        return null;
+                    }
 
                     $prevRecord = Equipment::where('code', '<', $currentRecord->code)
                         ->orderBy('code', 'desc')
@@ -66,7 +72,9 @@ class EditEquipments extends EditRecord
                 ->hidden(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof Equipment) return true;
+                    if (! $currentRecord instanceof Equipment) {
+                        return true;
+                    }
 
                     return ! Equipment::where('code', '<', $currentRecord->code)->exists();
                 }),
@@ -79,7 +87,9 @@ class EditEquipments extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof Equipment) return null;
+                    if (! $currentRecord instanceof Equipment) {
+                        return null;
+                    }
 
                     $nextRecord = Equipment::where('code', '>', $currentRecord->code)
                         ->orderBy('code', 'asc')
@@ -91,7 +101,9 @@ class EditEquipments extends EditRecord
                 })
                 ->hidden(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof Equipment) return true;
+                    if (! $currentRecord instanceof Equipment) {
+                        return true;
+                    }
 
                     return ! Equipment::where('code', '>', $currentRecord->code)
                         ->exists();
@@ -105,7 +117,9 @@ class EditEquipments extends EditRecord
                 ->url(function () {
                     $currentRecord = $this->record;
 
-                    if (!$currentRecord instanceof Equipment) return null;
+                    if (! $currentRecord instanceof Equipment) {
+                        return null;
+                    }
 
                     $lastRecord = Equipment::orderBy('code', 'desc')->first();
 
@@ -116,7 +130,9 @@ class EditEquipments extends EditRecord
                 })
                 ->disabled(function () {
                     $currentRecord = $this->record;
-                    if (!$currentRecord instanceof Equipment) return true;
+                    if (! $currentRecord instanceof Equipment) {
+                        return true;
+                    }
 
                     return ! Equipment::where('code', '>', $currentRecord->code)->exists();
                 }),

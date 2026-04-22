@@ -27,7 +27,7 @@ class ListPaymentTerms extends ListRecords
         $dynamicTabs = collect($staticTabs)->mapWithKeys(function ($item) {
             return [
                 $item => Tab::make(str($item)->replace('_', ' ')->title())
-                    ->modifyQueryUsing(fn(Builder $query) => $query->where('bill_period_basis', $item)),
+                    ->modifyQueryUsing(fn (Builder $query) => $query->where('bill_period_basis', $item)),
             ];
         })->toArray();
 

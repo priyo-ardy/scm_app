@@ -19,9 +19,9 @@ class CustomLogin extends BaseLogin
 
         // 1. Cek apakah user terkunci sebelum memanggil fitur rate limiter
         $user = User::where('email', $data['email'])->first();
-        if ($user && !$user->is_active) {
+        if ($user && ! $user->is_active) {
             throw ValidationException::withMessages([
-                'data.email' => 'Sorry, your account is not yet active. Please contact the administrator.'
+                'data.email' => 'Sorry, your account is not yet active. Please contact the administrator.',
             ]);
             // Notification::make()
             //     ->title('Access Denied')
@@ -33,7 +33,7 @@ class CustomLogin extends BaseLogin
 
         if ($user && $user->is_locked) {
             throw ValidationException::withMessages([
-                'data.email' => 'Your account is locked, please contact your system administrator'
+                'data.email' => 'Your account is locked, please contact your system administrator',
             ]);
             // Notification::make()
             //     ->title('Access Denied')
