@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Materials\Schemas;
 
+use App\Models\Company;
 use App\Models\MaterialCategory;
+use Closure;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -25,10 +27,22 @@ class MaterialForm
                         Select::make('company_id')
                             ->label('Company')
                             ->relationship('companyList', 'name')
-                            ->native(false)
-                            ->searchable()
+                            ->searchable(['slug', 'name'])
                             ->preload()
                             ->required()
+                            ->default(function () {
+                                $sessionCompanyId = session('active_company');
+
+                                // 2. Jika session tidak null, jadikan itu sebagai default
+                                if ($sessionCompanyId) {
+                                    return $sessionCompanyId;
+                                }
+
+                                // 3. Jika session null (Super Admin), ambil company default dari DB
+                                return Company::where('is_default', 1)->first()?->id;
+                            })
+                            ->disabled(fn() => session('active_company') !== null)
+                            ->dehydrated(true)
                             ->columnSpan(3),
                         Select::make('category_id')
                             ->label('Category')
@@ -149,14 +163,13 @@ class MaterialForm
                             ->searchable()
                             ->options(['draft' => 'Draft', 'active' => 'Active', 'phase_out' => 'Phase out', 'obsolete' => 'Obsolete'])
                             ->required()
-                            ->default('draft')
+                            ->default('active')
                             ->searchable()
                             ->columnSpan(2),
                         TextInput::make('last_purchase_price')
                             ->readOnly()
                             ->numeric()
                             ->default(0.0)
-                            ->prefix('Rp')
                             ->columnSpan(2),
                         Select::make('is_hazardous')
                             ->label('Is Hazardous')
@@ -164,8 +177,10 @@ class MaterialForm
                                 '0' => 'No',
                                 '1' => 'Yes',
                             ])
-                            ->default(0)
+                            ->default('0')
                             ->searchable()
+                            ->native(false)
+                            ->required()
                             ->columnSpan(2),
                         Select::make('tonnage_id')
                             ->label('Tonnage')
@@ -249,7 +264,9 @@ class MaterialForm
                                 $gross = (float) $get('gross_weight');
                                 $net = (float) $state;
 
-                                $sprue = max($gross - $net, 0);
+                                $diff = $gross - $net;
+
+                                $sprue = round(max($diff, 0), 4);
 
                                 $set('sprue', $sprue);
                             })
@@ -258,7 +275,7 @@ class MaterialForm
                                     $gross = (float) $get('gross_weight');
 
                                     if ($value > $gross) {
-                                        $fail('Net weight tidak boleh lebih besar dari gross weight.');
+                                        $fail('The net weight cannot be greater than the gross weight.');
                                     }
                                 };
                             }),
@@ -271,11 +288,18 @@ class MaterialForm
                             ->columnSpan(2)
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                // 1. Ambil nilai dan pastikan tipenya float
                                 $net = (float) $get('net_weight');
                                 $gross = (float) $state;
 
-                                $sprue = max($gross - $net, 0);
+                                // 2. Hitung selisihnya
+                                $diff = $gross - $net;
 
+                                // 3. Pastikan hasil tidak negatif dan bulatkan ke 2 desimal
+                                // round() digunakan untuk menjaga presisi matematis
+                                $sprue = round(max($diff, 0), 4);
+
+                                // 4. Set nilai ke input 'sprue'
                                 $set('sprue', $sprue);
                             }),
                         TextInput::make('sprue')
@@ -284,6 +308,7 @@ class MaterialForm
                             ->step('0.00001')
                             ->readOnly()
                             ->default(0)
+                            ->readOnly()
                             ->columnSpan(2)
                             ->placeholder('Sprue Weight'),
                         TextInput::make('cycle_time')
@@ -303,7 +328,9 @@ class MaterialForm
                         TextInput::make('color')
                             ->label('Material Color')
                             ->maxLength(20)
-                            ->columnSpan(2),
+                            ->columnSpan(2)
+                            ->placeholder('Material Color')
+                            ->autocomplete(false),
                         TextInput::make('cavity')
                             ->label('Number of Cavity')
                             ->numeric()
@@ -348,11 +375,22 @@ class MaterialForm
                                 '0' => 'No',
                                 '1' => 'Yes',
                             ])
+                            ->searchable()
                             ->columnSpan(2)
-                            ->default(0),
+                            ->default('0')
+                            ->required()
+                            ->native(false),
                         TextInput::make('min_stock')
                             ->numeric()
+                            ->required(fn(Get $get) => $get('enable_min_stock') === '1')
                             ->default(0.0)
+                            ->rules([
+                                fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                    if ($get('enable_min_stock') === '1' && $value <= 0) {
+                                        $fail('The Min Stock must be greater than 0 when enabled.');
+                                    }
+                                },
+                            ])
                             ->columnSpan(2),
                         Select::make('enable_safety_stock')
                             ->label('Enable Safety Stock')
@@ -360,11 +398,22 @@ class MaterialForm
                                 '0' => 'No',
                                 '1' => 'Yes',
                             ])
+                            ->searchable()
                             ->columnSpan(2)
-                            ->default(0),
+                            ->default('0')
+                            ->required()
+                            ->native(false),
                         TextInput::make('safety_stock')
                             ->numeric()
                             ->default(0.0)
+                            ->required(fn(Get $get) => $get('enable_safety_stock') === '1')
+                            ->rules([
+                                fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                    if ($get('enable_safety_stock') === '1' && $value <= 0) {
+                                        $fail('The Safety Stock must be greater than 0 when enabled.');
+                                    }
+                                },
+                            ])
                             ->columnSpan(2),
                         Select::make('enable_max_stock')
                             ->label('Enable Max Stock')
@@ -372,11 +421,22 @@ class MaterialForm
                                 '0' => 'No',
                                 '1' => 'Yes',
                             ])
+                            ->searchable()
                             ->columnSpan(2)
-                            ->default(0),
+                            ->default('0')
+                            ->required()
+                            ->native(false),
                         TextInput::make('max_stock')
                             ->numeric()
                             ->default(0.0)
+                            ->required(fn(Get $get) => $get('enable_max_stock') === '1')
+                            ->rules([
+                                fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                    if ($get('enable_max_stock') === '1' && $value <= 0) {
+                                        $fail('The maximum stock must be greater than 0 when enabled.');
+                                    }
+                                },
+                            ])
                             ->columnSpan(2),
                         TextInput::make('reorder_point')
                             ->numeric()
@@ -391,13 +451,23 @@ class MaterialForm
                                 '0' => 'No',
                                 '1' => 'Yes',
                             ])
-                            ->default(0)
-                            ->nullable()
+                            ->searchable()
+                            ->default('0')
+                            ->required()
+                            ->native(false)
                             ->columnSpan(2),
                         TextInput::make('expiry_days')
                             ->label('Expired Days')
                             ->numeric()
                             ->default(0)
+                            ->required(fn(Get $get) => $get('enable_expired') === '1')
+                            ->rules([
+                                fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                    if ($get('enable_expired') === '1' && $value <= 0) {
+                                        $fail('The expired days must be greater than 0 when enabled.');
+                                    }
+                                },
+                            ])
                             ->columnSpan(2),
                         TextInput::make('lead_time_days')
                             ->label('Lead Time Days')
@@ -407,11 +477,12 @@ class MaterialForm
                         Select::make('is_inspection_required')
                             ->label('Required Inspection')
                             ->required()
-                            ->nullable()
                             ->options([
                                 '0' => 'No',
                                 '1' => 'Yes',
                             ])
+                            ->searchable()
+                            ->native(false)
                             ->default('0')
                             ->columnSpan(2),
                     ])

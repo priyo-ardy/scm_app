@@ -23,19 +23,19 @@ class SuppliersResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 4;
 
-    protected static ?string $navigationLabel = 'List of Supplier';
+    protected static ?string $navigationLabel = 'Suppliers';
 
-    protected static ?string $breadcrumb = 'List of Supplier';
+    protected static ?string $breadcrumb = 'Suppliers';
 
-    protected static ?string $pluralLabel = 'List of Supplier';
+    protected static ?string $pluralLabel = 'Suppliers';
 
     protected static ?string $modelLabel = 'Supplier';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'List of Supplier';
+    protected static ?string $recordTitleAttribute = 'Supplier';
 
     public static function form(Schema $schema): Schema
     {

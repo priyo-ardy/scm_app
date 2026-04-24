@@ -23,13 +23,13 @@ class WorkshopResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 6;
 
-    protected static ?string $pluralLabel = 'List of Workshop';
+    protected static ?string $pluralLabel = 'Workshops';
 
     protected static ?string $label = 'Workshop';
 
-    protected static ?string $recordTitleAttribute = 'List of Workshop';
+    protected static ?string $recordTitleAttribute = 'Workshop';
 
     public static function form(Schema $schema): Schema
     {

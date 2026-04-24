@@ -23,13 +23,13 @@ class MaterialCategoryResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 8;
 
-    protected static ?string $pluralLabel = 'List of Material Category';
+    protected static ?string $pluralLabel = 'Material Categories';
 
     protected static ?string $label = 'Material Category';
 
-    protected static ?string $recordTitleAttribute = 'List of Material Category';
+    protected static ?string $recordTitleAttribute = 'Material Category';
 
     public static function form(Schema $schema): Schema
     {

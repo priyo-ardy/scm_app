@@ -23,9 +23,10 @@ class PaymentTermResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'PaymentTerm';
 
+
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $pluralLabel = 'Payment Terms';
 

@@ -5,6 +5,8 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\CustomLogin;
 use App\Models\Company;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Closure;
+use Filament\Actions\CreateAction;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -14,6 +16,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -115,6 +118,10 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('Transaction')
+                    ->icon(null)
+                    ->collapsed(),
                 NavigationGroup::make()
                     ->label('Master Data')
                     ->icon(null)

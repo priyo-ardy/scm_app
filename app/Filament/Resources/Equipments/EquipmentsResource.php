@@ -25,7 +25,7 @@ class EquipmentsResource extends Resource
 
     protected static ?string $navigationLabel = 'Machine & Equipments';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 11;
 
     protected static ?string $recordTitleAttribute = 'Machine & Equpment';
 

@@ -23,13 +23,13 @@ class TonnageResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 7;
 
-    protected static ?string $pluralLabel = 'List of Tonnage';
+    protected static ?string $pluralLabel = 'Tonnage';
 
     protected static ?string $label = 'Tonnage';
 
-    protected static ?string $recordTitleAttribute = 'List of Tonnage';
+    protected static ?string $recordTitleAttribute = 'Tonnage';
 
     public static function form(Schema $schema): Schema
     {

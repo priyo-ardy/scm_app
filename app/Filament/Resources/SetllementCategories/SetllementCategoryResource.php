@@ -15,6 +15,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class SetllementCategoryResource extends Resource
 {
@@ -23,6 +24,8 @@ class SetllementCategoryResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'SetllementCategory';
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

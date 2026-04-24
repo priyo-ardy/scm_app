@@ -23,11 +23,11 @@ class MaterialResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'List of Materials';
+    protected static ?string $navigationLabel = 'Materials';
 
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 12;
 
-    protected static ?string $pluralLabel = 'List of Materials';
+    protected static ?string $pluralLabel = 'Materials';
 
     protected static ?string $recordTitleAttribute = 'Material';
 

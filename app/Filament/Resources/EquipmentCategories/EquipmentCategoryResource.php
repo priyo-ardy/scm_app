@@ -23,9 +23,9 @@ class EquipmentCategoryResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 9;
 
-    protected static ?string $pluralLabel = 'List of Equipment Category';
+    protected static ?string $pluralLabel = 'Equipment Categories';
 
     protected static ?string $label = 'Euipment Category';
 

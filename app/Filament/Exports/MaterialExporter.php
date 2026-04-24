@@ -37,19 +37,19 @@ class MaterialExporter extends Exporter
             ExportColumn::make('cust_part_no'),
             ExportColumn::make('cust_part_name'),
             ExportColumn::make('delivery_location'),
-            ExportColumn::make('enable_min_stock')->formatStateUsing(fn (bool $state): string => $state ? 'True' : 'False'),
+            ExportColumn::make('enable_min_stock')->formatStateUsing(fn(bool $state): string => $state ? 'True' : 'False'),
             ExportColumn::make('min_stock'),
-            ExportColumn::make('enable_safety_stock')->formatStateUsing(fn (bool $state): string => $state ? 'True' : 'False'),
+            ExportColumn::make('enable_safety_stock')->formatStateUsing(fn(bool $state): string => $state ? 'True' : 'False'),
             ExportColumn::make('safety_stock'),
-            ExportColumn::make('enable_max_stock')->formatStateUsing(fn (bool $state): string => $state ? 'True' : 'False'),
+            ExportColumn::make('enable_max_stock')->formatStateUsing(fn(bool $state): string => $state ? 'True' : 'False'),
             ExportColumn::make('max_stock'),
             ExportColumn::make('reorder_point'),
             ExportColumn::make('description'),
             ExportColumn::make('mold_no'),
             ExportColumn::make('supplierList.name'),
-            ExportColumn::make('is_hazardous')->formatStateUsing(fn (bool $state): string => $state ? 'True' : 'False'),
+            ExportColumn::make('is_hazardous')->formatStateUsing(fn(bool $state): string => $state ? 'True' : 'False'),
             ExportColumn::make('storage_location_id'),
-            ExportColumn::make('enable_expired')->formatStateUsing(fn (bool $state): string => $state ? 'True' : 'False'),
+            ExportColumn::make('enable_expired')->formatStateUsing(fn(bool $state): string => $state ? 'True' : 'False'),
             ExportColumn::make('expiry_days'),
             ExportColumn::make('lead_time_days'),
             ExportColumn::make('status'),
@@ -66,19 +66,24 @@ class MaterialExporter extends Exporter
             ExportColumn::make('carton_height'),
             ExportColumn::make('dimension_unit_id'),
             ExportColumn::make('stacking_limit'),
-            ExportColumn::make('is_inspection_required')->formatStateUsing(fn (bool $state): string => $state ? 'True' : 'False'),
+            ExportColumn::make('is_inspection_required')->formatStateUsing(fn(bool $state): string => $state ? 'True' : 'False'),
             ExportColumn::make('last_purchase_price'),
         ];
     }
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your material export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
+        $body = 'Your material export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
+            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
         }
 
         return $body;
+    }
+
+    public function getFileName(Export $export): string
+    {
+        return 'material_list_' . date("YmdHis");
     }
 }

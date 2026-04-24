@@ -23,19 +23,19 @@ class CustomerResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 5;
 
-    protected static ?string $navigationLabel = ' List of Customer';
+    protected static ?string $navigationLabel = 'Customers';
 
-    protected static ?string $breadcrumb = 'List of Customer';
+    protected static ?string $breadcrumb = 'Customers';
 
-    protected static ?string $pluralLabel = 'List of Customer';
+    protected static ?string $pluralLabel = 'Customers';
 
     protected static ?string $modelLabel = 'Customer';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'List of Customer';
+    protected static ?string $recordTitleAttribute = 'Customer';
 
     public static function form(Schema $schema): Schema
     {

@@ -14,11 +14,14 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\QueryBuilder\Constraints\SelectConstraint;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -35,11 +38,6 @@ class MaterialsTable
             ->columns([
                 TextColumn::make('companyList.slug')
                     ->label('Company')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(),
-                TextColumn::make('categoryList.name')
-                    ->label('Branch')
                     ->numeric()
                     ->sortable()
                     ->toggleable(),
@@ -136,6 +134,11 @@ class MaterialsTable
                     ->numeric()
                     ->sortable()
                     ->searchable()
+                    ->toggleable(),
+                TextColumn::make('categoryList.name')
+                    ->label('Category')
+                    ->numeric()
+                    ->sortable()
                     ->toggleable(),
                 TextColumn::make('cust_part_no')
                     ->label('Customer Part No.')
@@ -359,10 +362,6 @@ class MaterialsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('creator.name')
-                    ->sortable(),
-                TextColumn::make('updater.name')
-                    ->sortable(),
             ])
             ->filters([
                 QueryBuilder::make()
@@ -471,114 +470,130 @@ class MaterialsTable
             ->filtersFormColumns(1)
             ->persistFiltersInSession()
             ->recordActions([
-                EditAction::make(),
+                // EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
                     BulkAction::make('bulkEdit')
                         ->label('Mass Edit')
                         ->color('warning')
                         ->icon(Heroicon::OutlinedPencilSquare)
                         ->schema([
-                            Select::make('column_to_update')
-                                ->label('Edit field name')
-                                ->searchable()
-                                ->live()
-                                ->options([
-                                    'specification' => 'Specification',
-                                    'spq' => 'SPQ',
-                                    'qty_bag' => 'Qty/Bag',
-                                    'net_weight' => 'Net Weight',
-                                    'gross_weight' => 'Gross Weight',
-                                    'cycle_time' => 'Cycle Time',
-                                    'shift_capacity' => 'Shift Capacity',
-                                    'cavity' => 'Cavity',
-                                    'workshop_id' => 'Workshop',
-                                    'cust_part_no' => 'Customer Part No',
-                                    'cust_part_name' => 'Customer Part Name',
-                                    'delivery_location' => 'Delivery Location',
-                                    'mold_no' => 'Mold No',
-                                    'supplier_id' => 'Suppilier',
-                                    'is_hazardous' => 'Is Hazardous',
-                                    'status' => 'Status',
-                                    'drawing_no' => 'Drawing No',
-                                    'process_routes' => 'Process Routes',
-                                    'drawing_level' => 'Drawing Level',
-                                    'revision_no' => 'Revision No',
-                                    'tonnage_id' => 'Tonnage',
-                                    'hs_code' => 'HS Code',
-                                    'regrind_method' => 'Regrind Method',
-                                    'carton_category' => 'Carton Category',
-                                    'carton_length' => 'Carton Length',
-                                    'carton_width' => 'Carton Width',
-                                    'carton_height' => 'Carton Height',
-                                    'dimension_unit_id' => 'Carton Dimension Unit',
-                                    'stacking_limit' => 'Stacking Limit',
-                                    'is_inspection_required' => 'Is Inspection Required',
-                                ]),
+                            Grid::make(3)
+                                ->schema([
+                                    Select::make('column_to_update')
+                                        ->label('Edit field name')
+                                        ->searchable()
+                                        ->live()
+                                        ->options([
+                                            'specification' => 'Specification',
+                                            'spq' => 'SPQ',
+                                            'qty_bag' => 'Qty/Bag',
+                                            'net_weight' => 'Net Weight',
+                                            'gross_weight' => 'Gross Weight',
+                                            'cycle_time' => 'Cycle Time',
+                                            'shift_capacity' => 'Shift Capacity',
+                                            'cavity' => 'Cavity',
+                                            'workshop_id' => 'Workshop',
+                                            'cust_part_no' => 'Customer Part No',
+                                            'cust_part_name' => 'Customer Part Name',
+                                            'delivery_location' => 'Delivery Location',
+                                            'mold_no' => 'Mold No',
+                                            'supplier_id' => 'Suppilier',
+                                            'is_hazardous' => 'Is Hazardous',
+                                            'status' => 'Status',
+                                            'drawing_no' => 'Drawing No',
+                                            'process_routes' => 'Process Routes',
+                                            'drawing_level' => 'Drawing Level',
+                                            'revision_no' => 'Revision No',
+                                            'tonnage_id' => 'Tonnage',
+                                            'hs_code' => 'HS Code',
+                                            'regrind_method' => 'Regrind Method',
+                                            'carton_category' => 'Carton Category',
+                                            'carton_length' => 'Carton Length',
+                                            'carton_width' => 'Carton Width',
+                                            'carton_height' => 'Carton Height',
+                                            'dimension_unit_id' => 'Carton Dimension Unit',
+                                            'stacking_limit' => 'Stacking Limit',
+                                            'is_inspection_required' => 'Is Inspection Required',
+                                        ])
+                                        ->columnSpan(1),
 
-                            // Tipe TEXTAREA (Specification)
-                            Textarea::make('value_textarea')
-                                ->label('New Specification')
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'specification')
-                                ->required(),
+                                    // Tipe TEXTAREA (Specification)
+                                    Textarea::make('value_textarea')
+                                        ->label('New Specification')
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'specification')
+                                        ->required()
+                                        ->columnSpan(2),
 
-                            // Tipe NUMERIC (SPQ, Qty/Bag, Cavity, Capacity)
-                            TextInput::make('value_numeric')
-                                ->label('New Value (Integer)')
-                                ->numeric()
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['spq', 'qty_bag', 'shift_capacity', 'cavity']))
-                                ->required(),
+                                    // Tipe NUMERIC (SPQ, Qty/Bag, Cavity, Capacity)
+                                    TextInput::make('value_numeric')
+                                        ->label('New Value (Integer)')
+                                        ->numeric()
+                                        ->visible(fn(Get $get) => in_array($get('column_to_update'), ['spq', 'qty_bag', 'shift_capacity', 'cavity']))
+                                        ->required()
+                                        ->columnSpan(2),
 
-                            // Tipe DECIMAL (Weights, Cycle Time, Carton Dims)
-                            TextInput::make('value_decimal')
-                                ->label('New Value (Decimal)')
-                                ->numeric()
-                                ->step('0.00001')
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['net_weight', 'gross_weight', 'cycle_time', 'carton_length', 'carton_width', 'carton_height']))
-                                ->required(),
+                                    // Tipe DECIMAL (Weights, Cycle Time, Carton Dims)
+                                    TextInput::make('value_decimal')
+                                        ->label('New Value (Decimal)')
+                                        ->numeric()
+                                        ->step('0.00001')
+                                        ->visible(fn(Get $get) => in_array($get('column_to_update'), ['net_weight', 'gross_weight', 'cycle_time', 'carton_length', 'carton_width', 'carton_height']))
+                                        ->required()
+                                        ->columnSpan(2),
 
-                            // Tipe RELATIONSHIP (Workshop, Supplier, Tonnage, Unit)
-                            Select::make('value_relation_workshop')
-                                ->label('Select New Workshop')
-                                ->relationship('workshopList', 'name')
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'workshop_id')
-                                ->required(),
+                                    // Tipe RELATIONSHIP (Workshop, Supplier, Tonnage, Unit)
+                                    Select::make('value_relation_workshop')
+                                        ->label('Select New Workshop')
+                                        ->relationship('workshopList', 'name')
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'workshop_id')
+                                        ->required()
+                                        ->columnSpan(2),
 
-                            Select::make('value_relation_supplier')
-                                ->label('Select New Supplier')
-                                ->relationship('supplierList', 'name')
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'supplier_id')
-                                ->required(),
+                                    Select::make('value_relation_supplier')
+                                        ->label('Select New Supplier')
+                                        ->relationship('supplierList', 'name')
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'supplier_id')
+                                        ->required()
+                                        ->columnSpan(2),
 
-                            // Tipe ENUM (Status)
-                            Select::make('value_status')
-                                ->label('Select New Status')
-                                ->options(['draft' => 'Draft', 'active' => 'Active', 'phase_out' => 'Phase out', 'obsolete' => 'Obsolete'])
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'status')
-                                ->required(),
+                                    // Tipe ENUM (Status)
+                                    Select::make('value_status')
+                                        ->label('Select New Status')
+                                        ->options(['draft' => 'Draft', 'active' => 'Active', 'phase_out' => 'Phase out', 'obsolete' => 'Obsolete'])
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'status')
+                                        ->required()
+                                        ->columnSpan(2),
 
-                            // Tipe ENUM (Regrind Method)
-                            Select::make('value_regrind')
-                                ->label('Select New Regrind Method')
-                                ->options(['inline' => 'Inline', 'offline' => 'Offline', 'no_regrind' => 'No regrind'])
-                                ->visible(fn(Get $get) => $get('column_to_update') === 'regrind_method')
-                                ->required(),
+                                    // Tipe ENUM (Regrind Method)
+                                    Select::make('value_regrind')
+                                        ->label('Select New Regrind Method')
+                                        ->options(['inline' => 'Inline', 'offline' => 'Offline', 'no_regrind' => 'No regrind'])
+                                        ->visible(fn(Get $get) => $get('column_to_update') === 'regrind_method')
+                                        ->required()
+                                        ->columnSpan(2),
 
-                            // Tipe BOOLEAN (Hazardous, Inspection)
-                            Select::make('value_boolean')
-                                ->label('Select Yes/No')
-                                ->options(['0' => 'No', '1' => 'Yes'])
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['is_hazardous', 'is_inspection_required']))
-                                ->required(),
+                                    // Tipe BOOLEAN (Hazardous, Inspection)
+                                    Select::make('value_boolean')
+                                        ->label('Select Yes/No')
+                                        ->options(['0' => 'No', '1' => 'Yes'])
+                                        ->visible(fn(Get $get) => in_array($get('column_to_update'), ['is_hazardous', 'is_inspection_required']))
+                                        ->required()
+                                        ->columnSpan(2),
 
-                            // Tipe STRING BIASA (Part No, Part Name, Delivery Loc, Mold No)
-                            TextInput::make('value_string')
-                                ->label('New Text Value')
-                                ->visible(fn(Get $get) => in_array($get('column_to_update'), ['cust_part_no', 'cust_part_name', 'delivery_location', 'mold_no', 'drawing_no', 'hs_code']))
-                                ->required(),
+                                    // Tipe STRING BIASA (Part No, Part Name, Delivery Loc, Mold No)
+                                    TextInput::make('value_string')
+                                        ->label('New Text Value')
+                                        ->visible(fn(Get $get) => in_array($get('column_to_update'), ['cust_part_no', 'cust_part_name', 'delivery_location', 'mold_no', 'drawing_no', 'hs_code']))
+                                        ->required()
+                                        ->columnSpan(2),
+                                ])
                         ])
+                        ->modalWidth('3xl')
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
 
