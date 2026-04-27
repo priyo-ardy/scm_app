@@ -26,6 +26,7 @@ class PurchasePriceDetailsRelationManager extends RelationManager
 
     // protected static ?string $relatedResource = PurchasePriceHeaderResource::class;
 
+
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -133,7 +134,12 @@ class PurchasePriceDetailsRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('Add Details')->icon(Heroicon::OutlinedPlusCircle)->modalWidth('7xl')->modalHeading('Add Material Item'),
+                CreateAction::make()
+                    ->label('Add Details')
+                    ->icon(Heroicon::OutlinedPlusCircle)
+                    ->modalWidth('7xl')
+                    ->modalHeading('Add Material Item')
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->doc_status == 'approved'),
             ])
             ->columns([
                 TextColumn::make('materialList.code')->label('Material Code'),

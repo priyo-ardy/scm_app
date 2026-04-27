@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PurchasePriceHeaders\Schemas;
 
+use App\Filament\Resources\PurchasePriceHeaders\Pages\EditPurchasePriceHeader;
 use App\Models\Company;
 use App\Models\PurchasePriceHeader;
 use Filament\Forms\Components\Select;
@@ -36,7 +37,15 @@ class PurchasePriceHeaderForm
 
                                 return Company::where('is_default', 1)->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(function ($context, $livewire) {
+                                if (session('active_company') !== null) {
+                                    return true;
+                                }
+
+                                if ($context === 'edit' && $livewire instanceof EditPurchasePriceHeader) {
+                                    return !$livewire->isEditingEnabled;
+                                }
+                            })
                             ->dehydrated(true)
                             ->columnSpan(3),
                         TextInput::make('code')
@@ -51,7 +60,13 @@ class PurchasePriceHeaderForm
                             ->required()
                             ->columnSpan(3)
                             ->autocomplete(false)
-                            ->autofocus(),
+                            ->autofocus()
+                            ->disabled(function ($livewire) {
+                                if ($livewire instanceof EditPurchasePriceHeader) {
+                                    return !$livewire->isEditingEnabled;
+                                }
+                                return false;
+                            }),
                         Select::make('supplier_id')
                             ->label('Supplier')
                             ->relationship('supplierList', 'name')
@@ -85,7 +100,13 @@ class PurchasePriceHeaderForm
                                 'unique' => 'This supplier already registered to purchase price data, please find the data then edit'
                             ])
                             ->native(false)
-                            ->columnSpan(4),
+                            ->columnSpan(4)
+                            ->disabled(function ($livewire) {
+                                if ($livewire instanceof EditPurchasePriceHeader) {
+                                    return !$livewire->isEditingEnabled;
+                                }
+                                return false;
+                            }),
                         Select::make('currency_id')
                             ->label('Currency')
                             ->relationship('currencyList', 'code')
@@ -93,11 +114,23 @@ class PurchasePriceHeaderForm
                             ->searchable()
                             ->preload()
                             ->native(false)
-                            ->columnSpan(2),
+                            ->columnSpan(2)
+                            ->disabled(function ($livewire) {
+                                if ($livewire instanceof EditPurchasePriceHeader) {
+                                    return !$livewire->isEditingEnabled;
+                                }
+                                return false;
+                            }),
                         Textarea::make('remark')
                             ->label('Remark')
                             ->placeholder('Write additional information here ...')
                             ->columnSpan(10)
+                            ->disabled(function ($livewire) {
+                                if ($livewire instanceof EditPurchasePriceHeader) {
+                                    return !$livewire->isEditingEnabled;
+                                }
+                                return false;
+                            })
                     ])
                     ->columns(12)
                     ->columnSpanFull()

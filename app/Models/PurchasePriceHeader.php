@@ -85,7 +85,7 @@ class PurchasePriceHeader extends Model
             $companyId = $model->company_id;
 
             if ($companyId) {
-                $model->code = self::generateCodeBasedOnCompany(
+                $model->code = self::generateCodeWithDateByCompany(
                     tableName: 'purchase_price_headers',
                     columnName: 'code',
                     prefix: 'PRC',

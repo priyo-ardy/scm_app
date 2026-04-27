@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PurchasePriceHeaders\Pages;
 use App\Filament\Resources\PurchasePriceHeaders\PurchasePriceHeaderResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Icons\Heroicon;
 
 class ListPurchasePriceHeaders extends ListRecords
 {
@@ -13,7 +14,7 @@ class ListPurchasePriceHeaders extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->label('New')->icon(Heroicon::OutlinedPlusCircle),
         ];
     }
 }
