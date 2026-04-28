@@ -43,6 +43,7 @@ class User extends Authenticatable
         'avatar',
         'is_active',
         'assign_company',
+        'department_id',
         'remark',
         'role',
     ];
@@ -109,5 +110,10 @@ class User extends Authenticatable
     public function companyList(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'assign_company');
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id');
     }
 }

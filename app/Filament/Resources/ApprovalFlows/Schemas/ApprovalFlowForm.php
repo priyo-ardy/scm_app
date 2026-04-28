@@ -19,6 +19,10 @@ class ApprovalFlowForm
                         TextInput::make('code')
                             ->label('Document Code')
                             ->maxLength(20)
+                            ->unique(ignoreRecord: true)
+                            ->validationMessages([
+                                'unique' => 'This document code already registered'
+                            ])
                             ->placeholder('Document Code')
                             ->autofocus()
                             ->autocomplete(false)
