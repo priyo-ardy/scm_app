@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\ApprovalFlows\Pages;
+namespace App\Filament\Resources\Sections\Pages;
 
-use App\Filament\Resources\ApprovalFlows\ApprovalFlowResource;
+use App\Filament\Resources\Sections\SectionResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
 
-class ListApprovalFlows extends ListRecords
+class ListSections extends ListRecords
 {
-    protected static string $resource = ApprovalFlowResource::class;
+    protected static string $resource = SectionResource::class;
 
     protected function getHeaderActions(): array
     {

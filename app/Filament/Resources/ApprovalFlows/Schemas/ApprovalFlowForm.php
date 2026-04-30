@@ -5,7 +5,10 @@ namespace App\Filament\Resources\ApprovalFlows\Schemas;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class ApprovalFlowForm
@@ -16,68 +19,74 @@ class ApprovalFlowForm
             ->components([
                 Section::make()
                     ->schema([
-                        TextInput::make('code')
-                            ->label('Document Code')
-                            ->maxLength(20)
+                        Select::make('code')
+                            ->label('Document Type')
+                            ->options([
+                                'purchase_price' => 'Purchase Price'
+                            ])
+                            ->searchable()
+                            ->required()
                             ->unique(ignoreRecord: true)
                             ->validationMessages([
-                                'unique' => 'This document code already registered'
+                                'unique' => 'This approval flow document already registered'
                             ])
-                            ->placeholder('Document Code')
-                            ->autofocus()
-                            ->autocomplete(false)
-                            ->required()
-                            ->columnSpan(4),
+                            ->columnSpan(3),
                         TextInput::make('name')
-                            ->label('Document Name')
+                            ->label('Approval Flow Name')
                             ->maxLength(150)
-                            ->placeholder('Document Name')
-                            ->autocomplete(false)
                             ->required()
-                            ->columnSpan(8),
-                    ])->columns(12)
+                            ->autocomplete(false)
+                            ->columnSpan(4)
+                            ->placeholder('Approval flow name')
+                            ->dehydrateStateUsing(fn($state) => is_string($state) ? trim($state) : $state),
+                        Textarea::make('remark')
+                            ->label('Description')
+                            ->placeholder('Add additional information here ...')
+                            ->default(null)
+                            ->columnSpan(5)
+                            ->dehydrateStateUsing(fn($state) => is_string($state) ? trim($state) : $state),
+                    ])
+                    ->columns(12)
                     ->columnSpanFull(),
                 Section::make()
                     ->schema([
                         Repeater::make('steps')
-                            ->relationship('steps')
+                            ->relationship()
                             ->schema([
-                                TextInput::make('order')
-                                    ->label('Approver Order')
-                                    ->numeric()
-                                    ->required()
-                                    ->placeholder('Approver Order')
-                                    ->columnSpan(2),
-                                Select::make('role_name')
-                                    ->label('Select Approver Role')
-                                    ->required()
-                                    ->searchable()
+                                Select::make('approver_role')
+                                    ->label('Approver Roles')
                                     ->options([
-                                        'Section Head' => 'Section Head',
-                                        'Dept Manager' => 'Dept Manager',
-                                        'Vice GM' => 'Vice GM',
-                                        'Finance' => 'Finance',
-                                    ])->columnSpan(4),
-                                Select::make('approver_id')
-                                    ->label('Select Approver')
-                                    ->required()
-                                    ->relationship('user', 'name')
+                                        'direct_user' => 'Direct User',
+                                        'section_head' => 'Section Head',
+                                        'dept_head' => 'Department Head',
+                                        'manager_dept' => 'Department Manager',
+                                        'finance' => 'Finance Manager',
+                                        'vice_gm' => 'Vice GM',
+                                        'gm' => 'GM'
+                                    ])
                                     ->searchable()
+                                    ->required()
                                     ->preload()
-                                    ->native()
-                                    ->columnSpan(6),
+                                    ->live()
+                                    ->native(false)
+                                    ->columnSpan(1),
+                                Select::make('approver_id ')
+                                    ->label('Approver')
+                                    ->relationship('approver', 'name')
+                                    ->searchable()
+                                    ->required(fn(Get $get) => $get('approver_role') === 'direct_user')
+                                    ->preload()
+                                    ->native(false)
+                                    ->columnSpan(1)
                             ])
-                            ->columns(12)
-                            ->itemNumbers()
-                            ->cloneable()
-                            ->reorderable()
-                            ->collapsible()
                             ->orderColumn('order')
-                            ->reorderableWithButtons()
-                            ->reorderableWithDragAndDrop(),
+                            ->collapsible()
+                            ->addActionLabel('Add Approver')
+                            ->columns(2)
+                            ->columnSpanFull()
                     ])
-                    ->columns(1)
-                    ->columnSpanFull(),
+                    ->columns(12)
+                    ->columnSpanFull()
             ]);
     }
 }

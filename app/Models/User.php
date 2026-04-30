@@ -23,7 +23,6 @@ class User extends Authenticatable
 
     use HasRoles;
     use SoftDeletes;
-    use SoftDeletes;
     // use LogsAllActivities;
 
     /**
@@ -44,6 +43,7 @@ class User extends Authenticatable
         'is_active',
         'assign_company',
         'department_id',
+        'section_id',
         'remark',
         'role',
     ];
@@ -115,5 +115,10 @@ class User extends Authenticatable
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    public function sectionList(): BelongsTo
+    {
+        return $this->belongsTo(Section::class, 'section_id');
     }
 }

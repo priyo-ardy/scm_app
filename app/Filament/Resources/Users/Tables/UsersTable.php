@@ -89,6 +89,11 @@ class UsersTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
+                TextColumn::make('sectionList.name')
+                    ->label('Section')
+                    ->searchable(['name'])
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('last_login')
                     ->dateTime('D, jS M Y, h:i:s')
                     ->sortable()

@@ -2,41 +2,34 @@
 
 namespace App\Models;
 
+use App\Blameable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Permission\Traits\HasRoles;
 
 class ApprovalStep extends Model
 {
+    use HasFactory, HasRoles, Blameable;
+
     protected $fillable = [
         'approval_flow_id',
-        'approval_flow_code',
         'order',
-        'role_name',
+        'approver_role',
         'approver_id',
-        'created_at',
-        'updated_at',
+        'created_by',
+        'updated_by',
     ];
 
     public function flow(): BelongsTo
     {
-        return $this->belongsTo(ApprovalFlow::class, 'approval_flow_code', 'code');
+        return $this->belongsTo(ApprovalFlow::class, 'approval_flow_id', 'id');
     }
 
-    public function user(): BelongsTo
+    public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');
     }
 
-    protected static function booted()
-    {
-        static::creating(function ($step) {
-            if ($step->approval_flow_id && !$step->approval_flow_code) {
-                $flow = ApprovalFlow::find($step->approval_flow_id);
-
-                if ($flow) {
-                    $step->approval_flow_code = $flow->code;
-                }
-            }
-        });
-    }
+    protected static function booted() {}
 }

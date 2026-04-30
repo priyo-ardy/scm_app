@@ -13,19 +13,14 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use UnitEnum;
 
 class ApprovalFlowResource extends Resource
 {
     protected static ?string $model = ApprovalFlow::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCommandLine;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Application Setup';
-
-    protected static ?int $navigationSort = 5;
-
-    protected static ?string $recordTitleAttribute = 'Approval Flow';
+    protected static ?string $recordTitleAttribute = 'ApprovalFlow';
 
     public static function form(Schema $schema): Schema
     {

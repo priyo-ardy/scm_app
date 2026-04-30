@@ -7,7 +7,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 
 class UsersForm
@@ -87,7 +90,15 @@ class UsersForm
                             ->relationship('department', 'name')
                             ->searchable()
                             ->native(false)
+                            ->live()
+                            ->afterStateUpdated(fn(Set $set) => $set('section_id', null))
                             ->preload(),
+                        Select::make('section_id')
+                            ->label('Section')
+                            ->relationship('sectionList', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('department_id', $get('department_id')))
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
                         Textarea::make('remark')
                             ->label('Remark')
                             ->placeholder('Additional Information')
