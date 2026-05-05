@@ -83,6 +83,7 @@ class ApprovalFlowForm
                                     ->preload()
                                     ->native(false)
                             ])
+                            ->compact()
                             ->orderColumn('order')
                             ->collapsible()
                             ->addActionLabel('Add Approver')

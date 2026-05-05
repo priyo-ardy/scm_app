@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PurchaseRequisitions\Schemas;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -87,6 +88,7 @@ class PurchaseRequisitionForm
                             ->searchable()
                             ->required()
                             ->native(false)
+                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                             ->preload(),
                         TextInput::make('specification')
                             ->label('Specification')
@@ -118,6 +120,9 @@ class PurchaseRequisitionForm
                             ->label('Remark')
                             ->placeholder('Remark ...')
                     ])
+                    ->deleteAction(
+                        fn(Action $action) => $action->requiresConfirmation()
+                    )
                     ->columnSpanFull()
             ]);
     }
