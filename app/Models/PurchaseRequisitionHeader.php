@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Blameable;
 use App\HasCodeGenerator;
+use App\Jobs\InitializeApprovalJob;
 use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -87,6 +88,9 @@ class PurchaseRequisitionHeader extends Model
                 separator: '-',
                 companyId: $company
             );
+        });
+        static::created(function ($model) {
+            InitializeApprovalJob::dispatch($model, 'purchase_requisition');
         });
     }
 }

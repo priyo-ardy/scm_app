@@ -14,6 +14,8 @@ class ApprovalLog extends Model
     protected $fillable = [
         'approval_flow_id',
         'document_type',
+        'flow_code',
+        'header_id',
         'document_id',
         'current_step_order',
         'current_approver_id',

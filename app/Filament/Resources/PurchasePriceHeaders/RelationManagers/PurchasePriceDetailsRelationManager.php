@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\PurchasePriceHeaders\RelationManagers;
 
-use App\Filament\Resources\PurchasePriceHeaders\PurchasePriceHeaderResource;
+// use App\Filament\Resources\PurchasePriceHeaders\PurchasePriceHeaderResource;
 use App\Models\Material;
-use Closure;
+// use Closure;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -22,7 +22,7 @@ use Filament\Tables\Columns\TextColumn;
 
 class PurchasePriceDetailsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'PurchasePriceDetails';
+    protected static string $relationship = 'purchasePriceDetails';
 
     // protected static ?string $relatedResource = PurchasePriceHeaderResource::class;
 
@@ -139,7 +139,7 @@ class PurchasePriceDetailsRelationManager extends RelationManager
                     ->icon(Heroicon::OutlinedPlusCircle)
                     ->modalWidth('7xl')
                     ->modalHeading('Add Material Item')
-                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->doc_status == 'approved'),
+                // ->visible(fn($livewire) => $livewire->getOwnerRecord()->doc_status == 'approved'),
             ])
             ->columns([
                 TextColumn::make('materialList.code')->label('Material Code'),

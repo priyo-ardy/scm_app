@@ -29,7 +29,7 @@ class PurchasePriceHeader extends Model
         'doc_status',
         'remark',
         'created_by',
-        'updated_at'
+        'updated_by'
     ];
 
     protected function casts(): array
@@ -72,7 +72,7 @@ class PurchasePriceHeader extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function PurchasePriceDetails(): HasMany
+    public function purchasePriceDetails(): HasMany
     {
         return $this->hasMany(PurchasePriceDetail::class, 'header_id');
     }

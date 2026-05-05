@@ -61,4 +61,9 @@ class Section extends Model
             );
         });
     }
+
+    public function getSectionById(int $sectionId)
+    {
+        return $this->whereId($sectionId)->first();
+    }
 }

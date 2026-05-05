@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ApprovalFlows\Schemas;
 
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -22,7 +23,8 @@ class ApprovalFlowForm
                         Select::make('code')
                             ->label('Document Type')
                             ->options([
-                                'purchase_price' => 'Purchase Price'
+                                'purchase_price' => 'Purchase Price',
+                                'purchase_requisition' => 'Purchase Requisition',
                             ])
                             ->searchable()
                             ->required()
@@ -51,14 +53,18 @@ class ApprovalFlowForm
                 Section::make()
                     ->schema([
                         Repeater::make('steps')
+                            ->label('Approval Flow Steps')
                             ->relationship()
+                            ->table([
+                                TableColumn::make('Approver Role'),
+                                TableColumn::make('Approver'),
+                            ])
                             ->schema([
                                 Select::make('approver_role')
                                     ->label('Approver Roles')
                                     ->options([
                                         'direct_user' => 'Direct User',
                                         'section_head' => 'Section Head',
-                                        'dept_head' => 'Department Head',
                                         'manager_dept' => 'Department Manager',
                                         'finance' => 'Finance Manager',
                                         'vice_gm' => 'Vice GM',
@@ -68,8 +74,7 @@ class ApprovalFlowForm
                                     ->required()
                                     ->preload()
                                     ->live()
-                                    ->native(false)
-                                    ->columnSpan(1),
+                                    ->native(false),
                                 Select::make('approver_id ')
                                     ->label('Approver')
                                     ->relationship('approver', 'name')
@@ -77,7 +82,6 @@ class ApprovalFlowForm
                                     ->required(fn(Get $get) => $get('approver_role') === 'direct_user')
                                     ->preload()
                                     ->native(false)
-                                    ->columnSpan(1)
                             ])
                             ->orderColumn('order')
                             ->collapsible()

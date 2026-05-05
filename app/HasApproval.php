@@ -2,13 +2,17 @@
 
 namespace App;
 
+use App\Models\ApprovalFlow;
 use App\Models\ApprovalLog;
 
 trait HasApproval
 {
-    public function approvalLog()
+    public function approvalLog(string $approvalFlowCode)
     {
-        return $this->morphOne(ApprovalLog::class, 'approvable');
+        // $approvalFlow = ApprovalFlow::where('code', '=', $approvalFlowCode, 'and')->first();
+        // if(! $approvalFlow && $approvalFlow->id){
+        //     throw
+        // }
     }
 
     public function getApprovalStatus(): string

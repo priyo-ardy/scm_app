@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Blameable;
+use App\Jobs\InitializeApprovalJob;
+use App\Services\ApprovalService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +19,6 @@ class PurchasePriceDetail extends Model
         'header_id',
         'material_id',
         'unit_id',
-        'unit_id',
         'from_qty',
         'to_qty',
         'unit_price',
@@ -27,8 +28,8 @@ class PurchasePriceDetail extends Model
         'expired_date',
         'is_active',
         'remark',
-        'created_by ',
-        'updated_by '
+        'created_by',
+        'updated_by'
     ];
 
     protected function casts(): array
@@ -37,8 +38,6 @@ class PurchasePriceDetail extends Model
             'from_qty'              => 'decimal:4',
             'to_qty'                => 'decimal:4',
             'unit_price'            => 'decimal:4',
-            'unit_price'            => 'decimal:4',
-            'unit_price_after_tax'  => 'decimal:4',
             'unit_price_after_tax'  => 'decimal:4',
             'tax_rate'              => 'decimal:2',
             'effective_date'        => 'date',
@@ -57,5 +56,17 @@ class PurchasePriceDetail extends Model
     public function unitList(): BelongsTo
     {
         return $this->belongsTo(Unit::class, 'unit_id')->where('is_active', true)->orderBy('code', 'asc');
+    }
+
+    public function purchasePriceHeader(): BelongsTo
+    {
+        return $this->belongsTo(PurchasePriceHeader::class, 'header_id');
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($model) {
+            InitializeApprovalJob::dispatch($model, 'purchase_price');
+        });
     }
 }
