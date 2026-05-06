@@ -62,6 +62,8 @@ namespace App\Models{
  * @property int $id
  * @property int $approval_flow_id
  * @property string $document_type
+ * @property int|null $header_id
+ * @property string|null $flow_code
  * @property int $document_id
  * @property int $current_step_order
  * @property int|null $current_approver_id
@@ -84,6 +86,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalLog whereCurrentStepOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalLog whereDocumentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalLog whereDocumentType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalLog whereFlowCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalLog whereHeaderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalLog whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalLog whereProcessedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalLog whereStatus($value)
@@ -888,6 +892,7 @@ namespace App\Models{
  * @property-read \App\Models\Material|null $materialList
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
  * @property-read int|null $permissions_count
+ * @property-read \App\Models\PurchasePriceHeader|null $purchasePriceHeader
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
  * @property-read \App\Models\Unit $unitList
@@ -947,14 +952,14 @@ namespace App\Models{
  * @property int|null $created_by
  * @property int|null $updated_by
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PurchasePriceDetail> $PurchasePriceDetails
- * @property-read int|null $purchase_price_details_count
  * @property-read \App\Models\User|null $approverList
  * @property-read \App\Models\Company|null $companyList
  * @property-read \App\Models\User|null $creatorList
  * @property-read \App\Models\Currency|null $currencyList
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
  * @property-read int|null $permissions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PurchasePriceDetail> $purchasePriceDetails
+ * @property-read int|null $purchase_price_details_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
  * @property-read \App\Models\Supplier|null $supplierList
@@ -1008,9 +1013,18 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int $created_by
  * @property int $updated_by
+ * @property-read \App\Models\Material|null $material
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
+ * @property-read int|null $permissions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
+ * @property-read int|null $roles_count
+ * @property-read \App\Models\Supplier|null $supplier
+ * @property-read \App\Models\Unit $units
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail permission($permissions, bool $without = false)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail role($roles, ?string $guard = null, bool $without = false)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail whereArrivalDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail whereCreatedBy($value)
@@ -1028,6 +1042,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail whereUnitId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail withoutPermission($permissions)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionDetail withoutRole($roles, ?string $guard = null)
  */
 	class PurchaseRequisitionDetail extends \Eloquent {}
 }
@@ -1044,6 +1060,8 @@ namespace App\Models{
  * @property string $doc_status
  * @property \Illuminate\Support\Carbon|null $required_date
  * @property string|null $reject_reason
+ * @property string|null $reject_date
+ * @property int|null $rejected_by
  * @property string|null $reason
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1083,7 +1101,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader whereRejectDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader whereRejectReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader whereRejectedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader whereRequesterId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader whereRequiredDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseRequisitionHeader whereUpdatedAt($value)
@@ -1111,7 +1131,7 @@ namespace App\Models{
  * @property string|null $deleted_at
  * @property int|null $created_by
  * @property int|null $updated_by
- * @property-read \App\Models\Company|null $company
+ * @property-read \App\Models\Company|null $companyList
  * @property-read \App\Models\Department $dept
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
  * @property-read int|null $permissions_count
@@ -1388,6 +1408,7 @@ namespace App\Models{
  * @property bool $is_active
  * @property int|null $assign_company
  * @property int|null $department_id
+ * @property int|null $section_id
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1400,6 +1421,7 @@ namespace App\Models{
  * @property-read int|null $permissions_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
+ * @property-read \App\Models\Section|null $sectionList
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
@@ -1426,6 +1448,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRemark($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereSectionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutPermission($permissions)
