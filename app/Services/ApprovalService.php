@@ -15,12 +15,12 @@ class ApprovalService
 {
     public function initializeApproval(Model $record, string $flowCode): void
     {
-        $section_id = Session::get('section_id');
-        $dept_id = Session::get('department_id');
-        $user_id = Session::get('id');
+        $section_id = session('section_id');
+        $dept_id = session('department_id');
+        $user_id = session('id');
 
         $documentName = ucwords(str_replace('_', ' ', strtolower($flowCode)));
-        $flow = ApprovalFlow::where('code', $flowCode)->first();
+        $flow = ApprovalFlow::where('code', '=', $flowCode, 'and')->first();
         if (!$flow) {
             throw new \Exception("Approval flow for document {$documentName} is not found, please contact your administrator");
         }
@@ -41,28 +41,28 @@ class ApprovalService
                     $approverId = $row->approver_id;
                     break;
                 case 'section_head':
-                    $section = Section::find($section_id);
+                    $section = Section::find($section_id, 'id');
                     $approverId = $section->section_head_id;
                     break;
                 case 'manager_dept':
-                    $dept = Department::find($dept_id);
+                    $dept = Department::find($dept_id, 'id');
                     $approverId = $dept->manager_id;
                     break;
                 case 'finance':
-                        $finance = User::where('role', 'finance')->first();
-                        $approverId = $finance->id;
+                    $finance = User::where('role', '=', 'finance', 'and')->first();
+                    $approverId = $finance->id;
                     break;
-                    case 'vice_gm':
-                        $vice_gm = User::where('role', 'vice_gm')->first();
-                        $approverId = $vice_gm->id;
-                        break;
-                    case 'gm':
-                        $gm = User::where('role', 'gm')->first();
-                        $approverId = $gm->id;
-                        break;
+                case 'vice_gm':
+                    $vice_gm = User::where('role', '=', 'vice_gm', 'and')->first();
+                    $approverId = $vice_gm->id;
+                    break;
+                case 'gm':
+                    $gm = User::where('role', '=', 'gm', 'and')->first();
+                    $approverId = $gm->id;
+                    break;
             }
 
-            if($approverId) {
+            if ($approverId) {
                 ApprovalLog::create([
                     'approval_flow_id' => $flow->id,
                     'document_type' => get_class($record),

@@ -57,6 +57,11 @@ class CustomLogin extends BaseLogin
 
         session()->regenerate();
 
+        session([
+            'department_id' => $sessionUser->department_id,
+            'section_id'    => $sessionUser->section_id,
+        ]);
+
         return app(LoginResponse::class);
     }
 }

@@ -26,7 +26,7 @@ class EditMaterial extends EditRecord
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->color('success')
-                ->url(fn () => $this->getResource()::getUrl('create')),
+                ->url(fn() => $this->getResource()::getUrl('create')),
             Action::make('copy')
                 ->label('Copy')
                 ->icon(Heroicon::OutlinedDocumentDuplicate)
@@ -34,7 +34,7 @@ class EditMaterial extends EditRecord
                 ->action(function ($record) {
                     $data = $record->toArray();
                     unset($data['id'], $data['created_at'], $data['updated_at']);
-                    $data['code'] = $record->code.'-COPY-'.uniqid();
+                    $data['code'] = $record->code . '-COPY-' . uniqid();
                     $newRecord = Material::create($data);
 
                     if ($newRecord) {
@@ -62,19 +62,19 @@ class EditMaterial extends EditRecord
                         ? MaterialResource::getUrl('edit', ['record' => $firstRecord])
                         : null;
                 })
-                ->disabled(fn () => ! Material::where('code', '<', $this->record->code)->exists()),
+                ->disabled(fn() => ! Material::where('code', '<', $this->record->code, 'and')->exists()),
             Action::make('prev')
                 ->label('Prev')
                 ->color('gray')
                 ->tooltip('Previous')
                 ->icon(Heroicon::OutlinedChevronLeft)
                 ->url(function () {
-                    $prevRecord = Material::where('code', '<', $this->record->code)->orderBy('code', 'desc')->first();
+                    $prevRecord = Material::where('code', '<', $this->record->code, 'and')->orderBy('code', 'desc')->first();
 
                     return $prevRecord
                         ? MaterialResource::getUrl('edit', ['record' => $prevRecord]) : null;
                 })
-                ->hidden(fn () => ! Material::where('code', '<', $this->record->code)->exists()),
+                ->hidden(fn() => ! Material::where('code', '<', $this->record->code, 'and')->exists()),
             Action::make('next')
                 ->label('Next')
                 ->color('gray')
@@ -82,13 +82,13 @@ class EditMaterial extends EditRecord
                 ->icon(Heroicon::OutlinedChevronRight)
                 ->iconPosition('after')
                 ->url(function () {
-                    $nextRecord = Material::where('code', '>', $this->record->code)->orderBy('code', 'asc')->first();
+                    $nextRecord = Material::where('code', '>', $this->record->code, 'and')->orderBy('code', 'asc')->first();
 
                     return $nextRecord
                         ? MaterialResource::getUrl('edit', ['record' => $nextRecord])
                         : null;
                 })
-                ->hidden(fn () => ! Material::where('code', '>', $this->record->code)->exists()),
+                ->hidden(fn() => ! Material::where('code', '>', $this->record->code, 'and')->exists()),
             Action::make('last')
                 ->label('Last')
                 ->color('gray')
@@ -103,7 +103,7 @@ class EditMaterial extends EditRecord
                         ? MaterialResource::getUrl('edit', ['record' => $lastRecord])
                         : null;
                 })
-                ->disabled(fn () => ! Material::where('code', '>', $this->record->code)->exists()),
+                ->disabled(fn() => ! Material::where('code', '>', $this->record->code, 'and')->exists()),
         ];
     }
 }

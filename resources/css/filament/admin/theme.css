@@ -2,3 +2,13 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+
+.repeater-table-overflow .fi-fo-repeater-table-ctn {
+    overflow-x: auto !important;
+}
+
+.repeater-table-overflow table {
+    /* Memaksa tabel agar tidak menyusut lebih kecil dari total lebar kolom */
+    width: max-content !important;
+    min-width: 100%;
+}
