@@ -75,9 +75,30 @@ class PurchaseRequisitionHeader extends Model
         'approved_at' => 'datetime',
     ];
 
+    public function scopeWithFilteredDetails($query, $search)
+    {
+        return $query->with(['details' => function ($q) use ($search) {
+            if ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->whereHas('material', function ($m) use ($search) {
+                        $m->where('code', 'like', "%{$search}%")
+                            ->orWhere('name', 'like', "%{$search}%")
+                            ->orWhere('specification', 'like', "%{$search}%");
+                    })
+                        ->orWhereHas('unit', fn($u) => $u->where('code', 'like', "%{$search}%"))
+                        ->orWhere('qty', 'like', "%{$search}%")
+                        ->orWhere('arrival_date', 'like', "%{$search}%")
+                        ->orWhere('remark', 'like', "%{$search}%")
+                        // Baris sakti: Kalau yang dicari adalah Kode Header, tampilkan semua detail
+                        ->orWhereHas('header', fn($h) => $h->where('code', 'like', "%{$search}%"));
+                });
+            }
+        }, 'details.material', 'details.units', 'details.supplier']);
+    }
+
     protected static function booted()
     {
-        static::addGlobalScope(CompanyScope::class);
+        // static::addGlobalScope(CompanyScope::class);
         static::creating(function ($model) {
             $company = $model->company_id;
             $model->code = self::generateCodeWithDateByCompany(
@@ -89,8 +110,9 @@ class PurchaseRequisitionHeader extends Model
                 companyId: $company
             );
         });
-        static::created(function ($model) {
-            InitializeApprovalJob::dispatch($model, 'purchase_requisition');
-        });
+
+        // static::created(function ($model) {
+        //     InitializeApprovalJob::dispatch($model, 'purchase_requisition');
+        // });
     }
 }

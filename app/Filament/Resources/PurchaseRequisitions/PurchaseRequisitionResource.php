@@ -67,5 +67,5 @@ class PurchaseRequisitionResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
+    }   
 }

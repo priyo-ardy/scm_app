@@ -146,6 +146,7 @@ class PurchaseRequisitionForm
                             ->required(),
                         DatePicker::make('arrival_date')
                             ->label('Required Arrival Date')
+                            ->default(now())
                             ->required(),
                         Select::make('supplier_id')
                             ->label('Default Supplier')

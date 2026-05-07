@@ -88,6 +88,13 @@ class ViewPurchaseRequisition extends ViewRecord
                 ->icon(Heroicon::OutlinedCog6Tooth)
                 ->color('primary')
                 ->tooltip('Generate Purchase Order')
+                ->requiresConfirmation()
+                ->modalHeading('Generate Purchase Order')
+                ->modalDescription('Are you sure you want to create a purchase order from this document?')
+                ->modalSubmitActionLabel('Generate')
+                // ->url(fn($record): string => route('filament.resource.purchase-orders.create', [
+                //     'source_id' => $record->id,
+                // ]))
                 ->visible(fn($record) => $record->doc_status === 'approved'),
             Action::make('deApprove')
                 ->label('De-Approve')
