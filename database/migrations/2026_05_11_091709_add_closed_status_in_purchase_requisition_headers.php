@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vw_purchase_requisitions', function (Blueprint $table) {});
+        Schema::table('purchase_requisition_headers', function (Blueprint $table) {
+            $table->boolean('is_closed')->default(false)->after('doc_status');
+        });
     }
 
     /**
@@ -19,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vw_purchase_requisitions');
+        Schema::table('purchase_requisition_headers', function (Blueprint $table) {
+            $table->dropColumn('is_closed');
+        });
     }
 };

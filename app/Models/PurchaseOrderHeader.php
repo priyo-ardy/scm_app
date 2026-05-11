@@ -9,6 +9,7 @@ use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
 
 class PurchaseOrderHeader extends Model
@@ -84,6 +85,11 @@ class PurchaseOrderHeader extends Model
     public function purchaseRequisition(): BelongsTo
     {
         return $this->belongsTo(PurchaseRequisitionHeader::class, 'purchase_requisition_id');
+    }
+
+    public function details(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderDetail::class, 'po_id');
     }
 
     protected static function booted()

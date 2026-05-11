@@ -27,6 +27,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -139,6 +140,7 @@ class AdminPanelProvider extends PanelProvider
                     ->icon(null)
                     ->collapsed(),
             ])
-            ->globalSearch();
+            ->globalSearch()
+            ->sidebarCollapsibleOnDesktop(true);
     }
 }
