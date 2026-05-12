@@ -3,8 +3,11 @@
 namespace App\Filament\Resources\PurchaseOrders\Schemas;
 
 use App\Models\Material;
+use App\Models\PurchaseRequisitionDetail;
+use App\Models\PurchaseRequisitionHeader;
 use App\Models\Supplier;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -17,6 +20,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
 use Filament\Tables\Columns\Column;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\ValidationException;
 
 class PurchaseOrderForm
 {
@@ -119,8 +123,64 @@ class PurchaseOrderForm
                             ->relationship('purchaseRequisition', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('doc_status', 'approved')->orderBy('code', 'desc'))
                             ->searchable()
                             ->preload()
-                            ->live()
-                            ->afterStateUpdated(function ($state, Set $set) {})
+                            ->reactive()
+                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
+                                $currentSupplierId = $get('supplier_id');
+
+                                if (!$get('supplier_id')) {
+                                    // 2. Kosongkan kembali field PR agar user harus memilih ulang nanti
+                                    $set('purchase_requisition_id', null);
+
+                                    // 3. Lempar error validasi langsung ke field ini
+                                    // Gunakan key 'data.purchase_requisition_id' karena Filament menyimpan state dalam array 'data'
+                                    throw ValidationException::withMessages([
+                                        'data.supplier_id' => 'Please choose supplier',
+                                        'data.purchase_requisition_id' => 'Please choose supplier first.',
+                                    ]);
+                                }
+
+                                if (!$state) {
+                                    $set('details', []);
+                                    return;
+                                }
+
+
+                                $pr = PurchaseRequisitionHeader::with('details')->find($state);
+
+                                if ($pr) {
+                                    $filterDetails = $pr->details->filter(function ($detail) use ($currentSupplierId) {
+                                        if (!empty($detail->supplier_id)) {
+                                            return $detail->supplier_id == $currentSupplierId;
+                                        }
+
+                                        return true;
+                                    });
+
+                                    $repeaterData = $filterDetails->map(function ($detail) {
+                                        $material = Material::find($detail->material_id);
+
+                                        return [
+                                            'pr_detail_id' => $detail->id,
+                                            'material_id' => $detail->material_id,
+                                            'material_name' => $material?->name,
+                                            'specification' => $material?->specification,
+                                            'unit_id' => $detail->unit_id,
+                                            'qty' => $detail->qty,
+                                            'unit_price' => 0,
+                                            'amount' => 0,
+                                            'discount_rate' => 0,
+                                            'discount_amount' => 0,
+                                            'price_after_discount' => 0,
+                                            'tax_rate' => 0,
+                                            'tax_amount' => 0,
+                                            'price_after_tax' => 0,
+                                            'total_amount' => 0
+                                        ];
+                                    })->toArray();
+
+                                    $set('details', $repeaterData);
+                                }
+                            })
                             ->native(false)
                             ->columnSpan(3)
                             ->required(),
@@ -133,11 +193,6 @@ class PurchaseOrderForm
                     ->columnSpanFull(),
                 Repeater::make('details')
                     ->relationship()
-                    ->extraAttributes([
-                        // 'class' => 'repeater-table-overflow',
-                        // Tambahkan style inline ini untuk memastikan overflow bekerja
-                        // 'style' => 'overflow-x: auto; display: block; width: 100%;'
-                    ])
                     ->table([
                         TableColumn::make('Material Code')->markAsRequired()->wrapHeader(),
                         TableColumn::make('Material Name')->wrapHeader(),
@@ -151,14 +206,14 @@ class PurchaseOrderForm
                         TableColumn::make('Price After Discount')->wrapHeader(),
                         TableColumn::make('Tax Rate (%)'),
                         TableColumn::make('Tax Amount'),
-                        TableColumn::make('Unit Price After Tax')->wrapHeader()
-
-                        // TableColumn::make('Total Amount'),
+                        TableColumn::make('Unit Price After Tax')->wrapHeader(),
+                        TableColumn::make('Total Amount')->wrapHeader(),
                         // TableColumn::make('Arrival Date'),
                         // TableColumn::make('Remark'),
                     ])
                     ->compact()
                     ->schema([
+                        Hidden::make('pr_detail_id'),
                         Select::make('material_id')
                             ->relationship('material', 'code')
                             ->searchable(['code', 'name'])
@@ -284,14 +339,14 @@ class PurchaseOrderForm
                             ->extraInputAttributes(['style' => 'text-align: right'])
                             ->mask(RawJs::make('$money($input)'))
                             ->stripCharacters(','),
-                        // TextInput::make('total_amount')
-                        //     ->numeric()
-                        //     ->default(0)
-                        //     ->extraInputAttributes(['style' => 'text-align: right'])
-                        //     ->mask(RawJs::make('$money($input)'))
-                        //     ->extraInputAttributes(['style' => 'text-align: right; min-width: 200px'])
-                        //     ->readOnly()
-                        //     ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0),
+                        TextInput::make('total_amount')
+                            ->numeric()
+                            ->default(0)
+                            ->extraInputAttributes(['style' => 'text-align: right'])
+                            ->mask(RawJs::make('$money($input)'))
+                            ->extraInputAttributes(['style' => 'text-align: right'])
+                        // ->readOnly()
+                        // ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0),
                         // DatePicker::make('delivery_date')
                         //     ->default(now())
                         //     ->extraInputAttributes(['style' => 'min-width: 200px']),
@@ -343,6 +398,7 @@ class PurchaseOrderForm
 
         // downstream recalc
         self::calculateDiscountAmount($get, $set);
+        self::calculateTotalAmount($get, $set);
     }
 
     public static function calculateDiscountAmount(Get $get, Set $set): void
@@ -384,6 +440,7 @@ class PurchaseOrderForm
         $set('price_after_discount', $priceAfterDiscount);
 
         self::calculateTaxAmount($get, $set);
+        self::calculateTotalAmount($get, $set);
     }
 
     public static function calculateDiscountRate(Get $get, Set $set): void
@@ -427,6 +484,7 @@ class PurchaseOrderForm
         $set('price_after_discount', $priceAfterDiscount);
 
         self::calculateTaxAmount($get, $set);
+        self::calculateTotalAmount($get, $set);
     }
 
     public static function calculateTaxAmount(Get $get, Set $set): void
@@ -435,16 +493,19 @@ class PurchaseOrderForm
             $get('price_after_discount')
         );
 
+
         $amount = self::parseMoney(
             $get('amount')
         );
+
+        $discountRate = (float) ($get('discount_rate') ?? 0);
 
         $taxRate = (float) ($get('tax_rate') ?? 0);
 
         // IMPORTANT:
         // kalau discount belum dihitung,
         // fallback ke amount
-        $taxBase = $priceAfterDiscount > 0
+        $taxBase = $discountRate > 0
             ? $priceAfterDiscount
             : $amount;
 
@@ -479,5 +540,37 @@ class PurchaseOrderForm
         $set('tax_amount', $taxAmount);
 
         $set('price_after_tax', $priceAfterTax);
+
+        self::calculateTotalAmount($get, $set);
+    }
+
+    public static function calculateTotalAmount(Get $get, Set $set): void
+    {
+        // 1. Ambil nilai-nilai penting
+        $amount = self::parseMoney($get('amount'));
+        $priceAfterDiscount = self::parseMoney($get('price_after_discount'));
+        $priceAfterTax = self::parseMoney($get('price_after_tax'));
+
+        /**
+         * LOGIKA BARU:
+         * Kita gunakan logika "Coalesce" (mencari nilai terakhir yang tersedia).
+         * Urutan prioritas: Price After Tax -> Price After Discount -> Amount.
+         */
+
+        // Jika price_after_tax ada nilainya (bukan 0 atau null), gunakan itu.
+        if ($priceAfterTax != 0) {
+            $total = $priceAfterTax;
+        }
+        // Jika tidak, cek apakah ada price_after_discount.
+        elseif ($priceAfterDiscount != 0) {
+            $total = $priceAfterDiscount;
+        }
+        // Jika semua kosong, gunakan amount awal.
+        else {
+            $total = $amount;
+        }
+
+        // 2. Set nilai ke field total_amount
+        $set('total_amount', round($total, 4));
     }
 }

@@ -55,4 +55,14 @@ class PurchaseOrderDetail extends Model
     {
         return $this->belongsTo(Unit::class, 'unit_id');
     }
+
+    public function detail(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseOrderHeader::class, 'po_id');
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($mode) {});
+    }
 }

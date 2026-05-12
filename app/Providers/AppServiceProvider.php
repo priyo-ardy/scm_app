@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Http\Responses\LoginResponse;
 use App\Listeners\HandleUserLoginAttempts;
+use App\Models\PurchaseOrderHeader;
+use App\Observers\PurchaseOrderObserver;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Notifications\Livewire\Notifications;
 use Filament\Support\Enums\Alignment;
@@ -39,5 +41,6 @@ class AppServiceProvider extends ServiceProvider
                 Session::put('active_company', $event->user->assign_company);
             }
         });
+        PurchaseOrderHeader::observe(PurchaseOrderObserver::class);
     }
 }
