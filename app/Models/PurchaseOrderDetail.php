@@ -13,35 +13,45 @@ class PurchaseOrderDetail extends Model
     use HasFactory, HasRoles, Blameable;
 
     protected $fillable = [
+        'id',
         'po_id',
         'order',
+        'pr_detail_id',
         'material_id',
         'unit_id',
         'qty',
         'qty_remaining',
         'unit_price',
+        'amount',
         'tax_rate',
         'tax_amount',
+        'price_after_tax',
         'discount_rate',
         'discount_amount',
+        'price_after_discount',
         'total_amount',
         'row_status',
         'is_closed',
         'delivery_date',
         'remark',
+        'created_at',
+        'updated_at',
     ];
 
     protected function casts()
     {
         return [
-            'qty' => 'decimal: 15,4',
-            'qty_remaining' => 'decimal: 5,2',
-            'unit_price' => 'decimal: 15,4',
-            'tax_rate' => 'decimal:5, 2',
-            'tax_amount' => 'decimal:15,4',
-            'discount_rate' => 'decimal:5,2',
-            'discount_amount' => 'decimal:15,4',
-            'total_amount' => 'decimal:15,4',
+            'qty' => 'double',
+            'qty_remaining' => 'double',
+            'unit_price' => 'double',
+            'amount' => 'double',
+            'tax_rate' => 'double',
+            'tax_amount' => 'double',
+            'price_after_tax' => 'double',
+            'discount_rate' => 'double',
+            'discount_amount' => 'double',
+            'price_after_discount' => 'double',
+            'total_amount' => 'double',
             'is_closed' => 'boolean'
         ];
     }

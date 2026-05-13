@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\PurchaseOrderDetail;
 use App\Models\PurchaseOrderHeader;
 use App\Models\PurchaseRequisitionDetail;
+use App\Models\PurchaseRequisitionHeader;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -43,6 +44,8 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
                 return;
             }
 
+            $affectedPrHeaderIds = [];
+
             foreach ($poDetails as $poDetail) {
                 if (empty($poDetail->pr_detail_id)) {
                     continue;
@@ -51,9 +54,35 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
                 $prDetail = PurchaseRequisitionDetail::where('id', $poDetail->pr_detail_id)->lockForUpdate()->first();
 
                 if ($prDetail) {
+                    $affectedPrHeaderIds[] = $prDetail->purchase_requisition_header_id;
+
                     $prDetail->decrement('qty_remaining', $poDetail->qty);
                     if ($prDetail->qty_remaining <= 0) {
                         $prDetail->update(['qty_ordered' => $poDetail->qty, 'item_status' => 'closed', 'is_closed' => true]);
+                    }
+                }
+            }
+
+            $uniquePrHeaderIds = array_unique($affectedPrHeaderIds);
+
+            foreach ($uniquePrHeaderIds as $prHeaderId) {
+                $prHeader = PurchaseRequisitionHeader::find($prHeaderId);
+
+                if ($prHeader) {
+                    // Cek apakah masih ada detail yang statusnya bukan 'closed'
+                    $hasOpenItems = $prHeader->details()
+                        ->where(function ($query) {
+                            $query->where('item_status', '!=', 'closed')
+                                ->orWhere('is_closed', false);
+                        })
+                        ->exists();
+
+                    // Jika TIDAK ADA lagi item yang open, maka tutup headernya
+                    if (!$hasOpenItems) {
+                        $prHeader->update([
+                            'doc_status' => 'closed',
+                            'is_closed' => true
+                        ]);
                     }
                 }
             }

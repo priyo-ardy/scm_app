@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\PurchaseOrders\Schemas;
 
+use App\Models\Company;
 use App\Models\Material;
-use App\Models\PurchaseRequisitionDetail;
 use App\Models\PurchaseRequisitionHeader;
 use App\Models\Supplier;
 use Filament\Forms\Components\DatePicker;
@@ -18,7 +18,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
-use Filament\Tables\Columns\Column;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\ValidationException;
 
@@ -37,6 +36,17 @@ class PurchaseOrderForm
                             ->preload()
                             ->native(false)
                             ->columnSpan(4)
+                            ->default(function () {
+                                $sessionCompanyId = session('active_company');
+
+                                if ($sessionCompanyId) {
+                                    return $sessionCompanyId;
+                                }
+
+                                return Company::where('is_default', 1)->first()?->id;
+                            })
+                            ->disabled(fn() => session('active_company') !== null)
+                            ->dehydrated(true)
                             ->required(),
                         TextInput::make('code')
                             ->label('Code')
@@ -48,19 +58,6 @@ class PurchaseOrderForm
                             ->required()
                             ->default(now())
                             ->columnSpan(2),
-                        Select::make('department_id')
-                            ->label('Requested Department')
-                            ->relationship('department', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->required()
-                            ->columnSpan(2),
-                        TextInput::make('doc_status')
-                            ->label('Document Status')
-                            ->columnSpan(2)
-                            ->default('draft')
-                            ->readOnly(),
                         Select::make('supplier_id')
                             ->label('Supplier')
                             ->relationship('supplier', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
@@ -92,47 +89,18 @@ class PurchaseOrderForm
                             ->native(false)
                             ->required()
                             ->columnSpan(2),
-                        TextInput::make('exchange_rate')
-                            ->label('Exchange Rate')
-                            ->numeric()
-                            ->mask(RawJs::make('$money($input)'))
-                            ->stripCharacters(',')
-                            ->live(onBlur: true)
-                            ->columnSpan(2)
-                            ->placeholder('Exchange Rate')
-                            ->required()
-                            ->default(1)
-                            ->extraInputAttributes(['style' => 'text-align: right']),
-                        Select::make('payment_term_id')
-                            ->label('Payment Term')
-                            ->relationship('paymentTerm', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->required()
-                            ->columnSpan(3),
-                        TextInput::make('printed_count')
-                            ->label('Print Count')
-                            ->default(0)
-                            ->columnSpan(1)
-                            ->readOnly()
-                            ->numeric()
-                            ->extraInputAttributes(['style' => 'text-align: right']),
                         Select::make('purchase_requisition_id')
                             ->label('Purchase Requisition')
-                            ->relationship('purchaseRequisition', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('doc_status', 'approved')->orderBy('code', 'desc'))
+                            ->relationship('purchaseRequisition', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('doc_status', 'approved')->where('is_closed', false)->orderBy('code', 'desc'))
                             ->searchable()
-                            ->preload()
+                            ->optionsLimit(5)
+                            ->preload(true)
                             ->reactive()
                             ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
                                 $currentSupplierId = $get('supplier_id');
 
                                 if (!$get('supplier_id')) {
-                                    // 2. Kosongkan kembali field PR agar user harus memilih ulang nanti
                                     $set('purchase_requisition_id', null);
-
-                                    // 3. Lempar error validasi langsung ke field ini
-                                    // Gunakan key 'data.purchase_requisition_id' karena Filament menyimpan state dalam array 'data'
                                     throw ValidationException::withMessages([
                                         'data.supplier_id' => 'Please choose supplier',
                                         'data.purchase_requisition_id' => 'Please choose supplier first.',
@@ -144,17 +112,23 @@ class PurchaseOrderForm
                                     return;
                                 }
 
-
                                 $pr = PurchaseRequisitionHeader::with('details')->find($state);
 
-                                if ($pr) {
+                                if ($pr && $pr->is_closed == false) {
                                     $filterDetails = $pr->details->filter(function ($detail) use ($currentSupplierId) {
+                                        if ($detail->item_status !== 'open') {
+                                            return false;
+                                        }
+
                                         if (!empty($detail->supplier_id)) {
                                             return $detail->supplier_id == $currentSupplierId;
                                         }
 
                                         return true;
                                     });
+
+                                    $set('department_id', $pr->department_id);
+                                    $set('reason', $pr->reason);
 
                                     $repeaterData = $filterDetails->map(function ($detail) {
                                         $material = Material::find($detail->material_id);
@@ -174,7 +148,9 @@ class PurchaseOrderForm
                                             'tax_rate' => 0,
                                             'tax_amount' => 0,
                                             'price_after_tax' => 0,
-                                            'total_amount' => 0
+                                            'total_amount' => 0,
+                                            'delivery_date' => $detail->arrival_date ?? now(),
+                                            'remark' => $detail->remark,
                                         ];
                                     })->toArray();
 
@@ -184,9 +160,55 @@ class PurchaseOrderForm
                             ->native(false)
                             ->columnSpan(3)
                             ->required(),
+                        Select::make('department_id')
+                            ->label('Requested Department')
+                            ->relationship('department', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->required()
+                            ->columnSpan(2),
+                        TextInput::make('doc_status')
+                            ->label('Document Status')
+                            ->columnSpan(2)
+                            ->disabled()
+                            ->default('draft')
+                            ->readOnly(),
+                        TextInput::make('exchange_rate')
+                            ->label('Exchange Rate')
+                            ->numeric()
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->live(onBlur: true)
+                            ->columnSpan(2)
+                            ->placeholder('Exchange Rate')
+                            ->required()
+                            ->default(1)
+                            ->extraInputAttributes(['style' => 'text-align: right']),
+                        TextInput::make('printed_count')
+                            ->label('Print Count')
+                            ->default(0)
+                            ->columnSpan(1)
+                            ->readOnly()
+                            ->numeric()
+                            ->extraInputAttributes(['style' => 'text-align: right']),
+                        Select::make('payment_term_id')
+                            ->label('Payment Term')
+                            ->relationship('paymentTerm', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->required()
+                            ->columnSpan(3),
+                        TextInput::make('reason')
+                            ->label('Purchase Reason')
+                            ->placeholder('Purchase reason')
+                            ->columnSpan(9)
+                            ->maxLength(255)
+                            ->nullable(),
                         Textarea::make('shipping_address')
                             ->label('Shipping Address')
-                            ->columnSpan(9)
+                            ->columnSpanFull()
                             ->rows(3)
                     ])
                     ->columns(12)
@@ -208,8 +230,8 @@ class PurchaseOrderForm
                         TableColumn::make('Tax Amount'),
                         TableColumn::make('Unit Price After Tax')->wrapHeader(),
                         TableColumn::make('Total Amount')->wrapHeader(),
-                        // TableColumn::make('Arrival Date'),
-                        // TableColumn::make('Remark'),
+                        TableColumn::make('Arrival Date'),
+                        TableColumn::make('Remark'),
                     ])
                     ->compact()
                     ->schema([
@@ -220,6 +242,7 @@ class PurchaseOrderForm
                             ->searchPrompt('Write material code/name')
                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
                             ->extraAttributes(['style' => '400px !important'])
+                            ->required()
                             ->live()
                             ->optionsLimit(5)
                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
@@ -238,11 +261,11 @@ class PurchaseOrderForm
                         TextInput::make('material_name')
                             ->readOnly()
                             ->placeholder('Material name')
-                            ->extraAttributes(['class' => 'break-words text-sm; min-width: 200px']),
+                            ->extraAttributes(['class' => 'break-words text-sm;']),
                         TextInput::make('specification')
                             ->readOnly()
                             ->placeholder('Specification')
-                            ->extraAttributes(['class' => 'break-words text-sm; min-width: 400px']),
+                            ->extraAttributes(['class' => 'break-words text-sm']),
                         Select::make('unit_id')
                             ->relationship('units', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('code', 'asc'))
                             ->searchable()
@@ -258,10 +281,17 @@ class PurchaseOrderForm
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 self::calculateAmount($get, $set);
                             })
+                            ->required()
+                            ->minValue(0.001)
+                            ->step(0.001)
                             ->live(onBlur: true)
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0)
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0)
                             ->stripCharacters(',')
+                            ->validationMessages([
+                                'required' => 'Qty is required',
+                                'min' => 'Qty must be greater than 0',
+                            ])
                             ->required(),
                         TextInput::make('unit_price')
                             ->numeric()
@@ -271,8 +301,15 @@ class PurchaseOrderForm
                                 self::calculateAmount($get, $set);
                             })
                             ->live(onBlur: true)
+                            ->required()
+                            ->minValue(0.001)
+                            ->step(0.001)
+                            ->validationMessages([
+                                'required' => 'Unit price is required',
+                                'min' => 'Unit price must be greater than 0',
+                            ])
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0)
+                            ->dehydrateStateUsing(fn($state) =>  self::parseMoney($state) ?? 0)
                             ->stripCharacters(',')
                             ->required(),
                         TextInput::make('amount')
@@ -281,8 +318,15 @@ class PurchaseOrderForm
                             ->readOnly()
                             ->extraInputAttributes(['style' => 'text-align: right'])
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0)
-                            ->stripCharacters(','),
+                            ->dehydrateStateUsing(fn($state) =>  self::parseMoney($state) ?? 0)
+                            ->stripCharacters(',')
+                            ->required()
+                            ->minValue(0.001)
+                            ->step(0.001)
+                            ->validationMessages([
+                                'required' => 'Amount is required',
+                                'min' => 'Amount must be greater than 0',
+                            ]),
                         TextInput::make('discount_rate')
                             ->numeric()
                             ->default(0)
@@ -293,7 +337,7 @@ class PurchaseOrderForm
                                 self::calculateDiscountAmount($get, $set);
                             })
                             ->stripCharacters(',')
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0),
+                            ->dehydrateStateUsing(fn($state) =>  self::parseMoney($state) ?? 0),
                         TextInput::make('discount_amount')
                             ->numeric()
                             ->default(0)
@@ -304,14 +348,13 @@ class PurchaseOrderForm
                             })
                             ->live(onBlur: true)
                             ->stripCharacters(',')
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0),
+                            ->dehydrateStateUsing(fn($state) =>  self::parseMoney($state) ?? 0),
                         TextInput::make('price_after_discount')
-                            ->numeric()
                             ->default(0)
                             ->readOnly()
                             ->extraInputAttributes(['style' => 'text-align: right'])
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0),
+                            ->dehydrateStateUsing(fn($state) =>  self::parseMoney($state) ?? 0),
                         TextInput::make('tax_rate')
                             ->numeric()
                             ->default(0)
@@ -322,7 +365,7 @@ class PurchaseOrderForm
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 self::calculateTaxAmount($get, $set);
                             })
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0),
+                            ->dehydrateStateUsing(fn($state) =>  self::parseMoney($state) ?? 0),
                         TextInput::make('tax_amount')
                             ->numeric()
                             ->default(0)
@@ -331,28 +374,30 @@ class PurchaseOrderForm
                             ->stripCharacters(',')
                             ->readOnly()
                             ->afterStateUpdated(function (Get $get, Set $set) {})
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0),
+                            ->dehydrateStateUsing(fn($state) =>  self::parseMoney($state) ?? 0),
                         TextInput::make('price_after_tax')
-                            ->numeric()
                             ->default(0)
                             ->readOnly()
                             ->extraInputAttributes(['style' => 'text-align: right'])
                             ->mask(RawJs::make('$money($input)'))
                             ->stripCharacters(','),
                         TextInput::make('total_amount')
-                            ->numeric()
                             ->default(0)
                             ->extraInputAttributes(['style' => 'text-align: right'])
                             ->mask(RawJs::make('$money($input)'))
-                            ->extraInputAttributes(['style' => 'text-align: right'])
-                        // ->readOnly()
-                        // ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0),
-                        // DatePicker::make('delivery_date')
-                        //     ->default(now())
-                        //     ->extraInputAttributes(['style' => 'min-width: 200px']),
-                        // TextInput::make('remark')
-                        //     ->placeholder('Write remark here ...')
-                        //     ->extraInputAttributes(['style' => 'min-width: 400px']),
+                            ->required()
+                            ->minValue(0.001)
+                            ->step(0.001)
+                            ->validationMessages([
+                                'required' => 'Total amount is required',
+                                'min' => 'Total amount must greather than 0'
+                            ])
+                            ->readOnly()
+                            ->dehydrateStateUsing(fn($state) =>  self::parseMoney($state) ?? 0),
+                        DatePicker::make('delivery_date')
+                            ->default(now()),
+                        TextInput::make('remark')
+                            ->placeholder('Write remark here ...')
                     ])
                     ->columnSpanFull()
             ]);
@@ -360,7 +405,11 @@ class PurchaseOrderForm
 
     private static function parseMoney($value): float
     {
-        return (float) str_replace([',', ' '], '', $value ?? 0);
+        if (is_null($value)) return 0;
+        if (is_numeric($value)) return (float) $value;
+
+        $clean = str_replace([',', ' '], '', $value);
+        return (float) $clean;
     }
 
     public static function calculateAmount(Get $get, Set $set): void
@@ -370,7 +419,6 @@ class PurchaseOrderForm
         $qty = self::parseMoney($get('qty'));
         $unitPrice = self::parseMoney($get('unit_price'));
 
-        // no material
         if (blank($material)) {
             $set('amount', 0);
             $set('price_after_discount', 0);
@@ -381,7 +429,6 @@ class PurchaseOrderForm
             return;
         }
 
-        // invalid amount
         if ($qty <= 0 || $unitPrice <= 0) {
             $set('amount', 0);
             $set('price_after_discount', 0);
@@ -396,7 +443,6 @@ class PurchaseOrderForm
 
         $set('amount', $amount);
 
-        // downstream recalc
         self::calculateDiscountAmount($get, $set);
         self::calculateTotalAmount($get, $set);
     }
@@ -429,7 +475,6 @@ class PurchaseOrderForm
             4
         );
 
-        // anti loop
         if (
             round(self::parseMoney($get('discount_amount')), 4)
             !== $discountAmount
@@ -460,7 +505,6 @@ class PurchaseOrderForm
             return;
         }
 
-        // clamp biar gak lebih dari amount
         $discountAmount = min($discountAmount, $amount);
 
         $rate = round(
@@ -473,7 +517,6 @@ class PurchaseOrderForm
             4
         );
 
-        // anti loop
         if (
             round((float) $get('discount_rate'), 2)
             !== $rate
@@ -493,7 +536,6 @@ class PurchaseOrderForm
             $get('price_after_discount')
         );
 
-
         $amount = self::parseMoney(
             $get('amount')
         );
@@ -502,9 +544,6 @@ class PurchaseOrderForm
 
         $taxRate = (float) ($get('tax_rate') ?? 0);
 
-        // IMPORTANT:
-        // kalau discount belum dihitung,
-        // fallback ke amount
         $taxBase = $discountRate > 0
             ? $priceAfterDiscount
             : $amount;
@@ -516,10 +555,8 @@ class PurchaseOrderForm
             return;
         }
 
-        // clamp
         $taxRate = max($taxRate, 0);
 
-        // no tax
         if ($taxRate <= 0) {
             $set('tax_amount', 0);
             $set('price_after_tax', round($taxBase, 4));
@@ -546,31 +583,18 @@ class PurchaseOrderForm
 
     public static function calculateTotalAmount(Get $get, Set $set): void
     {
-        // 1. Ambil nilai-nilai penting
         $amount = self::parseMoney($get('amount'));
         $priceAfterDiscount = self::parseMoney($get('price_after_discount'));
         $priceAfterTax = self::parseMoney($get('price_after_tax'));
 
-        /**
-         * LOGIKA BARU:
-         * Kita gunakan logika "Coalesce" (mencari nilai terakhir yang tersedia).
-         * Urutan prioritas: Price After Tax -> Price After Discount -> Amount.
-         */
-
-        // Jika price_after_tax ada nilainya (bukan 0 atau null), gunakan itu.
         if ($priceAfterTax != 0) {
             $total = $priceAfterTax;
-        }
-        // Jika tidak, cek apakah ada price_after_discount.
-        elseif ($priceAfterDiscount != 0) {
+        } elseif ($priceAfterDiscount != 0) {
             $total = $priceAfterDiscount;
-        }
-        // Jika semua kosong, gunakan amount awal.
-        else {
+        } else {
             $total = $amount;
         }
 
-        // 2. Set nilai ke field total_amount
         $set('total_amount', round($total, 4));
     }
 }

@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Blameable;
 use App\HasCodeGenerator;
 use App\Jobs\InitializeApprovalJob;
+use App\Jobs\UpdateAmountPoHeader;
+use App\Jobs\UpdatePurchaseRequisitionStatusJob;
 use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -48,9 +50,9 @@ class PurchaseOrderHeader extends Model
     protected function casts()
     {
         return [
-            'total_amount' => 'decimal: 15,4',
-            'tax_amount' => 'decimal: 5,2',
-            'exchange_rate' => 'decimal: 15,4',
+            'total_amount' => 'double',
+            'tax_amount' => 'double',
+            'exchange_rate' => 'double',
             'is_printed' => 'boolean',
             'printed_count' => 'integer',
             'doc_date' => 'date',
@@ -92,6 +94,28 @@ class PurchaseOrderHeader extends Model
         return $this->hasMany(PurchaseOrderDetail::class, 'po_id');
     }
 
+    public static function calculateTotals(array $details): array
+    {
+        $totalAmount = 0;
+        $totalTax = 0;
+
+        foreach ($details as $detail) {
+            $amount = $detail['total_amount'] ?? 0;
+            $tax = $detail['tax_amount'] ?? 0;
+
+            $cleanAmount = is_string($amount) ? str_replace([',', ' '], '', $amount) : $amount;
+            $cleanTax = is_string($tax) ? str_replace([',', ' '], '', $tax) : $tax;
+
+            $totalAmount += (float) $cleanAmount;
+            $totalTax += (float) $cleanTax;
+        }
+
+        return [
+            'total_amount' => round($totalAmount, 4),
+            'tax_amount' => round($totalTax, 4),
+        ];
+    }
+
     protected static function booted()
     {
         static::addGlobalScope(CompanyScope::class);
@@ -107,8 +131,12 @@ class PurchaseOrderHeader extends Model
             );
         });
 
-        // static::created(function ($model) {
-        //     InitializeApprovalJob::dispatch($model, 'purchase_order');
-        // });
+        static::created(function ($model) {
+            // InitializeApprovalJob::dispatch($model, 'purchase_order');
+            $model->afterCommit(function () use ($model) {
+                UpdateAmountPoHeader::dispatch($model);
+                UpdatePurchaseRequisitionStatusJob::dispatch($model);
+            });
+        });
     }
 }

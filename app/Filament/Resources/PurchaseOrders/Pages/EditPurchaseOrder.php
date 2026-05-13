@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PurchaseOrders\Pages;
 
 use App\Filament\Resources\PurchaseOrders\PurchaseOrderResource;
+use App\Models\PurchaseOrderHeader;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -21,5 +22,17 @@ class EditPurchaseOrder extends EditRecord
             ForceDeleteAction::make(),
             RestoreAction::make(),
         ];
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['doc_status'] = 'approved';
+
+        $totals = PurchaseOrderHeader::calculateTotals($data['details'] ?? []);
+
+        $data['total_amount'] = $totals['total_amount'];
+        $data['tax_amount'] = $totals['tax_amount'];
+
+        return $data;
     }
 }
