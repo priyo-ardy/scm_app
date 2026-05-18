@@ -184,7 +184,7 @@
         <!-- Footer / Approval Section -->
         <table style="border-top: none;">
             <tr style="height: 60px; vertical-align: top;">
-                <td valign="top" style="border: none; border-left: 1px solid #000; border-bottom:1px solid #000; border-top:1px solid #000;" width="29%">
+                <td valign="top" width="33%">
                     Prepared By:
                     <br>
                     <br>
@@ -193,9 +193,28 @@
                     <br>
                     <br>
                     {{ $record->requestor?->name }}
+                    Date:
                 </td>
-                <td valign="top" style="border: none; border-bottom:1px solid #000; border-top:1px solid #000;" width="32%">Checked By:</td>
-                <td valign="top" style="border: none; border-bottom:1px solid #000; border-right:1px solid #000; border-top:1px solid #000;" width="34%">Approved By:</td>
+                <td valign="top" width="34%">Checked By:
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    Date:
+                </td>
+                <td valign="top" width="33%">Approved By:
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    Date:
+                </td>
             </tr>
         </table>
     </div>
