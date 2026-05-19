@@ -10,7 +10,6 @@ use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Icons\Heroicon;
@@ -31,7 +30,7 @@ class ViewPurchaseOrder extends ViewRecord
             EditAction::make()
                 ->icon(Heroicon::OutlinedPencilSquare)
                 ->tooltip('Edit')
-                ->visible(fn($record) => $record->doc_status !== 'approved'),
+                ->visible(fn ($record) => $record->doc_status !== 'approved'),
             Action::make('add')
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
@@ -47,25 +46,25 @@ class ViewPurchaseOrder extends ViewRecord
                 ->modalHeading('Delete Confirmation')
                 ->modalDescription('Are you sure you want to delete this record? This action cannot be undone.')
                 ->modalSubmitActionLabel('Delete')
-                ->visible(fn($record) => $record->doc_status !== 'approved'),
+                ->visible(fn ($record) => $record->doc_status !== 'approved'),
             Action::make('print')
                 ->label('Print')
                 ->icon(Heroicon::OutlinedPrinter)
                 ->tooltip('Print')
                 ->color('primary')
-                ->url(fn($record) => route('print.po', $record))
+                ->url(fn ($record) => route('print.po', $record))
                 ->openUrlInNewTab()
-                ->visible(fn($record) => $record->doc_status == 'approved'),
+                ->visible(fn ($record) => $record->doc_status == 'approved'),
             Action::make('generate')
                 ->label('Generate')
                 ->tooltip('Generate')
                 ->icon(Heroicon::OutlinedCog8Tooth)
                 ->color('primary')
-                ->visible(fn($record) => $record->doc_status == 'approved'),
+                ->visible(fn ($record) => $record->doc_status == 'approved'),
             Action::make('de-approve')
                 ->label('De-Approve')
                 ->tooltip('De-Approve')
-                ->visible(fn($record) => $record->doc_status == 'approved')
+                ->visible(fn ($record) => $record->doc_status == 'approved')
                 ->color('gray')
                 ->icon(Heroicon::OutlinedArrowUturnDown)
                 ->requiresConfirmation()
@@ -81,7 +80,7 @@ class ViewPurchaseOrder extends ViewRecord
             Action::make('approve')
                 ->label('Approve')
                 ->tooltip('Approve')
-                ->visible(fn($record) => $record->doc_status == 'saved')
+                ->visible(fn ($record) => $record->doc_status == 'saved')
                 ->color('gray')
                 ->icon(Heroicon::OutlinedCheck)
                 ->action(function ($record) {
@@ -124,7 +123,7 @@ class ViewPurchaseOrder extends ViewRecord
                         return $prevRecord
                             ? PurchaseOrderResource::getUrl('edit', ['record' => $prevRecord]) : null;
                     })
-                    ->hidden(fn() => ! PurchaseOrderHeader::where('code', '<', $this->record->code, 'and')->exists()),
+                    ->hidden(fn () => ! PurchaseOrderHeader::where('code', '<', $this->record->code, 'and')->exists()),
                 Action::make('next')
                     ->label('Next Page')
                     ->icon(Heroicon::OutlinedChevronRight)
@@ -136,7 +135,7 @@ class ViewPurchaseOrder extends ViewRecord
                             ? PurchaseOrderResource::getUrl('edit', ['record' => $nextRecord])
                             : null;
                     })
-                    ->hidden(fn() => ! PurchaseOrderHeader::where('code', '>', $this->record->code, 'and')->exists()),
+                    ->hidden(fn () => ! PurchaseOrderHeader::where('code', '>', $this->record->code, 'and')->exists()),
             ])
                 ->label('More')
                 ->icon(Heroicon::OutlinedEllipsisVertical)

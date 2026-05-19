@@ -30,15 +30,15 @@ class PurchaseOrdersTable
                     ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->formatStateUsing(fn($state) => date("d/M/Y", strtotime($state))),
+                    ->formatStateUsing(fn ($state) => date('d/M/Y', strtotime($state))),
                 TextColumn::make('doc_status')
                     ->badge()
                     ->label('Document Status')
                     ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->formatStateUsing(fn($state) => ucwords($state))
-                    ->color(fn($record) => match ($record->doc_status) {
+                    ->formatStateUsing(fn ($state) => ucwords($state))
+                    ->color(fn ($record) => match ($record->doc_status) {
                         'saved' => 'gray',
                         'approved' => 'success',
                         'hold' => 'warning',
@@ -50,8 +50,8 @@ class PurchaseOrdersTable
                 TextColumn::make('is_closed')
                     ->badge()
                     ->label('Close Status')
-                    ->formatStateUsing(fn($state) => $state ? 'Closed' : 'Open')
-                    ->color(fn($record) => $record->is_closed ? 'primary' : 'success')
+                    ->formatStateUsing(fn ($state) => $state ? 'Closed' : 'Open')
+                    ->color(fn ($record) => $record->is_closed ? 'primary' : 'success')
                     ->alignCenter()
                     ->toggleable(),
                 TextColumn::make('purchaseRequisition.code')
@@ -79,7 +79,7 @@ class PurchaseOrdersTable
                     ->label('Exchange Rate')
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state) => number_format($state, 4, ',', '.'))
+                    ->formatStateUsing(fn ($state) => number_format($state, 4, ',', '.'))
                     ->toggleable()
                     ->alignRight(),
                 TextColumn::make('paymentTerm.name')

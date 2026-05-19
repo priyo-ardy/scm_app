@@ -31,7 +31,7 @@ class EditPurchaseOrder extends EditRecord
             Action::make('approve')
                 ->label('Approve')
                 ->tooltip('Approve')
-                ->visible(fn($record) => $record->doc_status == 'saved')
+                ->visible(fn ($record) => $record->doc_status == 'saved')
                 ->color('gray')
                 ->icon(Heroicon::OutlinedCheck)
                 ->action(function ($record) {
@@ -42,7 +42,7 @@ class EditPurchaseOrder extends EditRecord
                         ->body('This document successfully approve')
                         ->success()
                         ->send();
-                })->visible(fn($record) => $record->doc_status == 'saved'),
+                })->visible(fn ($record) => $record->doc_status == 'saved'),
             DeleteAction::make()
                 ->icon(Heroicon::OutlinedTrash),
             ActionGroup::make([
@@ -56,7 +56,7 @@ class EditPurchaseOrder extends EditRecord
                         return $prevRecord
                             ? PurchaseOrderResource::getUrl('edit', ['record' => $prevRecord]) : null;
                     })
-                    ->hidden(fn() => ! PurchaseOrderHeader::where('code', '<', $this->record->code, 'and')->exists()),
+                    ->hidden(fn () => ! PurchaseOrderHeader::where('code', '<', $this->record->code, 'and')->exists()),
                 Action::make('next')
                     ->label('Next Page')
                     ->icon(Heroicon::OutlinedChevronRight)
@@ -68,7 +68,7 @@ class EditPurchaseOrder extends EditRecord
                             ? PurchaseOrderResource::getUrl('edit', ['record' => $nextRecord])
                             : null;
                     })
-                    ->hidden(fn() => ! PurchaseOrderHeader::where('code', '>', $this->record->code, 'and')->exists()),
+                    ->hidden(fn () => ! PurchaseOrderHeader::where('code', '>', $this->record->code, 'and')->exists()),
             ])
                 ->label('More')
                 ->icon(Heroicon::OutlinedEllipsisVertical)

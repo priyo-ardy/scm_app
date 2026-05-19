@@ -26,13 +26,16 @@ class PurchaseOrderResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'Purchase Order';
+
     protected static ?string $navigationLabel = 'Purchase Order';
+
     protected static string|UnitEnum|null $navigationGroup = 'Transaction';
+
     protected static ?int $navigationSort = 2;
+
     protected static ?string $modelLabel = 'Purchase Order';
+
     protected static ?string $pluralLabel = 'Purchase Orders';
-
-
 
     public static function form(Schema $schema): Schema
     {
