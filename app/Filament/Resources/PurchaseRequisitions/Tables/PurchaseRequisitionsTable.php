@@ -11,7 +11,6 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class PurchaseRequisitionsTable
 {
@@ -43,15 +42,15 @@ class PurchaseRequisitionsTable
                     ->toggleable(),
                 TextColumn::make('doc_status')
                     ->label('Document Status')
-                    ->formatStateUsing(fn($state) => ucwords(strtolower(str_replace('_', '', $state))))
+                    ->formatStateUsing(fn ($state) => ucwords(strtolower(str_replace('_', '', $state))))
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('priority')
                     ->label('Priority')
-                    ->formatStateUsing(fn($state) => ucwords(strtolower(str_replace('_', ' ', $state))))
+                    ->formatStateUsing(fn ($state) => ucwords(strtolower(str_replace('_', ' ', $state))))
                     ->badge()
                     ->sortable()
-                    ->color(fn($record) => match ($record->priority) {
+                    ->color(fn ($record) => match ($record->priority) {
                         'low' => 'gray',
                         'normal' => 'success',
                         'high' => 'warning',
@@ -86,7 +85,7 @@ class PurchaseRequisitionsTable
                     ->alignCenter(),
                 TextColumn::make('details.qty')
                     ->label('UoM')
-                    ->formatStateUsing(fn($state) => number_format($state, 4, ',', '.'))
+                    ->formatStateUsing(fn ($state) => number_format($state, 4, ',', '.'))
                     ->listWithLineBreaks()
                     ->sortable()
                     ->toggleable()
@@ -106,7 +105,7 @@ class PurchaseRequisitionsTable
                     ->label('Remark')
                     ->sortable()
                     ->toggleable()
-                    ->listWithLineBreaks()
+                    ->listWithLineBreaks(),
             ])
             ->filters([
                 TrashedFilter::make(),

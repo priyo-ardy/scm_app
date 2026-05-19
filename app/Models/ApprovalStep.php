@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class ApprovalStep extends Model
 {
-    use HasFactory, HasRoles, Blameable;
+    use Blameable, HasFactory, HasRoles;
 
     protected $fillable = [
         'approval_flow_id',

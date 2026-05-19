@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Models\ApprovalFlow;
-use App\Models\ApprovalLog;
 
 trait HasApproval
 {

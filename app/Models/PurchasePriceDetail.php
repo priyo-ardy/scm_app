@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Blameable;
 use App\Jobs\InitializeApprovalJob;
-use App\Services\ApprovalService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class PurchasePriceDetail extends Model
 {
-    use HasFactory, HasRoles, SoftDeletes, Blameable;
+    use Blameable, HasFactory, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'header_id',
@@ -29,22 +28,22 @@ class PurchasePriceDetail extends Model
         'is_active',
         'remark',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     protected function casts(): array
     {
         return [
-            'from_qty'              => 'decimal:4',
-            'to_qty'                => 'decimal:4',
-            'unit_price'            => 'decimal:4',
-            'unit_price_after_tax'  => 'decimal:4',
-            'tax_rate'              => 'decimal:2',
-            'effective_date'        => 'date',
-            'expired_date'          => 'date',
-            'is_active'             => 'boolean',
-            'updated_at'            => 'datetime:Y-m-d H:i:s',
-            'deleted_at'            => 'datetime',
+            'from_qty' => 'decimal:4',
+            'to_qty' => 'decimal:4',
+            'unit_price' => 'decimal:4',
+            'unit_price_after_tax' => 'decimal:4',
+            'tax_rate' => 'decimal:2',
+            'effective_date' => 'date',
+            'expired_date' => 'date',
+            'is_active' => 'boolean',
+            'updated_at' => 'datetime:Y-m-d H:i:s',
+            'deleted_at' => 'datetime',
         ];
     }
 

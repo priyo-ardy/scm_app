@@ -3,11 +3,25 @@
 namespace App\Filament\Resources\PurchaseOrders\Pages;
 
 use App\Filament\Resources\PurchaseOrders\PurchaseOrderResource;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Icons\Heroicon;
 
 class CreatePurchaseOrder extends CreateRecord
 {
     protected static string $resource = PurchaseOrderResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('back')
+                ->label('Back to List')
+                ->icon(Heroicon::OutlinedArrowLeft)
+                ->tooltip('Back to List')
+                ->url(static::getResource()::getUrl('index'))
+                ->color('gray'),
+        ];
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

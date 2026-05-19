@@ -74,9 +74,9 @@ class UsersForm
                             ->label('Password')
                             ->password()
                             ->revealable()
-                            ->required(fn($context) => $context === 'create')
-                            ->dehydrated(fn($state) => filled($state))
-                            ->mutateDehydratedStateUsing(fn($state) => Hash::make($state))
+                            ->required(fn ($context) => $context === 'create')
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->mutateDehydratedStateUsing(fn ($state) => Hash::make($state))
                             ->columnSpanFull(),
                         Select::make('role')
                             ->label('User Role')
@@ -91,11 +91,11 @@ class UsersForm
                             ->searchable()
                             ->native(false)
                             ->live()
-                            ->afterStateUpdated(fn(Set $set) => $set('section_id', null))
+                            ->afterStateUpdated(fn (Set $set) => $set('section_id', null))
                             ->preload(),
                         Select::make('section_id')
                             ->label('Section')
-                            ->relationship('sectionList', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $query->where('department_id', $get('department_id')))
+                            ->relationship('sectionList', 'name', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('department_id', $get('department_id')))
                             ->searchable()
                             ->preload()
                             ->native(false),

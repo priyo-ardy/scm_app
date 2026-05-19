@@ -14,14 +14,12 @@ use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\QueryBuilder\Constraints\SelectConstraint;
 use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
@@ -56,8 +54,8 @@ class DepartmentsTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable')
-                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn ($state) => $state ? 'Enable' : 'Disable')
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('cost_center_code')
@@ -101,28 +99,28 @@ class DepartmentsTable
                             ->label('Cost Center Code'),
                         SelectConstraint::make('company_id')
                             ->label('Company')
-                            ->options(fn() => Company::pluck('name', 'id'))
+                            ->options(fn () => Company::pluck('name', 'id'))
                             ->searchable()
                             ->native(false),
                         SelectConstraint::make('managet_id')
                             ->label('Department Manager')
-                            ->options(fn() => User::orderBy('name', 'asc')->pluck('name', 'id'))
+                            ->options(fn () => User::orderBy('name', 'asc')->pluck('name', 'id'))
                             ->searchable()
                             ->native(false),
                         SelectConstraint::make('is_active')
                             ->label('Status')
                             ->options([
                                 '0' => 'Disable',
-                                '1' => 'Enable'
+                                '1' => 'Enable',
                             ])
                             ->searchable()
-                            ->native(false)
-                    ])
+                            ->native(false),
+                    ]),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->persistFiltersInSession()
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel)
@@ -146,29 +144,29 @@ class DepartmentsTable
                                         ->label('Field to update')
                                         ->options([
                                             'manager_id' => 'Department Manager',
-                                            'is_active' => 'Status'
+                                            'is_active' => 'Status',
                                         ])
                                         ->searchable()
                                         ->live()
                                         ->columnSpan(1),
                                     Select::make('value_manager_id')
                                         ->label('Department Manager')
-                                        ->options(fn() => User::orderBy('name', 'asc')->pluck('name', 'id'))
+                                        ->options(fn () => User::orderBy('name', 'asc')->pluck('name', 'id'))
                                         ->searchable()
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'manager_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'manager_id')
                                         ->columnSpan(2),
                                     Select::make('value_is_active')
                                         ->label('Status')
                                         ->options([
                                             '0' => 'Disable',
-                                            '1' => "Enable"
+                                            '1' => 'Enable',
                                         ])
                                         ->searchable()
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'is_active')
                                         ->columnSpan(2),
-                                ])
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -182,19 +180,19 @@ class DepartmentsTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
-                        })
+                        }),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
-                    ->exporter(DepartmentExporter::class)
+                    ->exporter(DepartmentExporter::class),
             ]);
     }
 }

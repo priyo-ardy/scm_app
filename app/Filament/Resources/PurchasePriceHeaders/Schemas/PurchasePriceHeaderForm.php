@@ -43,7 +43,7 @@ class PurchasePriceHeaderForm
                                 }
 
                                 if ($context === 'edit' && $livewire instanceof EditPurchasePriceHeader) {
-                                    return !$livewire->isEditingEnabled;
+                                    return ! $livewire->isEditingEnabled;
                                 }
                             })
                             ->dehydrated(true)
@@ -63,8 +63,9 @@ class PurchasePriceHeaderForm
                             ->autofocus()
                             ->disabled(function ($livewire) {
                                 if ($livewire instanceof EditPurchasePriceHeader) {
-                                    return !$livewire->isEditingEnabled;
+                                    return ! $livewire->isEditingEnabled;
                                 }
+
                                 return false;
                             }),
                         Select::make('supplier_id')
@@ -75,7 +76,9 @@ class PurchasePriceHeaderForm
                             ->preload()
                             ->live() // 1. Aktifkan mode real-time
                             ->afterStateUpdated(function ($state, Set $set, ?PurchasePriceHeader $record) {
-                                if (! $state) return;
+                                if (! $state) {
+                                    return;
+                                }
 
                                 $exists = PurchasePriceHeader::where('supplier_id', $state)
                                     ->when($record, function ($query) use ($record) {
@@ -97,14 +100,15 @@ class PurchasePriceHeaderForm
                             })
                             ->unique(ignoreRecord: true)
                             ->validationMessages([
-                                'unique' => 'This supplier already registered to purchase price data, please find the data then edit'
+                                'unique' => 'This supplier already registered to purchase price data, please find the data then edit',
                             ])
                             ->native(false)
                             ->columnSpan(4)
                             ->disabled(function ($livewire) {
                                 if ($livewire instanceof EditPurchasePriceHeader) {
-                                    return !$livewire->isEditingEnabled;
+                                    return ! $livewire->isEditingEnabled;
                                 }
+
                                 return false;
                             }),
                         Select::make('currency_id')
@@ -117,8 +121,9 @@ class PurchasePriceHeaderForm
                             ->columnSpan(2)
                             ->disabled(function ($livewire) {
                                 if ($livewire instanceof EditPurchasePriceHeader) {
-                                    return !$livewire->isEditingEnabled;
+                                    return ! $livewire->isEditingEnabled;
                                 }
+
                                 return false;
                             }),
                         Textarea::make('remark')
@@ -127,13 +132,14 @@ class PurchasePriceHeaderForm
                             ->columnSpan(10)
                             ->disabled(function ($livewire) {
                                 if ($livewire instanceof EditPurchasePriceHeader) {
-                                    return !$livewire->isEditingEnabled;
+                                    return ! $livewire->isEditingEnabled;
                                 }
+
                                 return false;
-                            })
+                            }),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

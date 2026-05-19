@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginResponse implements Responsable
 {
-    public function toResponse($request): RedirectResponse | Redirector
+    public function toResponse($request): RedirectResponse|Redirector
     {
         $user = Auth::user();
 
         session([
             'department_id' => $user->department_id,
-            'section_id' => $user->section_id
+            'section_id' => $user->section_id,
         ]);
 
         return redirect()->intended(filament()->getUrl());

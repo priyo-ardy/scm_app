@@ -19,7 +19,7 @@ class SectionForm
                     ->schema([
                         Select::make('company_id')
                             ->label('Company')
-                            ->relationship('companyList', 'name', modifyQueryUsing: fn($query) => $query->orderBy('name', 'asc'))
+                            ->relationship('companyList', 'name', modifyQueryUsing: fn ($query) => $query->orderBy('name', 'asc'))
                             ->searchable(['slug', 'name'])
                             ->preload()
                             ->required()
@@ -34,12 +34,12 @@ class SectionForm
                                 // 3. Jika session null (Super Admin), ambil company default dari DB
                                 return Company::where('is_default', '=', true, 'and')->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(fn () => session('active_company') !== null)
                             ->dehydrated(true)
                             ->columnSpan(4),
                         Select::make('department_id')
                             ->label('Department')
-                            ->relationship('dept', 'name', modifyQueryUsing: fn($query) => $query->where('is_active', true)->orderBy('name', 'asc'))
+                            ->relationship('dept', 'name', modifyQueryUsing: fn ($query) => $query->where('is_active', true)->orderBy('name', 'asc'))
                             ->searchable()
                             ->preload()
                             ->native(false)
@@ -59,7 +59,7 @@ class SectionForm
                             ->autocomplete(false),
                         Select::make('section_head_id ')
                             ->label('Section Head')
-                            ->relationship('sectionHead', 'name', modifyQueryUsing: fn($query) => $query->where('is_active', true)->orderBy('name'))
+                            ->relationship('sectionHead', 'name', modifyQueryUsing: fn ($query) => $query->where('is_active', true)->orderBy('name'))
                             ->searchable()
                             ->preload()
                             ->native(false)
@@ -69,10 +69,10 @@ class SectionForm
                             ->label('Description')
                             ->placeholder('Write additional information here ...')
                             ->rows(3)
-                            ->columnSpan(9)
+                            ->columnSpan(9),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

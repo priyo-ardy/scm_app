@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\PurchaseOrderDetail;
 use App\Models\PurchaseOrderHeader;
 use App\Models\PurchaseRequisitionDetail;
 use App\Models\PurchaseRequisitionHeader;
@@ -19,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 
 class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
 {
-    use Queueable, Dispatchable, InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
 
@@ -33,7 +32,7 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
      */
     public function handle(): void
     {
-        if (!$this->purchaseOrder->exists) {
+        if (! $this->purchaseOrder->exists) {
             return;
         }
 
@@ -78,10 +77,10 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
                         ->exists();
 
                     // Jika TIDAK ADA lagi item yang open, maka tutup headernya
-                    if (!$hasOpenItems) {
+                    if (! $hasOpenItems) {
                         $prHeader->update([
                             'doc_status' => 'closed',
-                            'is_closed' => true
+                            'is_closed' => true,
                         ]);
                     }
                 }
@@ -104,8 +103,8 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
                 ->actions([
                     Action::make('view')
                         ->label('See Purchase Order')
-                        ->url(fn() => "/purchase-orders/{$this->purchaseOrder->id}/view")
-                        ->button()
+                        ->url(fn () => "/purchase-orders/{$this->purchaseOrder->id}/view")
+                        ->button(),
                 ])
                 ->sendToDatabase($recipient);
         }

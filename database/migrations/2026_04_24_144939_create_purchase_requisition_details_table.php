@@ -27,8 +27,8 @@ return new class extends Migration
             $table->foreignId('supplier_id')
                 ->nullable()
                 ->constrained('suppliers')
-                ->restrictOnDelete(); //Untuk default supplier jika ada;
-            $table->date('arrival_date')->index(); //User dapat menentukan kapan barang datang
+                ->restrictOnDelete(); // Untuk default supplier jika ada;
+            $table->date('arrival_date')->index(); // User dapat menentukan kapan barang datang
             $table->enum('item_status', ['open', 'partially_ordered', 'closed', 'rejected'])->default('open');
             $table->text('remark')->nullable();
             $table->timestamps();

@@ -20,7 +20,7 @@ class CreatePurchaseRequisition extends CreateRecord
                 ->icon(Heroicon::OutlinedArrowLeftCircle)
                 ->color('gray')
                 ->tooltip('Back to list')
-                ->url(static::getResource()::getUrl('index'))
+                ->url(static::getResource()::getUrl('index')),
         ];
     }
 

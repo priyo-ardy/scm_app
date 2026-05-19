@@ -15,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class PurchasePriceHeader extends Model
 {
-    use HasFactory, HasPermissions, HasRoles, HasCodeGenerator, SoftDeletes, Blameable;
+    use Blameable, HasCodeGenerator, HasFactory, HasPermissions, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'company_id',
@@ -29,7 +29,7 @@ class PurchasePriceHeader extends Model
         'doc_status',
         'remark',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     protected function casts(): array

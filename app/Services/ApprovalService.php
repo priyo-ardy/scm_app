@@ -3,13 +3,12 @@
 namespace App\Services;
 
 use App\Models\ApprovalFlow;
-use App\Models\ApprovalStep;
 use App\Models\ApprovalLog;
+use App\Models\ApprovalStep;
 use App\Models\Department;
 use App\Models\Section;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Session;
 
 class ApprovalService
 {
@@ -21,7 +20,7 @@ class ApprovalService
 
         $documentName = ucwords(str_replace('_', ' ', strtolower($flowCode)));
         $flow = ApprovalFlow::where('code', '=', $flowCode, 'and')->first();
-        if (!$flow) {
+        if (! $flow) {
             throw new \Exception("Approval flow for document {$documentName} is not found, please contact your administrator");
         }
 
@@ -29,7 +28,7 @@ class ApprovalService
             ->orderBy('order', 'asc')
             ->get();
 
-        if (!$steps) {
+        if (! $steps) {
             throw new \Exception("Approval step for {$documentName} is not found");
         }
 
@@ -72,7 +71,7 @@ class ApprovalService
                     'current_step_order' => $row->order,
                     'current_approver_id' => $approverId,
                     'status' => 'pending',
-                    'processed_at' => null
+                    'processed_at' => null,
                 ]);
             }
         }

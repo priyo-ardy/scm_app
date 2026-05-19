@@ -114,7 +114,7 @@ class MaterialsTable
                     ->toggleable(),
                 TextColumn::make('properties')
                     ->label('Material Properties')
-                    ->formatStateUsing(fn($state) => ucwords(str_replace('_', ' ', $state)))
+                    ->formatStateUsing(fn ($state) => ucwords(str_replace('_', ' ', $state)))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -164,8 +164,8 @@ class MaterialsTable
                     ->label('Enable Min. Stock')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No')
                     ->toggleable(),
                 TextColumn::make('min_stock')
                     ->numeric()
@@ -176,8 +176,8 @@ class MaterialsTable
                     ->label('Enable Safety Stock')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No')
                     ->toggleable(),
                 TextColumn::make('safety_stock')
                     ->numeric()
@@ -188,8 +188,8 @@ class MaterialsTable
                     ->label('Enable Max. Stock')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No')
                     ->toggleable(),
                 TextColumn::make('max_stock')
                     ->numeric()
@@ -211,8 +211,8 @@ class MaterialsTable
                     ->label('Hazardous Status')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No')
                     ->toggleable(),
                 TextColumn::make('storage_location_id')
                     ->label('Default Storage Location')
@@ -223,8 +223,8 @@ class MaterialsTable
                     ->label('Enable Expired Date')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No')
                     ->toggleable(),
                 TextColumn::make('expiry_days')
                     ->label('Expaired Days')
@@ -240,8 +240,8 @@ class MaterialsTable
                     ->toggleable(),
                 TextColumn::make('status')
                     ->label('Status')
-                    ->formatStateUsing(fn($state) => ucwords(str_replace('_', ' ', $state)))
-                    ->color(fn($state) => match ($state) {
+                    ->formatStateUsing(fn ($state) => ucwords(str_replace('_', ' ', $state)))
+                    ->color(fn ($state) => match ($state) {
                         'draft' => 'gray',
                         'active' => 'success',
                         'phase_out' => 'warning',
@@ -265,7 +265,7 @@ class MaterialsTable
                 TextColumn::make('regrind_method')
                     ->label('Regrid Method')
                     ->badge()
-                    ->formatStateUsing(fn($state) => ucwords(str_replace('_', ' ', $state)))
+                    ->formatStateUsing(fn ($state) => ucwords(str_replace('_', ' ', $state)))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -307,8 +307,8 @@ class MaterialsTable
                     ->label('Required Inspection Status')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Yes' : 'No')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No')
                     ->toggleable(),
                 TextColumn::make('last_purchase_price')
                     ->label('Last Purchase Price')
@@ -525,7 +525,7 @@ class MaterialsTable
                                     // Tipe TEXTAREA (Specification)
                                     Textarea::make('value_textarea')
                                         ->label('New Specification')
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'specification')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'specification')
                                         ->required()
                                         ->columnSpan(2),
 
@@ -533,7 +533,7 @@ class MaterialsTable
                                     TextInput::make('value_numeric')
                                         ->label('New Value (Integer)')
                                         ->numeric()
-                                        ->visible(fn(Get $get) => in_array($get('column_to_update'), ['spq', 'qty_bag', 'shift_capacity', 'cavity']))
+                                        ->visible(fn (Get $get) => in_array($get('column_to_update'), ['spq', 'qty_bag', 'shift_capacity', 'cavity']))
                                         ->required()
                                         ->columnSpan(2),
 
@@ -542,7 +542,7 @@ class MaterialsTable
                                         ->label('New Value (Decimal)')
                                         ->numeric()
                                         ->step('0.00001')
-                                        ->visible(fn(Get $get) => in_array($get('column_to_update'), ['net_weight', 'gross_weight', 'cycle_time', 'carton_length', 'carton_width', 'carton_height']))
+                                        ->visible(fn (Get $get) => in_array($get('column_to_update'), ['net_weight', 'gross_weight', 'cycle_time', 'carton_length', 'carton_width', 'carton_height']))
                                         ->required()
                                         ->columnSpan(2),
 
@@ -550,14 +550,14 @@ class MaterialsTable
                                     Select::make('value_relation_workshop')
                                         ->label('Select New Workshop')
                                         ->relationship('workshopList', 'name')
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'workshop_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'workshop_id')
                                         ->required()
                                         ->columnSpan(2),
 
                                     Select::make('value_relation_supplier')
                                         ->label('Select New Supplier')
                                         ->relationship('supplierList', 'name')
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'supplier_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'supplier_id')
                                         ->required()
                                         ->columnSpan(2),
 
@@ -565,7 +565,7 @@ class MaterialsTable
                                     Select::make('value_status')
                                         ->label('Select New Status')
                                         ->options(['draft' => 'Draft', 'active' => 'Active', 'phase_out' => 'Phase out', 'obsolete' => 'Obsolete'])
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'status')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'status')
                                         ->required()
                                         ->columnSpan(2),
 
@@ -573,7 +573,7 @@ class MaterialsTable
                                     Select::make('value_regrind')
                                         ->label('Select New Regrind Method')
                                         ->options(['inline' => 'Inline', 'offline' => 'Offline', 'no_regrind' => 'No regrind'])
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'regrind_method')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'regrind_method')
                                         ->required()
                                         ->columnSpan(2),
 
@@ -581,17 +581,17 @@ class MaterialsTable
                                     Select::make('value_boolean')
                                         ->label('Select Yes/No')
                                         ->options(['0' => 'No', '1' => 'Yes'])
-                                        ->visible(fn(Get $get) => in_array($get('column_to_update'), ['is_hazardous', 'is_inspection_required']))
+                                        ->visible(fn (Get $get) => in_array($get('column_to_update'), ['is_hazardous', 'is_inspection_required']))
                                         ->required()
                                         ->columnSpan(2),
 
                                     // Tipe STRING BIASA (Part No, Part Name, Delivery Loc, Mold No)
                                     TextInput::make('value_string')
                                         ->label('New Text Value')
-                                        ->visible(fn(Get $get) => in_array($get('column_to_update'), ['cust_part_no', 'cust_part_name', 'delivery_location', 'mold_no', 'drawing_no', 'hs_code']))
+                                        ->visible(fn (Get $get) => in_array($get('column_to_update'), ['cust_part_no', 'cust_part_name', 'delivery_location', 'mold_no', 'drawing_no', 'hs_code']))
                                         ->required()
                                         ->columnSpan(2),
-                                ])
+                                ]),
                         ])
                         ->modalWidth('3xl')
                         ->action(function (Collection $records, array $data): void {
@@ -615,7 +615,7 @@ class MaterialsTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
                         })
@@ -624,7 +624,7 @@ class MaterialsTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)

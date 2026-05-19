@@ -5,11 +5,10 @@ namespace App\Filament\Resources\ApprovalFlows\Schemas;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class ApprovalFlowForm
@@ -30,7 +29,7 @@ class ApprovalFlowForm
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->validationMessages([
-                                'unique' => 'This approval flow document already registered'
+                                'unique' => 'This approval flow document already registered',
                             ])
                             ->columnSpan(3),
                         TextInput::make('name')
@@ -40,13 +39,13 @@ class ApprovalFlowForm
                             ->autocomplete(false)
                             ->columnSpan(4)
                             ->placeholder('Approval flow name')
-                            ->dehydrateStateUsing(fn($state) => is_string($state) ? trim($state) : $state),
+                            ->dehydrateStateUsing(fn ($state) => is_string($state) ? trim($state) : $state),
                         Textarea::make('remark')
                             ->label('Description')
                             ->placeholder('Add additional information here ...')
                             ->default(null)
                             ->columnSpan(5)
-                            ->dehydrateStateUsing(fn($state) => is_string($state) ? trim($state) : $state),
+                            ->dehydrateStateUsing(fn ($state) => is_string($state) ? trim($state) : $state),
                     ])
                     ->columns(12)
                     ->columnSpanFull(),
@@ -68,7 +67,7 @@ class ApprovalFlowForm
                                         'manager_dept' => 'Department Manager',
                                         'finance' => 'Finance Manager',
                                         'vice_gm' => 'Vice GM',
-                                        'gm' => 'GM'
+                                        'gm' => 'GM',
                                     ])
                                     ->searchable()
                                     ->required()
@@ -79,19 +78,19 @@ class ApprovalFlowForm
                                     ->label('Approver')
                                     ->relationship('approver', 'name')
                                     ->searchable()
-                                    ->required(fn(Get $get) => $get('approver_role') === 'direct_user')
+                                    ->required(fn (Get $get) => $get('approver_role') === 'direct_user')
                                     ->preload()
-                                    ->native(false)
+                                    ->native(false),
                             ])
                             ->compact()
                             ->orderColumn('order')
                             ->collapsible()
                             ->addActionLabel('Add Approver')
                             ->columns(2)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

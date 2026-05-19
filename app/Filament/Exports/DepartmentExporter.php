@@ -19,7 +19,7 @@ class DepartmentExporter extends Exporter
             ExportColumn::make('code')->label('Code'),
             ExportColumn::make('name')->label('Name'),
             ExportColumn::make('managerList.name')->label('Department Manager'),
-            ExportColumn::make('is_active')->label('Status')->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable'),
+            ExportColumn::make('is_active')->label('Status')->formatStateUsing(fn ($state) => $state ? 'Enable' : 'Disable'),
             ExportColumn::make('cost_center_code')->label('Cost Center Code'),
             ExportColumn::make('remark')->label('Remark'),
         ];
@@ -27,10 +27,10 @@ class DepartmentExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your department export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your department export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -38,6 +38,6 @@ class DepartmentExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return 'department_list_' . date("YmdHis");
+        return 'department_list_'.date('YmdHis');
     }
 }

@@ -16,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class PurchaseOrderHeader extends Model
 {
-    use HasFactory, HasRoles, HasCodeGenerator, Blameable;
+    use Blameable, HasCodeGenerator, HasFactory, HasRoles;
 
     protected $fillable = [
         'company_id',

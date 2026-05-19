@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 
 class InitializeApprovalJob implements ShouldQueue
 {
-    use Dispatchable, Queueable, SerializesModels, InteractsWithQueue;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     // use Queueable;
 
     /**
@@ -20,10 +20,7 @@ class InitializeApprovalJob implements ShouldQueue
     public function __construct(
         public $model,
         public string $flowCode,
-    )
-    {
-
-    }
+    ) {}
 
     /**
      * Execute the job.

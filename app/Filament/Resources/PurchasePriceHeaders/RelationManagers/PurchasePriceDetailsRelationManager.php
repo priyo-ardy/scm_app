@@ -14,18 +14,17 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Support\RawJs;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class PurchasePriceDetailsRelationManager extends RelationManager
 {
     protected static string $relationship = 'purchasePriceDetails';
 
     // protected static ?string $relatedResource = PurchasePriceHeaderResource::class;
-
 
     public function form(Schema $schema): Schema
     {
@@ -39,10 +38,11 @@ class PurchasePriceDetailsRelationManager extends RelationManager
                     ->native(false)
                     ->required()
                     ->columnSpanFull()
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name}")
                     ->afterStateUpdated(function ($state, Set $set) {
-                        if (!$state) {
+                        if (! $state) {
                             $set('unit_id', null);
+
                             return;
                         }
 
@@ -115,17 +115,17 @@ class PurchasePriceDetailsRelationManager extends RelationManager
                     ->label('Expired Date')
                     ->required()
                     ->afterOrEqual('effective_date')
-                    ->minDate(fn(Get $get) => $get('effective_date'))
+                    ->minDate(fn (Get $get) => $get('effective_date'))
                     ->validationMessages([
                         'afterOrEqual' => 'Tanggal expired tidak boleh mendahului tanggal efektif.',
-                        'minDate' => 'Expired date cannot less than effective date'
+                        'minDate' => 'Expired date cannot less than effective date',
                     ])
                     ->columnSpan(2),
                 TextInput::make('remark')
                     ->label('Remark')
                     ->nullable()
                     ->placeholder('Write additional information here')
-                    ->columnSpan(4)
+                    ->columnSpan(4),
             ])
             ->columns(12);
     }
@@ -138,7 +138,7 @@ class PurchasePriceDetailsRelationManager extends RelationManager
                     ->label('Add Details')
                     ->icon(Heroicon::OutlinedPlusCircle)
                     ->modalWidth('7xl')
-                    ->modalHeading('Add Material Item')
+                    ->modalHeading('Add Material Item'),
                 // ->visible(fn($livewire) => $livewire->getOwnerRecord()->doc_status == 'approved'),
             ])
             ->columns([
@@ -169,7 +169,7 @@ class PurchasePriceDetailsRelationManager extends RelationManager
                 ),
                 TextColumn::make('effective_date')->label('Effective Date')->date('d/M/Y'),
                 TextColumn::make('expired_date')->label('Expired Date')->date('d/M/Y'),
-                TextColumn::make('is_active')->label('Status')->formatStateUsing(fn($state) => $state ? 'Approved' : 'Not Approved')->color(fn($state) => $state ? 'success' : 'warning')->badge(),
+                TextColumn::make('is_active')->label('Status')->formatStateUsing(fn ($state) => $state ? 'Approved' : 'Not Approved')->color(fn ($state) => $state ? 'success' : 'warning')->badge(),
                 TextColumn::make('remark')->label('Remark'),
             ])
             ->recordActions([

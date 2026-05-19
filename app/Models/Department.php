@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Department extends Model
 {
-    use HasFactory, HasRoles, HasCodeGenerator, Blameable;
+    use Blameable, HasCodeGenerator, HasFactory, HasRoles;
 
     protected $fillable = [
         'company_id',
@@ -23,7 +23,7 @@ class Department extends Model
         'is_active',
         'cost_center_code',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     protected function casts(): array
@@ -50,6 +50,7 @@ class Department extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
     public function updaterList(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');

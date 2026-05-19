@@ -18,23 +18,18 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\QueryBuilder\Constraints\DateConstraint;
 use Filament\QueryBuilder\Constraints\NumberConstraint;
 use Filament\QueryBuilder\Constraints\SelectConstraint;
 use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class EquipmentsTable
@@ -134,21 +129,21 @@ class EquipmentsTable
                 TextColumn::make('status')
                     ->label('Machine/Equipment Status')
                     ->badge()
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'standby' => 'Standby',
                         'running' => 'Running',
                         'breakdown' => 'Breakdown',
                         'repair' => 'Repair',
                         default => ucfirst($state), // Fallback kalau ada data lain
                     })
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'standby' => 'info',      // Biru: Sedang bersiap/menunggu
                         'running' => 'success',   // Hijau: Aman dan beroperasi normal
                         'breakdown' => 'danger',  // Merah: Rusak parah/berhenti beroperasi
                         'repair' => 'warning',    // Kuning/Oranye: Sedang dalam perbaikan
                         default => 'gray',        // Abu-abu: Default
                     })
-                    ->icon(fn(string $state): string => match ($state) {
+                    ->icon(fn (string $state): string => match ($state) {
                         'standby' => 'heroicon-m-pause-circle',
                         'running' => 'heroicon-m-play-circle',
                         'breakdown' => 'heroicon-m-exclamation-triangle',
@@ -161,8 +156,8 @@ class EquipmentsTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable')
-                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn ($state) => $state ? 'Enable' : 'Disable')
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -173,7 +168,7 @@ class EquipmentsTable
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Created Date')
-                    ->date("Y-m-d H:i:s")
+                    ->date('Y-m-d H:i:s')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -184,7 +179,7 @@ class EquipmentsTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->label('Updated Date')
-                    ->date("Y-m-d H:i:s")
+                    ->date('Y-m-d H:i:s')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -229,19 +224,19 @@ class EquipmentsTable
                             ->label('Updated Date'),
                         SelectConstraint::make('company_id')
                             ->label('Company')
-                            ->options(fn() => Company::pluck('name', 'id'))
+                            ->options(fn () => Company::pluck('name', 'id'))
                             ->searchable(),
                         SelectConstraint::make('Branch')
                             ->label('Branch')
-                            ->options(fn() => Branch::pluck('name', 'id'))
+                            ->options(fn () => Branch::pluck('name', 'id'))
                             ->searchable(),
                         SelectConstraint::make('category_id')
                             ->label('Category')
-                            ->options(fn() => EquipmentCategory::pluck('name', 'id'))
+                            ->options(fn () => EquipmentCategory::pluck('name', 'id'))
                             ->searchable(),
                         SelectConstraint::make('tonnage_id')
                             ->label('Tonnage')
-                            ->options(fn() => Tonnage::pluck('code', 'id'))
+                            ->options(fn () => Tonnage::pluck('code', 'id'))
                             ->searchable(),
                         SelectConstraint::make('status')
                             ->label('Machine Status')
@@ -249,28 +244,28 @@ class EquipmentsTable
                                 'standby' => 'Standby',
                                 'running' => 'Running',
                                 'breakdown' => 'Breakdown',
-                                'repair' => 'Repair'
+                                'repair' => 'Repair',
                             ])
                             ->searchable(),
                         SelectConstraint::make('is_active')
                             ->label('Status')
                             ->options([
                                 '0' => 'Disable',
-                                '1' => 'Enable'
+                                '1' => 'Enable',
                             ])
                             ->searchable(),
                         SelectConstraint::make('workshop_id ')
                             ->label('Workshop')
-                            ->options(fn() => Workshop::pluck('name', 'id'))
+                            ->options(fn () => Workshop::pluck('name', 'id'))
                             ->searchable(),
                     ])
-                    ->constraintPickerColumns(3)
+                    ->constraintPickerColumns(3),
             ])
             ->filtersLayout(FiltersLayout::Modal)
             ->filtersFormWidth('3xl')
             ->persistFiltersInSession()
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon(Heroicon::OutlinedFunnel)
@@ -307,33 +302,33 @@ class EquipmentsTable
                                             'total_shots' => 'Total Shots',
                                             'last_maintenance' => 'Last Maintenance Date',
                                             'workshop_id' => 'Workshop',
-                                            'is_active' => 'Status'
+                                            'is_active' => 'Status',
                                         ])
                                         ->searchable()
                                         ->live()
                                         ->columnSpan(1),
                                     Select::make('value_branch_id')
                                         ->label('Branch')
-                                        ->options(fn() => Branch::pluck('name', 'id'))
+                                        ->options(fn () => Branch::pluck('name', 'id'))
                                         ->searchable()
                                         ->preload()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'branch_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'branch_id')
                                         ->required()
                                         ->columnSpan(2),
                                     Select::make('value_tonnage')
                                         ->label('Branch')
-                                        ->options(fn() => Tonnage::pluck('code', 'id'))
+                                        ->options(fn () => Tonnage::pluck('code', 'id'))
                                         ->searchable()
                                         ->preload()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'tonnage_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'tonnage_id')
                                         ->required()
                                         ->columnSpan(2),
                                     Select::make('value_workshop_id')
                                         ->label('Workshop')
-                                        ->options(fn() => Workshop::pluck('name', 'id'))
+                                        ->options(fn () => Workshop::pluck('name', 'id'))
                                         ->searchable()
                                         ->preload()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'workshop_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'workshop_id')
                                         ->required()
                                         ->columnSpan(2),
                                     Select::make('value_status')
@@ -342,86 +337,86 @@ class EquipmentsTable
                                             'standby' => 'Standby',
                                             'running' => 'Running',
                                             'breakdown' => 'Breakdown',
-                                            'repair' => 'Repair'
+                                            'repair' => 'Repair',
                                         ])
                                         ->searchable()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'status')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'status')
                                         ->required()
                                         ->columnSpan(2),
                                     Select::make('value_is_active')
                                         ->label('Status')
                                         ->options([
                                             '0' => 'Disable',
-                                            '1' => 'Enable'
+                                            '1' => 'Enable',
                                         ])
                                         ->searchable()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'is_active')
                                         ->required()
                                         ->columnSpan(2),
                                     TextInput::make('value_equipment_no')
                                         ->label('Machine/Equipment No.')
                                         ->placeholder('Edit Machine/Equipment No.')
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'equipment_no')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'equipment_no')
                                         ->columnSpan(2),
                                     TextInput::make('value_specification')
                                         ->label('Specification')
                                         ->placeholder('Edit specification')
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'specification')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'specification')
                                         ->columnSpan(2),
                                     TextInput::make('value_brand')
                                         ->label('Brand')
                                         ->placeholder('Edit specification')
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'brand')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'brand')
                                         ->columnSpan(2),
                                     TextInput::make('value_model_number')
                                         ->label('Model Number')
                                         ->placeholder('Edit model number')
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'model_number')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'model_number')
                                         ->columnSpan(2),
                                     TextInput::make('value_machine_rate')
                                         ->label('Model Number')
                                         ->placeholder('Edit machine rate')
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'machine_rate')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'machine_rate')
                                         ->columnSpan(2),
                                     TextInput::make('value_total_shots')
                                         ->label('Total Shots')
                                         ->placeholder('Edit total shots')
                                         ->numeric()
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'total_shots')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'total_shots')
                                         ->columnSpan(2),
                                     DatePicker::make('value_purchase_date')
                                         ->label('Purchase Date')
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'purchase_date')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'purchase_date')
                                         ->columnSpan(2),
                                     DatePicker::make('value_installation_date')
                                         ->label('Installation Date')
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'installation_date')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'installation_date')
                                         ->columnSpan(2),
                                     DatePicker::make('value_last_maintenance')
                                         ->label('Last Maintenance Date')
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'last_maintenance')
-                                        ->columnSpan(2)
-                                ])
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'last_maintenance')
+                                        ->columnSpan(2),
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data) {
                             $column = $data['column_to_update'];
                         })
                         ->deselectRecordsAfterCompletion()
-                        ->modalSubmitActionLabel('Update')
+                        ->modalSubmitActionLabel('Update'),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)

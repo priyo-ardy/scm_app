@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class PurchaseOrderDetail extends Model
 {
-    use HasFactory, HasRoles, Blameable;
+    use Blameable, HasFactory, HasRoles;
 
     protected $fillable = [
         'id',
@@ -52,7 +52,7 @@ class PurchaseOrderDetail extends Model
             'discount_amount' => 'double',
             'price_after_discount' => 'double',
             'total_amount' => 'double',
-            'is_closed' => 'boolean'
+            'is_closed' => 'boolean',
         ];
     }
 

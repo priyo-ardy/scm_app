@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Print;
 
 use App\Http\Controllers\Controller;
 use App\Models\PurchaseOrderHeader;
-use Illuminate\Http\Request;
 
 class PurchaseOrderPrintController extends Controller
 {

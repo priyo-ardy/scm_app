@@ -47,7 +47,7 @@ class CustomersTable
                     ->sortable(),
                 TextColumn::make('category')
                     ->label('Category')
-                    ->formatStateUsing(fn(string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas')
+                    ->formatStateUsing(fn (string $state): string => ($state == 'local') ? 'Domestic' : 'Overseas')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
@@ -116,8 +116,8 @@ class CustomersTable
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Active' : 'Not Active')
-                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Active' : 'Not Active')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
                     ->alignCenter()
                     ->searchable()
                     ->sortable(),
@@ -169,7 +169,7 @@ class CustomersTable
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersTriggerAction(
-                fn($action) => $action
+                fn ($action) => $action
                     ->button()
                     ->label('Filter')
                     ->icon('heroicon-o-funnel')
@@ -207,24 +207,24 @@ class CustomersTable
                                         ])
                                         ->required()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update' === 'is_active')),
+                                        ->visible(fn (Get $get) => $get('column_to_update' === 'is_active')),
                                     TextInput::make('value_vat')
                                         ->numeric()
                                         ->required()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update' === 'vat')),
+                                        ->visible(fn (Get $get) => $get('column_to_update' === 'vat')),
                                     Select::make('value_payment_term')
                                         ->relationship('paymentList', 'name')
                                         ->searchable()
                                         ->preload()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update' === 'payment_term_id')),
+                                        ->visible(fn (Get $get) => $get('column_to_update' === 'payment_term_id')),
                                     Select::make('value_currency_id')
                                         ->relationship('currencyList', 'code')
                                         ->searchable()
                                         ->preload()
                                         ->columnSpan(2)
-                                        ->visible(fn(Get $get) => $get('column_to_update' === 'currency_id')),
+                                        ->visible(fn (Get $get) => $get('column_to_update' === 'currency_id')),
                                 ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
@@ -241,7 +241,7 @@ class CustomersTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
                         }),
@@ -249,7 +249,7 @@ class CustomersTable
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-o-arrow-path')
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make()
                     ->exporter(CustomerExporter::class)
                     ->label('Export')

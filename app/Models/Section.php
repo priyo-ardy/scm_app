@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Section extends Model
 {
-    use HasFactory, HasRoles, HasCodeGenerator, Blameable;
+    use Blameable, HasCodeGenerator, HasFactory, HasRoles;
 
     protected $fillable = [
         'company_id',
@@ -23,7 +23,7 @@ class Section extends Model
         'is_active',
         'description',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     protected $casts = [

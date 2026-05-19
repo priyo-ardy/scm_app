@@ -9,7 +9,6 @@ use Filament\Auth\Pages\Login as BaseLogin;
 // use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
-use Filament\Notifications\Notification;
 use Illuminate\Validation\ValidationException;
 
 class CustomLogin extends BaseLogin
@@ -59,7 +58,7 @@ class CustomLogin extends BaseLogin
 
         session([
             'department_id' => $sessionUser->department_id,
-            'section_id'    => $sessionUser->section_id,
+            'section_id' => $sessionUser->section_id,
         ]);
 
         return app(LoginResponse::class);

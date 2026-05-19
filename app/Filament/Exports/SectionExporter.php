@@ -21,17 +21,17 @@ class SectionExporter extends Exporter
             ExportColumn::make('name')->label('Section Name'),
             ExportColumn::make('sectionHead.name')->label('Section Head'),
             ExportColumn::make('dept.name')->label('Department'),
-            ExportColumn::make('is_active')->formatStateUsing(fn($state) => $state ? 'Enable' : 'Disable')->label('Status'),
+            ExportColumn::make('is_active')->formatStateUsing(fn ($state) => $state ? 'Enable' : 'Disable')->label('Status'),
             ExportColumn::make('description'),
         ];
     }
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your section export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your section export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;
@@ -39,7 +39,7 @@ class SectionExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return "section_list_" . date("YmdHis");
+        return 'section_list_'.date('YmdHis');
     }
 
     public static function modifyQuery(Builder $query): Builder

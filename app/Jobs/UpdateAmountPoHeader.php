@@ -33,9 +33,9 @@ class UpdateAmountPoHeader implements ShouldQueue
             ->first();
 
         $this->header->newQuery()->where('id', $this->header->id)->update([
-            'amount'       => $totals->amount,
+            'amount' => $totals->amount,
             'total_discount' => $totals->discount,
-            'tax_amount'   => $totals->tax,
+            'tax_amount' => $totals->tax,
             'total_amount' => $totals->total,
         ]);
     }

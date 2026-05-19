@@ -58,12 +58,12 @@ class EquipmentsResource extends Resource
     public static function getPluralModelLabel(): string
     {
         // return parent::getPluralModelLabel();
-        return "List of Machine & Equipments";
+        return 'List of Machine & Equipments';
     }
 
     public static function getModelLabel(): string
     {
         // return parent::getModelLabel();
-        return  'Machine & Equipments';
+        return 'Machine & Equipments';
     }
 }

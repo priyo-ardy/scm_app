@@ -14,7 +14,7 @@ use Spatie\Permission\Traits\HasPermissions;
 
 class Equipment extends Model
 {
-    use HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes, Blameable;
+    use Blameable, HasCodeGenerator, HasFactory, HasPermissions, SoftDeletes;
 
     protected $table = 'equipments';
 

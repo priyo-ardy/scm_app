@@ -19,7 +19,7 @@ trait HasCodeGenerator
 
             $lastRecord = DB::table($tableName)
                 // Filter hanya yang depannya sama persis dengan prefix + separator
-                ->where($columnName, 'like', $prefix . $separator . '%')
+                ->where($columnName, 'like', $prefix.$separator.'%')
                 // Urutkan berdasarkan kolom itu sendiri secara DESC
                 ->orderBy($columnName, 'desc')
                 // Paksa DB buat nahan row ini sampai transaksi selesai
@@ -32,7 +32,7 @@ trait HasCodeGenerator
                 $lastCode = (string) $lastRecord->$columnName;
 
                 // Ambil bagian angkanya saja
-                $onlyNumber = Str::after($lastCode, $prefix . $separator);
+                $onlyNumber = Str::after($lastCode, $prefix.$separator);
 
                 // Casting ke int biar aman (Larastan bakal seneng)
                 $number = ((int) $onlyNumber) + 1;
@@ -40,7 +40,7 @@ trait HasCodeGenerator
 
             $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
 
-            return $prefix . $separator . $formattedNumber;
+            return $prefix.$separator.$formattedNumber;
         });
     }
 
@@ -60,7 +60,7 @@ trait HasCodeGenerator
             // 1. Cari record terakhir berdasarkan TAHUN (reset tiap tahun)
             // Gunakan lockForUpdate agar proses lain mengantri sampai transaksi ini selesai
             $lastRecord = DB::table($tableName)
-                ->where($columnName, 'like', $prefix . $separator . $yearPart . '%')
+                ->where($columnName, 'like', $prefix.$separator.$yearPart.'%')
                 ->orderBy($columnName, 'desc')
                 ->lockForUpdate()
                 ->first();
@@ -79,7 +79,7 @@ trait HasCodeGenerator
             $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
 
             // Hasil: PREFIX-20240325-000001
-            return $prefix . $separator . $datePart . $separator . $formattedNumber;
+            return $prefix.$separator.$datePart.$separator.$formattedNumber;
         });
     }
 
@@ -107,7 +107,7 @@ trait HasCodeGenerator
             // Cari nomor terakhir KHUSUS untuk company tersebut
             $lastRecord = DB::table($tableName)
                 ->where('company_id', $companyId)
-                ->where($columnName, 'like', $prefix . $separator . '%')
+                ->where($columnName, 'like', $prefix.$separator.'%')
                 ->orderBy($columnName, 'desc')
                 ->lockForUpdate() // Kunci tabel agar user lain di company yang sama harus antri
                 ->first();
@@ -123,7 +123,7 @@ trait HasCodeGenerator
 
             $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
 
-            return $prefix . $separator . $formattedNumber;
+            return $prefix.$separator.$formattedNumber;
         });
     }
 
@@ -131,8 +131,8 @@ trait HasCodeGenerator
         string $tableName,
         string $columnName,
         string $prefix,
-        int $digits = 6,
-        string $separator = '-',
+        int $digits,
+        string $separator,
         int $companyId
     ): string {
         return DB::transaction(function () use ($companyId, $tableName, $columnName, $prefix, $digits, $separator) {
@@ -145,7 +145,7 @@ trait HasCodeGenerator
                 ->where('id', $companyId)
                 ->exists();
 
-            if (!$companyExists) {
+            if (! $companyExists) {
                 throw new \Exception('Company data is not found or disabled.');
             }
 
@@ -153,14 +153,14 @@ trait HasCodeGenerator
             $lastRecord = DB::table($tableName)
                 ->where('company_id', $companyId)
                 // Mencari awalan seperti: PR-2026%
-                ->where($columnName, 'like', $prefix . $separator . $yearPart . '%')
+                ->where($columnName, 'like', $prefix.$separator.$yearPart.'%')
                 // Ubah orderBy ini ke 'id' agar yang diambil benar-benar data terakhir yang dibuat
                 ->orderBy('id', 'desc')
                 ->lockForUpdate()
                 ->first();
 
             // 3. Tentukan nomor urut berikutnya
-            if (!$lastRecord || empty($lastRecord->$columnName)) {
+            if (! $lastRecord || empty($lastRecord->$columnName)) {
                 $number = 1;
             } else {
                 $lastCode = (string) $lastRecord->$columnName;
@@ -171,7 +171,7 @@ trait HasCodeGenerator
             // 4. Format hasil akhir
             $formattedNumber = str_pad((string) $number, $digits, '0', STR_PAD_LEFT);
 
-            return $prefix . $separator . $datePart . $separator . $formattedNumber;
+            return $prefix.$separator.$datePart.$separator.$formattedNumber;
         });
     }
 }

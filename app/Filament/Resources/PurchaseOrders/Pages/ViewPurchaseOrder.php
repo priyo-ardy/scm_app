@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\PurchaseOrders\Pages;
 
 use App\Filament\Resources\PurchaseOrders\PurchaseOrderResource;
+use App\Models\PurchaseOrderHeader;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Icons\Heroicon;
 
@@ -25,32 +28,76 @@ class ViewPurchaseOrder extends ViewRecord
                 ->color('gray'),
             EditAction::make()
                 ->icon(Heroicon::OutlinedPencilSquare)
-                ->tooltip('Edit'),
+                ->tooltip('Edit')
+                ->visible(fn($record) => $record->doc_status !== 'approved'),
             Action::make('add')
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->tooltip('New')
                 ->color('success')
                 ->url(static::getResource()::getUrl('create')),
+            DeleteAction::make()
+                ->icon(Heroicon::OutlinedTrash)
+                ->tooltip('Delete')
+                ->label('Delete')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Delete Confirmation')
+                ->modalDescription('Are you sure you want to delete this record? This action cannot be undone.')
+                ->modalSubmitActionLabel('Delete')
+                ->visible(fn($record) => $record->doc_status !== 'approved'),
             Action::make('print')
                 ->label('Print')
                 ->icon(Heroicon::OutlinedPrinter)
                 ->tooltip('Print')
                 ->color('primary')
                 ->url(fn($record) => route('print.po', $record))
-                ->openUrlInNewTab(),
+                ->openUrlInNewTab()
+                ->visible(fn($record) => $record->doc_status == 'approved'),
             Action::make('generate')
                 ->label('Generate')
                 ->tooltip('Generate')
                 ->icon(Heroicon::OutlinedCog8Tooth)
-                ->color('primary'),
+                ->color('primary')
+                ->visible(fn($record) => $record->doc_status == 'approved'),
+            Action::make('de-approve')
+                ->label('De-Approve')
+                ->tooltip('De-Approve')
+                ->visible(fn($record) => $record->doc_status == 'approved')
+                ->color('gray')
+                ->icon(Heroicon::OutlinedArrowUturnDown)
+                ->requiresConfirmation()
+                ->action(function ($record) {
+                    $record->update(['doc_status' => 'saved']);
+
+                    Notification::make()
+                        ->title('De-Approve Success')
+                        ->body('This document successfully de-approve')
+                        ->success()
+                        ->send();
+                }),
+            Action::make('approve')
+                ->label('Approve')
+                ->tooltip('Approve')
+                ->visible(fn($record) => $record->doc_status == 'saved')
+                ->color('gray')
+                ->icon(Heroicon::OutlinedCheck)
+                ->action(function ($record) {
+                    $record->update(['doc_status' => 'approved']);
+
+                    Notification::make()
+                        ->title('Approve Success')
+                        ->body('This document successfully approve')
+                        ->success()
+                        ->send();
+                }),
             ActionGroup::make([
                 Action::make('source')
                     ->label('Source Document')
                     ->tooltip('Source document'),
                 Action::make('target')
                     ->label('Target Document')
-                    ->tooltip('Target document')
+                    ->tooltip('Target document'),
             ])
                 ->label('Associated Query')
                 ->tooltip('Associated query')
@@ -61,22 +108,32 @@ class ViewPurchaseOrder extends ViewRecord
                 Action::make('prev')
                     ->label('Previous Page')
                     ->icon(Heroicon::OutlinedChevronLeft)
-                    ->tooltip('Previous page'),
+                    ->tooltip('Previous page')
+                    ->action(function () {
+                        $prevRecord = PurchaseOrderHeader::where('code', '<', $this->record->code, 'and')->orderBy('code', 'desc')->first();
+
+                        return $prevRecord
+                            ? PurchaseOrderResource::getUrl('edit', ['record' => $prevRecord]) : null;
+                    })
+                    ->hidden(fn() => ! PurchaseOrderHeader::where('code', '<', $this->record->code, 'and')->exists()),
                 Action::make('next')
                     ->label('Next Page')
                     ->icon(Heroicon::OutlinedChevronRight)
-                    ->tooltip('Next page'),
-                DeleteAction::make('Delete')
-                    ->icon(Heroicon::OutlinedTrash)
-                    ->tooltip('Delete')
-                    ->color('danger')
-                    ->requiresConfirmation(),
+                    ->tooltip('Next page')
+                    ->url(function () {
+                        $nextRecord = PurchaseOrderHeader::where('code', '>', $this->record->code, 'and')->orderBy('code', 'asc')->first();
+
+                        return $nextRecord
+                            ? PurchaseOrderResource::getUrl('edit', ['record' => $nextRecord])
+                            : null;
+                    })
+                    ->hidden(fn() => ! PurchaseOrderHeader::where('code', '>', $this->record->code, 'and')->exists()),
             ])
                 ->label('More')
                 ->icon(Heroicon::OutlinedEllipsisVertical)
                 ->tooltip('More action')
                 ->button()
-                ->color('gray')
+                ->color('gray'),
         ];
     }
 }

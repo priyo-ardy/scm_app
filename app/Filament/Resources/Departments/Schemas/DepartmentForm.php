@@ -4,12 +4,10 @@ namespace App\Filament\Resources\Departments\Schemas;
 
 use App\Models\Company;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 
 class DepartmentForm
 {
@@ -36,7 +34,7 @@ class DepartmentForm
                                 // 3. Jika session null (Super Admin), ambil company default dari DB
                                 return Company::where('is_default', 1)->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(fn () => session('active_company') !== null)
                             ->dehydrated(true)
                             ->columnSpan(4),
                         TextInput::make('code')
@@ -66,7 +64,7 @@ class DepartmentForm
                             ->nullable()
                             ->unique(ignoreRecord: true)
                             ->validationMessages([
-                                'unique' => 'This cost center already registered'
+                                'unique' => 'This cost center already registered',
                             ])
                             ->columnSpan(2),
                         Textarea::make('remark')
@@ -74,10 +72,10 @@ class DepartmentForm
                             ->placeholder('Write additional information here ...')
                             ->columnSpan(10)
                             ->rows(3)
-                            ->nullable()
+                            ->nullable(),
                     ])
                     ->columns(12)
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

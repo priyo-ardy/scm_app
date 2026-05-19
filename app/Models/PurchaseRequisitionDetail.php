@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class PurchaseRequisitionDetail extends Model
 {
-    use HasFactory, HasRoles, Blameable;
+    use Blameable, HasFactory, HasRoles;
 
     protected $fillable = [
         'purchase_requisition_header_id',

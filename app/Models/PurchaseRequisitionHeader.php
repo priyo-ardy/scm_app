@@ -15,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class PurchaseRequisitionHeader extends Model
 {
-    use HasFactory, HasRoles, HasCodeGenerator, Blameable, SoftDeletes;
+    use Blameable, HasCodeGenerator, HasFactory, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'company_id',
@@ -31,7 +31,7 @@ class PurchaseRequisitionHeader extends Model
         'created_by',
         'updated_by',
         'approved_by',
-        'approved_at'
+        'approved_at',
     ];
 
     public function company(): BelongsTo
@@ -85,12 +85,12 @@ class PurchaseRequisitionHeader extends Model
                             ->orWhere('name', 'like', "%{$search}%")
                             ->orWhere('specification', 'like', "%{$search}%");
                     })
-                        ->orWhereHas('unit', fn($u) => $u->where('code', 'like', "%{$search}%"))
+                        ->orWhereHas('unit', fn ($u) => $u->where('code', 'like', "%{$search}%"))
                         ->orWhere('qty', 'like', "%{$search}%")
                         ->orWhere('arrival_date', 'like', "%{$search}%")
                         ->orWhere('remark', 'like', "%{$search}%")
                         // Baris sakti: Kalau yang dicari adalah Kode Header, tampilkan semua detail
-                        ->orWhereHas('header', fn($h) => $h->where('code', 'like', "%{$search}%"));
+                        ->orWhereHas('header', fn ($h) => $h->where('code', 'like', "%{$search}%"));
                 });
             }
         }, 'details.material', 'details.units', 'details.supplier']);

@@ -5,17 +5,15 @@ namespace App\Filament\Resources\PurchasePriceHeaders\Pages;
 use App\Filament\Resources\PurchasePriceHeaders\PurchasePriceHeaderResource;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
-use Psy\Readline\Interactive\Actions\PreviousHistoryAction;
 
 class EditPurchasePriceHeader extends EditRecord
 {
     protected static string $resource = PurchasePriceHeaderResource::class;
+
     public bool $isEditingEnabled = false;
 
     protected function getHeaderActions(): array
@@ -26,19 +24,19 @@ class EditPurchasePriceHeader extends EditRecord
                 ->icon(Heroicon::OutlinedArrowLeft)
                 ->tooltip('Back to list')
                 ->color('gray')
-                ->url(fn() => $this->getResource()::getUrl('index')),
+                ->url(fn () => $this->getResource()::getUrl('index')),
             Action::make('new')
                 ->label('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->tooltip('New')
                 ->color('success')
-                ->url(fn() => $this->getResource()::getUrl('create')),
+                ->url(fn () => $this->getResource()::getUrl('create')),
             Action::make('enableEdit')
                 ->label('Edit')
                 ->icon(Heroicon::OutlinedPencilSquare)
                 ->tooltip('Edit')
-                ->action(fn() => $this->isEditingEnabled = true)
-                ->hidden(fn() => $this->isEditingEnabled),
+                ->action(fn () => $this->isEditingEnabled = true)
+                ->hidden(fn () => $this->isEditingEnabled),
             Action::make('undoEdit')
                 ->label('Undo')
                 ->icon(Heroicon::OutlinedArrowUturnLeft)
@@ -47,14 +45,14 @@ class EditPurchasePriceHeader extends EditRecord
                     $this->fillForm();
                     $this->isEditingEnabled = false;
                 })
-                ->visible(fn() => $this->isEditingEnabled)
+                ->visible(fn () => $this->isEditingEnabled)
                 ->tooltip('Undo'),
             Action::make('approve')
                 ->label('Approve')
                 ->color('warning')
                 ->tooltip('Approve')
                 ->icon(Heroicon::OutlinedCheck)
-                ->visible(fn() => $this->record->doc_status == 'saved' && !$this->isEditingEnabled)
+                ->visible(fn () => $this->record->doc_status == 'saved' && ! $this->isEditingEnabled)
                 ->action(function () {
                     $this->record->update(
                         ['doc_status' => 'approved']
@@ -75,7 +73,7 @@ class EditPurchasePriceHeader extends EditRecord
                 ->label('Delete')
                 ->icon(Heroicon::OutlinedTrash)
                 ->tooltip('Delete')
-                ->visible(fn() => in_array($this->record->doc_status, ['draft', 'saved']) && !$this->isEditingEnabled),
+                ->visible(fn () => in_array($this->record->doc_status, ['draft', 'saved']) && ! $this->isEditingEnabled),
             ActionGroup::make([
                 Action::make('first')
                     ->label('First Data')
@@ -101,14 +99,14 @@ class EditPurchasePriceHeader extends EditRecord
                 ->icon(Heroicon::OutlinedEllipsisVertical)
                 ->tooltip('More Action')
                 ->color('gray')
-                ->button()
+                ->button(),
             // ->visible(fn() => !$this->isEditingEnabled),
         ];
     }
 
     public function isFormDisabled(): bool
     {
-        return !$this->isEditingEnabled;
+        return ! $this->isEditingEnabled;
     }
 
     protected function getFormActions(): array

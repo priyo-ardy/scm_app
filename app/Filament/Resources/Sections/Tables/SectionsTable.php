@@ -62,13 +62,13 @@ class SectionsTable
                     ->label('Status')
                     ->sortable()
                     ->badge()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'gray')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Enable' : 'Disable')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Enable' : 'Disable')
                     ->toggleable(),
                 TextColumn::make('description')
                     ->label('Description')
                     ->searchable()
-                    ->sortable()
+                    ->sortable(),
             ])
             ->filters([
                 QueryBuilder::make()
@@ -81,29 +81,29 @@ class SectionsTable
                             ->label('Description'),
                         SelectConstraint::make('company_id')
                             ->label('Company')
-                            ->options(fn() => Company::pluck('name', 'id'))
+                            ->options(fn () => Company::pluck('name', 'id'))
                             ->searchable()
                             ->native(false),
                         SelectConstraint::make('department_id')
                             ->label('Department')
-                            ->options(fn() => Department::where('is_active', '=', true, 'and')->orderBy('name', 'asc')->pluck('name', 'id'))
+                            ->options(fn () => Department::where('is_active', '=', true, 'and')->orderBy('name', 'asc')->pluck('name', 'id'))
                             ->searchable()
                             ->native(false),
                         SelectConstraint::make('section_head_id')
                             ->label('Section Head')
-                            ->options(fn() => User::where('is_active', '=', true, 'and')->orderBy('name', 'asc')->pluck('name', 'id'))
+                            ->options(fn () => User::where('is_active', '=', true, 'and')->orderBy('name', 'asc')->pluck('name', 'id'))
                             ->searchable()
                             ->native(false),
                         SelectConstraint::make('is_active')
                             ->label('Status')
                             ->options([
                                 '0' => 'Disable',
-                                '1' => 'Enable'
+                                '1' => 'Enable',
                             ])
                             ->searchable()
-                            ->native(false)
+                            ->native(false),
                     ])
-                    ->constraintPickerColumns(2)
+                    ->constraintPickerColumns(2),
             ], layout: FiltersLayout::Modal)
             ->filtersFormWidth('4xl')
             ->filtersFormColumns(1)
@@ -130,47 +130,47 @@ class SectionsTable
                                             'department_id' => 'Department',
                                             'section_head_id' => 'Section Head',
                                             'is_active' => 'Status',
-                                            'description' => 'Description'
+                                            'description' => 'Description',
                                         ])
                                         ->searchable()
                                         ->live()
                                         ->columnSpan(1),
                                     Select::make('value_company_id')
                                         ->label('Company')
-                                        ->options(fn() => Company::orderBy('name', 'asc')->pluck('name', 'id'))
+                                        ->options(fn () => Company::orderBy('name', 'asc')->pluck('name', 'id'))
                                         ->searchable()
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'company_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'company_id')
                                         ->columnSpan(2),
                                     Select::make('value_department_id')
                                         ->label('Department')
-                                        ->options(fn() => Department::where('is_active', '=', true, 'and')->orderBy('name', 'asc')->pluck('name', 'id'))
+                                        ->options(fn () => Department::where('is_active', '=', true, 'and')->orderBy('name', 'asc')->pluck('name', 'id'))
                                         ->searchable()
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'department_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'department_id')
                                         ->columnSpan(2),
                                     Select::make('value_section_head_id')
                                         ->label('Section Head')
-                                        ->options(fn() => User::where('is_active', '=', true, 'and')->orderBy('name', 'asc')->pluck('name', 'id'))
+                                        ->options(fn () => User::where('is_active', '=', true, 'and')->orderBy('name', 'asc')->pluck('name', 'id'))
                                         ->searchable()
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'section_head_id')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'section_head_id')
                                         ->columnSpan(2),
                                     Select::make('value_is_active')
                                         ->label('Section Head')
                                         ->options([
                                             '0' => 'Disable',
-                                            '1' => 'Enable'
+                                            '1' => 'Enable',
                                         ])
                                         ->searchable()
                                         ->required()
-                                        ->visible(fn(Get $get) => $get('column_to_update') === 'is_active')
+                                        ->visible(fn (Get $get) => $get('column_to_update') === 'is_active')
                                         ->columnSpan(2),
                                     TextInput::make('description')
                                         ->label('Description')
                                         ->placeholder('Edit description')
-                                        ->columnSpan(2)
-                                ])
+                                        ->columnSpan(2),
+                                ]),
                         ])
                         ->action(function (Collection $records, array $data): void {
                             $column = $data['column_to_update'];
@@ -187,21 +187,21 @@ class SectionsTable
 
                             Notification::make()
                                 ->title('Mass edit success')
-                                ->body(count($records) . " Records updated on field: {$column}")
+                                ->body(count($records)." Records updated on field: {$column}")
                                 ->success()
                                 ->send();
-                        })
+                        }),
                 ]),
                 Action::make('refresh')
                     ->label('Refresh')
                     ->icon(Heroicon::OutlinedArrowPath)
                     ->tooltip('Refresh')
-                    ->action(fn() => null),
+                    ->action(fn () => null),
                 ExportAction::make('export')
                     ->label('Export')
                     ->icon(Heroicon::OutlinedArrowDownTray)
                     ->exporter(SectionExporter::class)
-                    ->tooltip('Export')
+                    ->tooltip('Export'),
             ]);
     }
 }

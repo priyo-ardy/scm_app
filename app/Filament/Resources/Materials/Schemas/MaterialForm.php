@@ -41,12 +41,12 @@ class MaterialForm
                                 // 3. Jika session null (Super Admin), ambil company default dari DB
                                 return Company::where('is_default', 1)->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(fn () => session('active_company') !== null)
                             ->dehydrated(true)
                             ->columnSpan(3),
                         Select::make('category_id')
                             ->label('Category')
-                            ->relationship('categoryList', 'name', fn($query) => $query->where('is_active', '1')->orderBy('code', 'asc'))
+                            ->relationship('categoryList', 'name', fn ($query) => $query->where('is_active', '1')->orderBy('code', 'asc'))
                             ->getOptionLabelFromRecordUsing(function ($record) {
                                 $depth = substr_count($record->code, '.');
                                 $indent = str_repeat('   ', $depth);
@@ -67,7 +67,7 @@ class MaterialForm
                                 $category = MaterialCategory::find($state);
 
                                 if ($category) {
-                                    $set('code', $category->code . '.');
+                                    $set('code', $category->code.'.');
                                 }
                             })
                             ->columnSpan(4),
@@ -86,7 +86,7 @@ class MaterialForm
                                     return;
                                 }
 
-                                $categoryCode = MaterialCategory::find($categoryId)?->code . '.';
+                                $categoryCode = MaterialCategory::find($categoryId)?->code.'.';
 
                                 // Jika user mencoba menghapus atau merubah awalan kategori
                                 if (! str_starts_with($state, $categoryCode)) {
@@ -382,10 +382,10 @@ class MaterialForm
                             ->native(false),
                         TextInput::make('min_stock')
                             ->numeric()
-                            ->required(fn(Get $get) => $get('enable_min_stock') === '1')
+                            ->required(fn (Get $get) => $get('enable_min_stock') === '1')
                             ->default(0.0)
                             ->rules([
-                                fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                                     if ($get('enable_min_stock') === '1' && $value <= 0) {
                                         $fail('The Min Stock must be greater than 0 when enabled.');
                                     }
@@ -406,9 +406,9 @@ class MaterialForm
                         TextInput::make('safety_stock')
                             ->numeric()
                             ->default(0.0)
-                            ->required(fn(Get $get) => $get('enable_safety_stock') === '1')
+                            ->required(fn (Get $get) => $get('enable_safety_stock') === '1')
                             ->rules([
-                                fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                                     if ($get('enable_safety_stock') === '1' && $value <= 0) {
                                         $fail('The Safety Stock must be greater than 0 when enabled.');
                                     }
@@ -429,9 +429,9 @@ class MaterialForm
                         TextInput::make('max_stock')
                             ->numeric()
                             ->default(0.0)
-                            ->required(fn(Get $get) => $get('enable_max_stock') === '1')
+                            ->required(fn (Get $get) => $get('enable_max_stock') === '1')
                             ->rules([
-                                fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                                     if ($get('enable_max_stock') === '1' && $value <= 0) {
                                         $fail('The maximum stock must be greater than 0 when enabled.');
                                     }
@@ -460,9 +460,9 @@ class MaterialForm
                             ->label('Expired Days')
                             ->numeric()
                             ->default(0)
-                            ->required(fn(Get $get) => $get('enable_expired') === '1')
+                            ->required(fn (Get $get) => $get('enable_expired') === '1')
                             ->rules([
-                                fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                                     if ($get('enable_expired') === '1' && $value <= 0) {
                                         $fail('The expired days must be greater than 0 when enabled.');
                                     }
@@ -560,14 +560,14 @@ class MaterialForm
                                 if (filled($materialCode)) {
                                     $safeCode = str_replace(['/', '\\', '?', '*', ':', '|', '"', '<', '>', ' '], '-', $materialCode);
 
-                                    return (string) str($safeCode . '-' . now()->timestamp . '-' . uniqid() . '.' . $file->getClientOriginalExtension());
+                                    return (string) str($safeCode.'-'.now()->timestamp.'-'.uniqid().'.'.$file->getClientOriginalExtension());
                                 }
 
                                 return $file->hashName();
                             })
                             ->rules([
                                 function () {
-                                    return function (string $attribute, $value, \Closure $fail) {
+                                    return function (string $attribute, $value, Closure $fail) {
                                         // $value di sini isinya adalah array file-file yang diupload
                                         if (is_array($value)) {
                                             $totalSize = 0;

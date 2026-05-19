@@ -24,9 +24,13 @@ class PurchaseRequisitionResource extends Resource
     protected static ?string $model = PurchaseRequisitionHeader::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static ?string $recordTitleAttribute = 'PurchaseRequisition';
+
     protected static ?string $modelLabel = 'Purchase Requisition';
-    protected static ?string $pluralLabel = 'List of Purchase Requisition';
+
+    protected static ?string $pluralLabel = 'Purchase Requisition';
+
     protected static string|UnitEnum|null $navigationGroup = 'Transaction';
 
     public static function form(Schema $schema): Schema
@@ -67,5 +71,5 @@ class PurchaseRequisitionResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }   
+    }
 }

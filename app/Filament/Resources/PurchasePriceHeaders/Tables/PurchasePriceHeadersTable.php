@@ -45,8 +45,8 @@ class PurchasePriceHeadersTable
                     ->sortable()
                     ->toggleable()
                     ->badge()
-                    ->formatStateUsing(fn($state) => ucwords(str_replace('_', ' ', $state)))
-                    ->color(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn ($state) => ucwords(str_replace('_', ' ', $state)))
+                    ->color(fn (string $state): string => match ($state) {
                         'saved' => 'gray',
                         'waiting_approval' => 'warning',
                         'approved' => 'success',
@@ -92,7 +92,7 @@ class PurchasePriceHeadersTable
                     ->label('Updated By')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

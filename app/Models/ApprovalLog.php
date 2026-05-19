@@ -9,7 +9,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class ApprovalLog extends Model
 {
-    use HasFactory, HasRoles, Blameable;
+    use Blameable, HasFactory, HasRoles;
 
     protected $fillable = [
         'approval_flow_id',
@@ -20,6 +20,6 @@ class ApprovalLog extends Model
         'current_step_order',
         'current_approver_id',
         'status',
-        'processed_at'
+        'processed_at',
     ];
 }

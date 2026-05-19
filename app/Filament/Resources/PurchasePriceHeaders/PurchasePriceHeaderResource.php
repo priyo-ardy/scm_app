@@ -5,19 +5,15 @@ namespace App\Filament\Resources\PurchasePriceHeaders;
 use App\Filament\Resources\PurchasePriceHeaders\Pages\CreatePurchasePriceHeader;
 use App\Filament\Resources\PurchasePriceHeaders\Pages\EditPurchasePriceHeader;
 use App\Filament\Resources\PurchasePriceHeaders\Pages\ListPurchasePriceHeaders;
-use App\Filament\Resources\PurchasePriceHeaders\RelationManagers\DetailsRelationManager;
 use App\Filament\Resources\PurchasePriceHeaders\RelationManagers\PurchasePriceDetailsRelationManager;
 use App\Filament\Resources\PurchasePriceHeaders\Schemas\PurchasePriceHeaderForm;
 use App\Filament\Resources\PurchasePriceHeaders\Tables\PurchasePriceHeadersTable;
 use App\Models\PurchasePriceHeader;
 use BackedEnum;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 
 class PurchasePriceHeaderResource extends Resource
@@ -27,8 +23,11 @@ class PurchasePriceHeaderResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'PurchasePriceHeader';
+
     protected static ?string $navigationLabel = 'Purchase Price';
+
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+
     protected static ?int $navigationSort = 13;
 
     public static function form(Schema $schema): Schema
@@ -44,7 +43,7 @@ class PurchasePriceHeaderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PurchasePriceDetailsRelationManager::class
+            PurchasePriceDetailsRelationManager::class,
         ];
     }
 

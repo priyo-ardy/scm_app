@@ -54,7 +54,6 @@ class MaterialResource extends Resource
         return 'List of Materials';
     }
 
-
     public static function getModelLabel(): string
     {
         // return parent::getModelLabel();

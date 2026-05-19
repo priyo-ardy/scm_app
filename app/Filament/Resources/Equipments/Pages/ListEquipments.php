@@ -11,7 +11,6 @@ class ListEquipments extends ListRecords
 {
     protected static string $resource = EquipmentsResource::class;
 
-
     protected function getHeaderActions(): array
     {
         return [

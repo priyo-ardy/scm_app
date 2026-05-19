@@ -16,11 +16,9 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Session;
 
 class PurchaseRequisitionForm
 {
-
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -39,7 +37,7 @@ class PurchaseRequisitionForm
 
                                 return Company::where('is_default', '=', 1, 'and')->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(fn () => session('active_company') !== null)
                             ->dehydrated(true)
                             ->searchable()
                             ->native(false)
@@ -60,7 +58,7 @@ class PurchaseRequisitionForm
                             ->label('Department')
                             ->default(session('department_id'))
                             ->disabled()
-                            ->relationship('department', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
+                            ->relationship('department', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
                             ->dehydrated(true)
                             ->searchable()
                             ->native(false)
@@ -72,7 +70,7 @@ class PurchaseRequisitionForm
                             ->options([
                                 'normal' => 'Normal',
                                 'urgent' => 'Urgent',
-                                'critical' => 'Critical'
+                                'critical' => 'Critical',
                             ])
                             ->searchable()
                             ->native(false)
@@ -99,20 +97,21 @@ class PurchaseRequisitionForm
                         TableColumn::make('Qty')->width('200px'),
                         TableColumn::make('Arrival Date')->width('200px'),
                         TableColumn::make('Suggest Supplier')->width('400px'),
-                        TableColumn::make('Remark')->width('400px')
+                        TableColumn::make('Remark')->width('400px'),
                     ])
                     ->compact()
                     ->schema([
                         Select::make('material_id')
                             ->label('Material')
-                            ->relationship('material', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('status', '=', 'active', 'and')->orderBy('code', 'asc'))
-                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                            ->relationship('material', 'code', modifyQueryUsing: fn (Builder $query) => $query->where('status', '=', 'active', 'and')->orderBy('code', 'asc'))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name}")
                             ->searchable()
                             ->required()
                             ->native(false)
                             ->afterStateUpdated(function ($state, Set $set) {
-                                if (!$state) {
+                                if (! $state) {
                                     $set('unit_id', null);
+
                                     return;
                                 }
 
@@ -133,14 +132,14 @@ class PurchaseRequisitionForm
                         Select::make('unit_id')
                             ->label('UoM')
                             ->required()
-                            ->relationship('units', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', '=', true, 'and')->orderBy('code', 'asc'))
+                            ->relationship('units', 'code', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', '=', true, 'and')->orderBy('code', 'asc'))
                             ->searchable()
                             ->native(false)
                             ->preload(),
                         TextInput::make('qty')
                             ->label('Qty')
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn($state) => $state !== null ? (float) str_replace(',', '', $state) : 0)
+                            ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) str_replace(',', '', $state) : 0)
                             ->extraInputAttributes(['style' => 'text-align: right'])
                             ->default(1)
                             ->required(),
@@ -150,18 +149,18 @@ class PurchaseRequisitionForm
                             ->required(),
                         Select::make('supplier_id')
                             ->label('Default Supplier')
-                            ->relationship('supplier', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', '=', true, 'and')->orderBy('name', 'asc'))
+                            ->relationship('supplier', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', '=', true, 'and')->orderBy('name', 'asc'))
                             ->searchable()
                             ->native(false)
                             ->preload(),
                         TextInput::make('remark')
                             ->label('Remark')
-                            ->placeholder('Remark ...')
+                            ->placeholder('Remark ...'),
                     ])
                     ->deleteAction(
-                        fn(Action $action) => $action->requiresConfirmation()
+                        fn (Action $action) => $action->requiresConfirmation()
                     )
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }

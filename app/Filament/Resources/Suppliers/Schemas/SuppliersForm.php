@@ -50,7 +50,7 @@ class SuppliersForm
                                 // 3. Jika session null (Super Admin), ambil company default dari DB
                                 return Company::where('is_default', 1)->first()?->id;
                             })
-                            ->disabled(fn() => session('active_company') !== null)
+                            ->disabled(fn () => session('active_company') !== null)
                             ->dehydrated(true)
                             ->columnSpanFull(),
                     ])->columnSpan(1),
@@ -66,10 +66,10 @@ class SuppliersForm
                         TextInput::make('name')
                             ->label('Supplier Name')
                             ->live()
-                            ->afterStateUpdated(fn($set, $state) => $set('name', strtoupper(strtolower($state))))
+                            ->afterStateUpdated(fn ($set, $state) => $set('name', strtoupper(strtolower($state))))
                             ->unique(ignoreRecord: true)
                             ->validationMessages([
-                                'unique' => 'This supplier already registered'
+                                'unique' => 'This supplier already registered',
                             ])
                             ->required()
                             ->maxLength(150)
@@ -77,7 +77,7 @@ class SuppliersForm
                             ->autofocus()
                             ->placeholder('Supplier Name')
                             ->columnSpan(4)
-                            ->dehydrateStateUsing(fn($state) => strtoupper(strtolower($state))),
+                            ->dehydrateStateUsing(fn ($state) => strtoupper(strtolower($state))),
                         Textarea::make('address')
                             ->label('Supplier Address')
                             ->rows(1)
@@ -207,7 +207,7 @@ class SuppliersForm
                             ->relationship('currencyList', 'code')
                             ->searchable(['code', 'name'])
                             ->preload()
-                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name} ({$record->symbol})")
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name} ({$record->symbol})")
                             ->columnSpan(3),
                         Select::make('payment_term_id')
                             ->label('Payment Method')
