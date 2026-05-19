@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\PurchaseRequisitions\Pages;
 
+use App\Filament\Resources\PurchaseOrders\PurchaseOrderResource;
 use App\Filament\Resources\PurchaseRequisitions\PurchaseRequisitionResource;
+use App\Models\PurchaseOrderHeader;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
@@ -31,12 +33,12 @@ class ViewPurchaseRequisition extends ViewRecord
                 ->tooltip('New')
                 ->icon(Heroicon::OutlinedPlusCircle)
                 ->color('success')
-                ->url(fn () => $this->getResource()::getUrl('create')),
+                ->url(fn() => $this->getResource()::getUrl('create')),
             EditAction::make()
                 ->label('Edit')
                 ->icon(Heroicon::OutlinedPencilSquare)
                 ->tooltip('Edit')
-                ->visible(fn ($record) => in_array($record->doc_status, ['draft', 'saved'])),
+                ->visible(fn($record) => in_array($record->doc_status, ['draft', 'saved'])),
             Action::make('approve')
                 ->label('Approve')
                 ->icon(Heroicon::OutlinedCheck)
@@ -54,7 +56,7 @@ class ViewPurchaseRequisition extends ViewRecord
                         ->send();
                 })
                 ->button()
-                ->visible(fn ($record) => in_array($record->doc_status, ['saved'])),
+                ->visible(fn($record) => in_array($record->doc_status, ['saved'])),
             Action::make('reject')
                 ->label('Reject')
                 ->icon(Heroicon::OutlinedXMark)
@@ -81,7 +83,7 @@ class ViewPurchaseRequisition extends ViewRecord
                         ->success()
                         ->send();
                 })
-                ->visible(fn ($record) => $record->doc_status === 'saved'),
+                ->visible(fn($record) => $record->doc_status === 'saved'),
             Action::make('generate')
                 ->label('Generate PO')
                 ->icon(Heroicon::OutlinedCog6Tooth)
@@ -94,7 +96,7 @@ class ViewPurchaseRequisition extends ViewRecord
                 // ->url(fn($record): string => route('filament.resource.purchase-orders.create', [
                 //     'source_id' => $record->id,
                 // ]))
-                ->visible(fn ($record) => $record->doc_status === 'approved'),
+                ->visible(fn($record) => $record->doc_status === 'approved'),
             Action::make('deApprove')
                 ->label('De-Approve')
                 ->icon(Heroicon::OutlinedArrowUturnDown)
@@ -107,17 +109,34 @@ class ViewPurchaseRequisition extends ViewRecord
                         'approved_at' => null,
                     ]);
                 })
-                ->visible(fn ($record) => $record->doc_status === 'approved'),
+                ->visible(fn($record) => $record->doc_status === 'approved'),
+            ActionGroup::make([
+                Action::make('target')
+                    ->label('Target Document')
+                    ->tooltip('Target document')
+                    ->url(function () {
+                        $targetDocument = PurchaseOrderHeader::where('purchase_requisition_id', $this->record->id)->first();
+
+                        return $targetDocument
+                            ? PurchaseOrderResource::getUrl('view', ['record' => $targetDocument])
+                            : null;
+                    }),
+            ])
+                ->label('Associated Query')
+                ->color('gray')
+                ->tooltip('Associated query')
+                ->icon(Heroicon::OutlinedEllipsisVertical)
+                ->button(),
             ActionGroup::make([
                 Action::make('print')
                     ->label('Print')
                     ->tooltip('Print')
                     ->icon(Heroicon::OutlinedPrinter)
-                    ->url(fn ($record) => route('print.pr', $record))
+                    ->url(fn($record) => route('print.pr', $record))
                     ->openUrlInNewTab()
                     ->color('gray')
-                    ->visible(fn ($record) => $record->doc_status === 'approved'),
-                DeleteAction::make()->label('Delete')->tooltip('Delete')->icon(Heroicon::OutlinedTrash)->visible(fn ($record) => in_array($record->doc_status, ['draft', 'saved'])),
+                    ->visible(fn($record) => $record->doc_status === 'approved'),
+                DeleteAction::make()->label('Delete')->tooltip('Delete')->icon(Heroicon::OutlinedTrash)->visible(fn($record) => in_array($record->doc_status, ['draft', 'saved'])),
                 Action::make('prev')
                     ->label('Previous')
                     ->icon(Heroicon::OutlinedChevronLeft)

@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\PurchaseOrders\Pages;
 
 use App\Filament\Resources\PurchaseOrders\PurchaseOrderResource;
+use App\Filament\Resources\PurchaseRequisitions\PurchaseRequisitionResource;
 use App\Models\PurchaseOrderHeader;
+use App\Models\PurchaseRequisitionHeader;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
@@ -94,7 +96,14 @@ class ViewPurchaseOrder extends ViewRecord
             ActionGroup::make([
                 Action::make('source')
                     ->label('Source Document')
-                    ->tooltip('Source document'),
+                    ->tooltip('Source document')
+                    ->url(function () {
+                        $sourceDocument = PurchaseRequisitionHeader::where('id', $this->record->purchase_requisition_id)->first();
+
+                        return $sourceDocument
+                            ? PurchaseRequisitionResource::getUrl('view', ['record' => $sourceDocument])
+                            : null;
+                    }),
                 Action::make('target')
                     ->label('Target Document')
                     ->tooltip('Target document'),

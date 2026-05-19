@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Purchase Order | {{ $record->code }}</title>
+    <link rel="icon" href="{{ asset('storage/favicon.png') }}" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         /* 1. Aturan Global agar perhitungan lebar presisi */
         * {
@@ -258,6 +261,7 @@
         <tr>
             <td class="info-box" style="width: 50%">
                 <div class="info-title">Ship To :</div>
+                @if (blank($record->shipping_address))
                 <span style="font-size: 7.5pt; line-height: 1.3;">
                     <strong>PT. Schlemmer Automotive Indonesia</strong>
                 </span><br>
@@ -273,6 +277,11 @@
                 <span style="font-size: 7.5pt; line-height: 1.3;">
                     Indonesia
                 </span>
+                @else
+                <span style="font-size: 7.5pt; line-height: 1.3; white-space: pre-wrap;">
+                    {!! nl2br(e($record->shipping_address)) !!}
+                </span>
+                @endif
             </td>
             <td style="width: 1%"></td>
             <td class="info-box" style="width: 49%;">
@@ -411,16 +420,13 @@
             <td style="width: 60%; vertical-align: top;">
                 <strong>Exchange Rate:</strong> Rp {{ number_format($record->exchange_rate, 0) ?? '1' }}<br>
                 <strong>Term Of Payment:</strong> {{ $record->term_of_payment ?? '30 days from Invoice received' }}<br>
-                <strong>Remarks:</strong> {{ $record->remark }}<br><br>
+                <strong>Remarks:</strong> {{ nl2br(e($record->remark)) }}<br><br>
                 <div style="font-size: 7pt; line-height: 1.3; color: #111;">
                     * PO Number must be listed in all invoices, street letters and Letters relating to this PO<br>
                     * Street mail and Invoice Tax must be sent 3 sheets (1 original, 2 copies)<br>
                     * Exchange invoices every Tuesday Wednesday Thursday (09:00 am to 11:00 am) -Received receipt <br>
                     * <strong>Note:</strong> This electronic document is already valid evidence as a Purchase Order
                 </div>
-            </td>
-            <td style="width: 40%; vertical-align: bottom; text-align: right; font-size: 7.5pt; font-style: italic;">
-                Tanggal Cetak (Date of Print): {{ now()->format('d/m/Y') }}
             </td>
         </tr>
     </table>
@@ -456,6 +462,11 @@
                         Signature:<br>
                         Date:
                     </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="vertical-align: bottom; text-align: right; font-size: 7.5pt; font-style: italic; padding-right: 10px;">
+                    Date of Print: {{ now()->format('d/m/Y') }}
                 </td>
             </tr>
         </table>
