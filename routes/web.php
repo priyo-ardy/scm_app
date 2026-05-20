@@ -26,3 +26,5 @@ Route::post('/purchase-orders/{record}/increment-print', function (PurchaseOrder
         'new_count' => $record->printed_count,
     ]);
 })->name('purchase-orders.increment-print')->middleware(['auth']);
+
+Route::get('/po-picker', \App\Livewire\PoPicker::class);

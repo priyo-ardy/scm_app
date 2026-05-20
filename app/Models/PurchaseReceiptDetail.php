@@ -50,7 +50,7 @@ class PurchaseReceiptDetail extends Model
         return $this->belongsTo(Unit::class, 'unit_id');
     }
 
-    public function details(): BelongsTo
+    public function detail(): BelongsTo
     {
         return $this->belongsTo(PurchaseReceiptHeader::class, 'receipt_id');
     }

@@ -16,7 +16,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
-use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 
 class PurchaseReceiptHeaderForm
@@ -57,7 +56,7 @@ class PurchaseReceiptHeaderForm
                             ->default(now())
                             ->columnSpan(2),
                         DatePicker::make('received_date')
-                            ->label('Date')
+                            ->label('Received Date')
                             ->required()
                             ->default(now())
                             ->columnSpan(2),
