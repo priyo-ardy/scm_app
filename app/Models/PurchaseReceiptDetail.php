@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Blameable;
+use App\Jobs\UpdateOutstandingPurchaseOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,5 +54,17 @@ class PurchaseReceiptDetail extends Model
     public function detail(): BelongsTo
     {
         return $this->belongsTo(PurchaseReceiptHeader::class, 'receipt_id');
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($model) {
+            if ($model->po_detail_id && $model->qty_received > 0) {
+                $model->afterCommit(function () use ($model) {
+                    // Lempar langsung objek $model (PurchaseReceiptDetail) ke Job
+                    UpdateOutstandingPurchaseOrder::dispatch($model);
+                });
+            }
+        });
     }
 }

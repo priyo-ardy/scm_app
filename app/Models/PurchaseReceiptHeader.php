@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Blameable;
 use App\HasCodeGenerator;
+use App\Jobs\UpdateOutstandingPurchaseOrder;
 use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -68,23 +69,17 @@ class PurchaseReceiptHeader extends Model
 
     protected static function booted()
     {
-        return parent::booted();
-
-        static::addGlobalScope(new CompanyScope);
-
+        static::addGlobalScope(CompanyScope::class);
         static::creating(function ($model) {
-            $companyId = $model->company_id;
-
-            if ($companyId) {
-                $model->code = self::generateCodeWithDateByCompany(
-                    tableName: 'purchase_receipt_headers',
-                    columnName: 'code',
-                    prefix: 'RCP',
-                    digits: 8,
-                    separator: '-',
-                    companyId: $companyId
-                );
-            }
+            $company = $model->company_id;
+            $model->code = self::generateCodeWithDateByCompany(
+                tableName: 'purchase_receipt_headers',
+                columnName: 'code',
+                prefix: 'PC',
+                digits: 8,
+                separator: '-',
+                companyId: $company
+            );
         });
     }
 }

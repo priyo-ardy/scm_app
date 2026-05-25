@@ -73,6 +73,9 @@ class PurchaseOrderDetail extends Model
 
     protected static function booted()
     {
-        static::created(function ($mode) {});
+        static::created(function ($model) {});
+        static::saving(function ($model) {
+            $model->qty_remaining = $model->qty;
+        });
     }
 }

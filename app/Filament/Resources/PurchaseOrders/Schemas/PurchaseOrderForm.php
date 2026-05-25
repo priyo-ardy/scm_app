@@ -45,7 +45,7 @@ class PurchaseOrderForm
 
                                 return Company::where('is_default', 1)->first()?->id;
                             })
-                            ->disabled(fn () => session('active_company') !== null)
+                            ->disabled(fn() => session('active_company') !== null)
                             ->dehydrated(true)
                             ->required(),
                         TextInput::make('code')
@@ -60,7 +60,7 @@ class PurchaseOrderForm
                             ->columnSpan(2),
                         Select::make('supplier_id')
                             ->label('Supplier')
-                            ->relationship('supplier', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
+                            ->relationship('supplier', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
                             ->searchable()
                             ->preload()
                             ->native(false)
@@ -83,7 +83,7 @@ class PurchaseOrderForm
                             ->columnSpan(4),
                         Select::make('currency_id')
                             ->label('Currency')
-                            ->relationship('currency', 'code', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true)->orderBy('code', 'asc'))
+                            ->relationship('currency', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('code', 'asc'))
                             ->searchable()
                             ->preload()
                             ->native(false)
@@ -91,7 +91,7 @@ class PurchaseOrderForm
                             ->columnSpan(2),
                         Select::make('purchase_requisition_id')
                             ->label('Purchase Requisition')
-                            ->relationship('purchaseRequisition', 'code', modifyQueryUsing: fn (Builder $query) => $query->where('doc_status', 'approved')->where('is_closed', false)->orderBy('code', 'desc'))
+                            ->relationship('purchaseRequisition', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('doc_status', 'approved')->where('is_closed', false)->orderBy('code', 'desc'))
                             ->searchable()
                             ->optionsLimit(5)
                             ->preload(true)
@@ -163,7 +163,7 @@ class PurchaseOrderForm
                             ->required(),
                         Select::make('department_id')
                             ->label('Requested Department')
-                            ->relationship('department', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
+                            ->relationship('department', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
                             ->searchable()
                             ->preload()
                             ->native(false)
@@ -195,7 +195,7 @@ class PurchaseOrderForm
                             ->extraInputAttributes(['style' => 'text-align: right']),
                         Select::make('payment_term_id')
                             ->label('Payment Term')
-                            ->relationship('paymentTerm', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
+                            ->relationship('paymentTerm', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
                             ->searchable()
                             ->preload()
                             ->native(false)
@@ -241,7 +241,7 @@ class PurchaseOrderForm
                             ->relationship('material', 'code')
                             ->searchable(['code', 'name'])
                             ->searchPrompt('Write material code/name')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name}")
+                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
                             ->extraAttributes(['style' => '400px !important'])
                             ->required()
                             ->live()
@@ -268,7 +268,7 @@ class PurchaseOrderForm
                             ->placeholder('Specification')
                             ->extraAttributes(['class' => 'break-words text-sm']),
                         Select::make('unit_id')
-                            ->relationship('units', 'code', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true)->orderBy('code', 'asc'))
+                            ->relationship('units', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('code', 'asc'))
                             ->searchable()
                             ->searchPrompt('')
                             ->preload()
@@ -287,7 +287,7 @@ class PurchaseOrderForm
                             ->step(0.001)
                             ->live(onBlur: true)
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0)
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0)
                             ->stripCharacters(',')
                             ->validationMessages([
                                 'required' => 'Qty is required',
@@ -310,7 +310,7 @@ class PurchaseOrderForm
                                 'min' => 'Unit price must be greater than 0',
                             ])
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0)
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0)
                             ->stripCharacters(',')
                             ->required(),
                         TextInput::make('amount')
@@ -319,7 +319,7 @@ class PurchaseOrderForm
                             ->readOnly()
                             ->extraInputAttributes(['style' => 'text-align: right'])
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0)
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0)
                             ->stripCharacters(',')
                             ->required()
                             ->minValue(0.001)
@@ -338,7 +338,7 @@ class PurchaseOrderForm
                                 self::calculateDiscountAmount($get, $set);
                             })
                             ->stripCharacters(',')
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0),
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0),
                         TextInput::make('discount_amount')
                             ->numeric()
                             ->default(0)
@@ -349,13 +349,13 @@ class PurchaseOrderForm
                             })
                             ->live(onBlur: true)
                             ->stripCharacters(',')
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0),
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0),
                         TextInput::make('price_after_discount')
                             ->default(0)
                             ->readOnly()
                             ->extraInputAttributes(['style' => 'text-align: right'])
                             ->mask(RawJs::make('$money($input)'))
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0),
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0),
                         TextInput::make('tax_rate')
                             ->numeric()
                             ->default(0)
@@ -366,7 +366,7 @@ class PurchaseOrderForm
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 self::calculateTaxAmount($get, $set);
                             })
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0),
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0),
                         TextInput::make('tax_amount')
                             ->numeric()
                             ->default(0)
@@ -375,7 +375,7 @@ class PurchaseOrderForm
                             ->stripCharacters(',')
                             ->readOnly()
                             ->afterStateUpdated(function (Get $get, Set $set) {})
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0),
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0),
                         TextInput::make('price_after_tax')
                             ->default(0)
                             ->readOnly()
@@ -394,7 +394,7 @@ class PurchaseOrderForm
                                 'min' => 'Total amount must greather than 0',
                             ])
                             ->readOnly()
-                            ->dehydrateStateUsing(fn ($state) => self::parseMoney($state) ?? 0),
+                            ->dehydrateStateUsing(fn($state) => self::parseMoney($state) ?? 0),
                         DatePicker::make('delivery_date')
                             ->default(now()),
                         TextInput::make('remark')

@@ -4,6 +4,8 @@ namespace App\Filament\Resources\PurchaseReceiptHeaders\Schemas;
 
 use App\Models\Company;
 use App\Models\Material;
+use App\Models\PurchaseOrderDetail;
+use App\Models\PurchaseReceiptDetail;
 use App\Models\Supplier;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -126,6 +128,7 @@ class PurchaseReceiptHeaderForm
                     ->columns(12)
                     ->columnSpanFull(),
                 Repeater::make('details')
+                    ->defaultItems(0)
                     ->relationship()
                     ->hiddenLabel()
                     ->table([
@@ -154,6 +157,13 @@ class PurchaseReceiptHeaderForm
                                     $set('material_name', $material?->name);
                                     $set('specification', $material?->specification);
                                     $set('unit_id', $material?->purchase_unit_id);
+                                }
+                            })
+                            ->afterStateHydrated(function ($state, Set $set) {
+                                if ($state) {
+                                    $material = Material::find($state);
+                                    $set('material_name', $material?->name);
+                                    $set('specification', $material?->specification);
                                 }
                             })
                             ->native(false)
@@ -190,7 +200,37 @@ class PurchaseReceiptHeaderForm
                                 'required' => 'Qty is required',
                                 'min' => 'Qty must be greater than 0',
                             ])
-                            ->required(),
+                            ->rule([
+                                fn(Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $cleanValue = is_numeric($value) ? (float) $value : (float) str_replace([',', ' '], '', $value);
+
+                                    $poDetailId = $get('po_detail_id');
+
+                                    if ($poDetailId) {
+                                        $poDetail = PurchaseOrderDetail::find($poDetailId);
+
+                                        if ($poDetail) {
+                                            $receiptDetailId = $get('id');
+                                            $alreadyReceiveBefore = 0;
+
+                                            if ($receiptDetailId) {
+                                                $alreadyReceiveBefore = PurchaseReceiptDetail::where('id', $receiptDetailId)->value('qty_received') ?? 0;
+                                            }
+
+                                            $maxAllowed = $poDetail->qty_remaining + $alreadyReceiveBefore;
+
+                                            if ($cleanValue > $maxAllowed) {
+                                                $fail("The quantity received must not exceed the remaining PO quantity (Maximum: {$maxAllowed}).");
+                                            }
+                                        }
+                                    }
+                                }
+                            ])
+                            ->required()
+                            ->validationMessages([
+                                'required' => 'Qty is required',
+                                'min' => 'Qty must be greater than 0',
+                            ]),
                         TextInput::make('lot_number')
                             ->required()
                             ->placeholder('Lot No')

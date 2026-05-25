@@ -9,13 +9,36 @@ use Filament\Support\Icons\Heroicon;
 use App\Livewire\PoPicker;
 use App\Models\PurchaseOrderDetail;
 use Filament\Schemas\Components\Livewire as ComponentsLivewire;
-use Livewire\Attributes\On; // 1. WAJIB IMPORT INI
-use Illuminate\Support\Str; // 2. WAJIB IMPORT INI UNTUK GENERATE UUID REPEATER
+use Livewire\Attributes\On;
+use Illuminate\Support\Str;
 
+/**
+ * Filament page for creating a Purchase Receipt Header record.
+ *
+ * Responsibilities:
+ * - Provides header actions for navigation and source-document selection.
+ * - Opens a PO picker modal (Livewire component) to select PO detail rows.
+ * - Listens for selected PO item IDs and maps them into receipt detail form rows.
+ * - Prevents duplicate PO detail insertion into current form state.
+ */
 class CreatePurchaseReceiptHeader extends CreateRecord
 {
+    /**
+     * Resource class bound to this Create page.
+     *
+     * @var class-string<\Filament\Resources\Resource>
+     */
     protected static string $resource = PurchaseReceiptHeaderResource::class;
 
+    /**
+     * Define actions displayed in the page header.
+     *
+     * Actions:
+     * - back: Navigate to the resource index page.
+     * - source: Open modal to select source document lines via PoPicker.
+     *
+     * @return array<int, \Filament\Actions\Action>
+     */
     protected function getHeaderActions(): array
     {
         return [
@@ -40,61 +63,71 @@ class CreatePurchaseReceiptHeader extends CreateRecord
         ];
     }
 
+    /**
+     * Handle selected Purchase Order detail IDs from the PoPicker component.
+     *
+     * Event: `po-items-selected`
+     *
+     * Processing flow:
+     * - Load selected PO details with required relations.
+     * - Set supplier_id from the first selected PO header detail.
+     * - Merge selected items into existing `details` form state.
+     * - Skip rows already present (duplicate `po_detail_id`).
+     * - Generate UUID keys for new repeater/form-detail rows.
+     * - Fill form state and close modal action.
+     *
+     * @param array<int, string|int> $selectedIds
+     * @return void
+     */
     #[On('po-items-selected')]
     public function handleSelectedPoItems(array $selectedIds)
     {
-        // Ambil detail PO beserta relasi headernya
         $poDetails = PurchaseOrderDetail::with(['detail', 'material', 'units'])->find($selectedIds);
 
         if ($poDetails->isEmpty()) {
             return;
         }
 
-        // 4. SET DATA HEADER (SUPPLIER)
         $firstItem = $poDetails->first();
         if ($firstItem && $firstItem->detail) {
             $this->data['supplier_id'] = $firstItem->detail->supplier_id;
         }
 
-        // 5. SET DATA BANYAK ITEM KE REPEATER (KEY: 'details')
         $currentItems = $this->data['details'] ?? [];
 
         foreach ($poDetails as $detail) {
-            // Cek duplikasi agar item yang sama tidak masuk dua kali jika di-klik ulang
             $isDuplicate = collect($currentItems)->contains('po_detail_id', $detail->id);
 
             if ($isDuplicate) {
                 continue;
             }
 
-            // Wajib generate UUID sebagai index baris agar sinkron dengan AlpineJS di Frontend
             $rowId = (string) Str::uuid();
 
-            // Petakan data sesuai dengan struktur komponen input di PurchaseReceiptHeaderForm.php
             $currentItems[$rowId] = [
                 'po_detail_id'  => $detail->id,
                 'material_id'   => $detail->material_id,
                 'material_name' => $detail->material?->name,
                 'specification' => $detail->material?->specification,
                 'unit_id'       => $detail->unit_id ?? $detail->material?->purchase_unit_id,
-                'qty_received'  => $detail->qty_remaining, // Set sisa PO sebagai default kuantitas terima
-                'lot_number'    => '', // Kosongkan agar user bisa isi manual (karena required)
+                'qty_received'  => $detail->qty_remaining,
+                'lot_number'    => '',
                 'remark'        => '',
             ];
         }
 
-        // Masukkan array items yang sudah matang kembali ke form state
         $this->data['details'] = $currentItems;
 
-        // 6. RE-REFRESH/FILL FORM STATE AGAR MUNCUL DI LAYAR
         $this->form->fill($this->data);
 
-        // 7. AKTIFKAN KEMBALI UNTUK MENUTUP MODAL SECARA OTOMATIS
-        $this->dispatch('close-modal', id: 'page-action-source');
+        $this->dispatch('close-modal');
+        $this->mountedActions = [];
     }
 
-    // public function closeSelectPoModal()
-    // {
-    //     $this->unmountMountedAction();
-    // }
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['doc_status'] = 'approved';
+
+        return $data;
+    }
 }

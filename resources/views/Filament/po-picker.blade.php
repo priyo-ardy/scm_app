@@ -82,6 +82,9 @@
                         Specification
                     </th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                        UoM
+                    </th>
+                    <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
                         Qty
                     </th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
@@ -117,7 +120,7 @@
                     </td>
 
                     {{-- Material Code --}}
-                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $po->material?->code }}>
+                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $po->material?->code }}">
                         {{ $po->material?->code ?? '—' }}
                     </td>
 
@@ -129,6 +132,11 @@
                     {{-- Specification --}}
                     <td class="px-4 py-3.5 whitespace-nowrap text-gray-500 dark:text-gray-400 max-w-xs truncate" title="{{ $po->material?->specification }}">
                         {{ $po->material?->specification ?? '—' }}
+                    </td>
+
+                    {{-- Units --}}
+                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-500 dark:text-gray-400 max-w-xs truncate" title="{{ $po->material?->specification }}">
+                        {{ $po->units?->code ?? '—' }}
                     </td>
 
                     {{-- Quantity --}}
@@ -143,9 +151,8 @@
                         ? 'bg-success-50 dark:bg-success-400/10 text-success-600 dark:text-success-400 ring-1 ring-inset ring-success-600/20 dark:ring-success-400/30'
                         : 'bg-danger-50 dark:bg-danger-400/10 text-danger-600 dark:text-danger-400 ring-1 ring-inset ring-danger-600/20 dark:ring-danger-400/30';
                         @endphp
-                        <span class="fi-badge inline-flex items-center justify-center min-w-[theme(spacing.6)]
-                                     rounded-xl px-2 py-0.5 text-xs font-medium tabular-nums {{ $badgeColors }}">
-                            {{ $po->qty_remaining ?? 0 }}
+                        <span class="fi-badge inline-flex items-center justify-center min-w-[theme(spacing.6)] rounded-xl px-2 py-0.5 text-xs font-medium tabular-nums {{ $badgeColors }}">
+                            {{ number_format($po->qty_remaining, 0) ?? 0 }}
                         </span>
                     </td>
 
