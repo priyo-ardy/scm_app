@@ -13,6 +13,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -125,6 +126,11 @@ class PurchaseReceiptHeaderForm
                             ->readOnly()
                             ->columnSpan(1)
                             ->default(0),
+                        Textarea::make('remark')
+                            ->label('Remark')
+                            ->placeholder('Write additional information here')
+                            ->nullable()
+                            ->columnSpanFull()
                     ])
                     ->columns(12)
                     ->columnSpanFull(),
@@ -138,12 +144,13 @@ class PurchaseReceiptHeaderForm
                         TableColumn::make('Specification')->wrapHeader(),
                         TableColumn::make('UoM')->wrapHeader(),
                         TableColumn::make('Qty Received')->markAsRequired()->wrapHeader(),
-                        TableColumn::make('Lot No.')->markAsRequired()->wrapHeader(),
+                        // TableColumn::make('Lot No.')->wrapHeader(),
                         TableColumn::make('Remark')->wrapHeader(),
                     ])
                     ->compact()
                     ->schema([
                         Hidden::make('po_detail_id'),
+                        Hidden::make('po_id'),
                         Select::make('material_id')
                             ->relationship('material', 'code')
                             ->searchable(['code', 'name'])
@@ -232,9 +239,9 @@ class PurchaseReceiptHeaderForm
                                 'required' => 'Qty is required',
                                 'min' => 'Qty must be greater than 0',
                             ]),
-                        TextInput::make('lot_number')
-                            ->placeholder('Lot No')
-                            ->maxLength(50),
+                        // TextInput::make('lot_number')
+                        //     ->placeholder('Lot No')
+                        //     ->maxLength(50),
                         TextInput::make('remark')
                             ->placeholder('Remark')
                             ->nullable(),

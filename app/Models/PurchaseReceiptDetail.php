@@ -63,7 +63,18 @@ class PurchaseReceiptDetail extends Model
             if ($model->po_detail_id && $model->qty_received > 0) {
                 UpdateOutstandingPurchaseOrder::dispatch(
                     $model->po_detail_id,
-                    (float) $model->qty_received
+                    (float) $model->qty_received,
+                    'decrement'
+                )->afterCommit();
+            }
+        });
+
+        static::deleted(function ($model) {
+            if ($model->po_detail_id && $model->qty_received > 0) {
+                UpdateOutstandingPurchaseOrder::dispatch(
+                    $model->po_detail_id,
+                    (float) $model->qty_received,
+                    'increment'
                 )->afterCommit();
             }
         });

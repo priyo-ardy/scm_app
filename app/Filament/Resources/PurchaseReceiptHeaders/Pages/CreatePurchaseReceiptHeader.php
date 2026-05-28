@@ -108,6 +108,7 @@ class CreatePurchaseReceiptHeader extends CreateRecord
             $rowId = (string) Str::uuid();
 
             $currentItems[$rowId] = [
+                'po_id' => $detail->po_id,
                 'po_detail_id' => $detail->id,
                 'material_id' => $detail->material_id,
                 'material_name' => $detail->material?->name,

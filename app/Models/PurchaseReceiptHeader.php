@@ -66,6 +66,11 @@ class PurchaseReceiptHeader extends Model
         return $this->hasMany(PurchaseReceiptDetail::class, 'receipt_id');
     }
 
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     protected static function booted()
     {
         static::addGlobalScope(CompanyScope::class);
@@ -79,6 +84,16 @@ class PurchaseReceiptHeader extends Model
                 separator: '-',
                 companyId: $company
             );
+        });
+
+        static::deleting(function ($header) {
+            // Ambil semua detail terkait, lalu hapus menggunakan model Eloquent
+            // Nama relasi 'details' sesuaikan dengan nama fungsi relasi di modelmu
+            if ($header->details) {
+                $header->details->each(function ($detail) {
+                    $detail->delete(); // Ini akan memicu event 'deleting' di PurchaseReceiptDetail
+                });
+            }
         });
     }
 }
