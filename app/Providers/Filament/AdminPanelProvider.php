@@ -10,11 +10,13 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -135,6 +137,10 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Application Setup')
                     ->icon(null)
                     ->collapsed(),
+                NavigationGroup::make()
+                    ->label('System')
+                    ->icon(null)
+                    ->collapsed()
             ])
             ->globalSearch()
             ->sidebarCollapsibleOnDesktop(true);
