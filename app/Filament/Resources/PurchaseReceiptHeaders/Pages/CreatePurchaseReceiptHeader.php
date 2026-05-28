@@ -3,14 +3,15 @@
 namespace App\Filament\Resources\PurchaseReceiptHeaders\Pages;
 
 use App\Filament\Resources\PurchaseReceiptHeaders\PurchaseReceiptHeaderResource;
-use Filament\Actions\Action;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Support\Icons\Heroicon;
 use App\Livewire\PoPicker;
 use App\Models\PurchaseOrderDetail;
+use Filament\Actions\Action;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Livewire as ComponentsLivewire;
-use Livewire\Attributes\On;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 
 /**
  * Filament page for creating a Purchase Receipt Header record.
@@ -37,7 +38,7 @@ class CreatePurchaseReceiptHeader extends CreateRecord
      * - back: Navigate to the resource index page.
      * - source: Open modal to select source document lines via PoPicker.
      *
-     * @return array<int, \Filament\Actions\Action>
+     * @return array<int, Action>
      */
     protected function getHeaderActions(): array
     {
@@ -59,7 +60,7 @@ class CreatePurchaseReceiptHeader extends CreateRecord
                 ])
                 ->modalSubmitAction(false)
                 ->modalCancelAction(false)
-                ->modalWidth('6xl')
+                ->modalWidth('6xl'),
         ];
     }
 
@@ -76,7 +77,7 @@ class CreatePurchaseReceiptHeader extends CreateRecord
      * - Generate UUID keys for new repeater/form-detail rows.
      * - Fill form state and close modal action.
      *
-     * @param array<int, string|int> $selectedIds
+     * @param  array<int, string|int>  $selectedIds
      * @return void
      */
     #[On('po-items-selected')]
@@ -91,6 +92,8 @@ class CreatePurchaseReceiptHeader extends CreateRecord
         $firstItem = $poDetails->first();
         if ($firstItem && $firstItem->detail) {
             $this->data['supplier_id'] = $firstItem->detail->supplier_id;
+            $this->data['currency_id'] = $firstItem->detail->currency_id;
+            $this->data['currency_id'] = $firstItem->detail->exchange_rate;
         }
 
         $currentItems = $this->data['details'] ?? [];
@@ -105,14 +108,14 @@ class CreatePurchaseReceiptHeader extends CreateRecord
             $rowId = (string) Str::uuid();
 
             $currentItems[$rowId] = [
-                'po_detail_id'  => $detail->id,
-                'material_id'   => $detail->material_id,
+                'po_detail_id' => $detail->id,
+                'material_id' => $detail->material_id,
                 'material_name' => $detail->material?->name,
                 'specification' => $detail->material?->specification,
-                'unit_id'       => $detail->unit_id ?? $detail->material?->purchase_unit_id,
-                'qty_received'  => $detail->qty_remaining,
-                'lot_number'    => '',
-                'remark'        => '',
+                'unit_id' => $detail->unit_id ?? $detail->material?->purchase_unit_id,
+                'qty_received' => $detail->qty_remaining,
+                'lot_number' => '',
+                'remark' => '',
             ];
         }
 

@@ -27,7 +27,7 @@ class UpdateOutstandingPurchaseOrder implements ShouldQueue
                 ->first();
 
             if ($poDetail) {
-                $poDetail->decreament('qty_remaining', $this->qtyReceived);
+                $poDetail->decrement('qty_remaining', $this->qtyReceived);
             }
         });
     }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Print\PurchaseOrderPrintController;
 use App\Http\Controllers\Print\PurchaseRequisitionPrintController;
+use App\Livewire\PoPicker;
 use App\Models\PurchaseOrderHeader;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +28,4 @@ Route::post('/purchase-orders/{record}/increment-print', function (PurchaseOrder
     ]);
 })->name('purchase-orders.increment-print')->middleware(['auth']);
 
-Route::get('/po-picker', \App\Livewire\PoPicker::class);
+Route::get('/po-picker', PoPicker::class);

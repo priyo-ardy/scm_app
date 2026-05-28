@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Blameable;
 use App\HasCodeGenerator;
-use App\Jobs\UpdateOutstandingPurchaseOrder;
 use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

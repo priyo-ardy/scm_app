@@ -7,6 +7,7 @@ use App\Jobs\UpdateOutstandingPurchaseOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
 
 class PurchaseReceiptDetail extends Model
@@ -60,10 +61,10 @@ class PurchaseReceiptDetail extends Model
     {
         static::created(function ($model) {
             if ($model->po_detail_id && $model->qty_received > 0) {
-                $model->afterCommit(function () use ($model) {
-                    // Lempar langsung objek $model (PurchaseReceiptDetail) ke Job
-                    UpdateOutstandingPurchaseOrder::dispatch($model);
-                });
+                UpdateOutstandingPurchaseOrder::dispatch(
+                    $model->po_detail_id,
+                    (float) $model->qty_received
+                )->afterCommit();
             }
         });
     }

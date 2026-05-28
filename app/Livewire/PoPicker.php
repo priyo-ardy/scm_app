@@ -4,10 +4,10 @@ namespace App\Livewire;
 
 use App\Models\PurchaseOrderDetail;
 use Filament\Notifications\Notification;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
-
-
 
 /**
  * Livewire component for selecting Purchase Order (PO) detail items.
@@ -65,13 +65,13 @@ class PoPicker extends Component
      * When enabled, all IDs from the current filtered query are selected.
      * When disabled, the selected list is cleared.
      *
-     * @param bool $value
+     * @param  bool  $value
      * @return void
      */
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selected = $this->getQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+            $this->selected = $this->getQuery()->pluck('id')->map(fn ($id) => (string) $id)->toArray();
         } else {
             $this->selected = [];
         }
@@ -89,7 +89,7 @@ class PoPicker extends Component
      *   - material code/name/specification
      * - Orders newest first by created_at.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     private function getQuery()
     {
@@ -100,16 +100,14 @@ class PoPicker extends Component
                 $query->where(function ($q) {
                     $q->whereHas(
                         'detail',
-                        fn($subQ) =>
-                        $subQ->where('code', 'like', '%' . $this->search . '%')
-                            ->orWhereHas('supplier', fn($sq) => $sq->where('name', 'like', '%' . $this->search . '%'))
+                        fn ($subQ) => $subQ->where('code', 'like', '%'.$this->search.'%')
+                            ->orWhereHas('supplier', fn ($sq) => $sq->where('name', 'like', '%'.$this->search.'%'))
                     )
                         ->orWhereHas(
                             'material',
-                            fn($subQ) =>
-                            $subQ->where('code', 'like', '%' . $this->search . '%')
-                                ->orWhere('name', 'like', '%' . $this->search . '%')
-                                ->orWhere('specification', 'like', '%' . $this->search . '%')
+                            fn ($subQ) => $subQ->where('code', 'like', '%'.$this->search.'%')
+                                ->orWhere('name', 'like', '%'.$this->search.'%')
+                                ->orWhere('specification', 'like', '%'.$this->search.'%')
                         );
                 });
             })
@@ -119,14 +117,14 @@ class PoPicker extends Component
     /**
      * Render the component view with paginated data.
      *
-     * @return \Illuminate\Contracts\View\View
+     * @return View
      */
     public function render()
     {
         $data = $this->getQuery()->paginate(10);
 
         return view('Filament.po-picker', [
-            'data' => $data
+            'data' => $data,
         ]);
     }
 

@@ -7,6 +7,7 @@ use App\Models\Material;
 use App\Models\PurchaseOrderDetail;
 use App\Models\PurchaseReceiptDetail;
 use App\Models\Supplier;
+use Closure;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -123,7 +124,7 @@ class PurchaseReceiptHeaderForm
                             ->numeric()
                             ->readOnly()
                             ->columnSpan(1)
-                            ->default(0)
+                            ->default(0),
                     ])
                     ->columns(12)
                     ->columnSpanFull(),
@@ -200,8 +201,8 @@ class PurchaseReceiptHeaderForm
                                 'required' => 'Qty is required',
                                 'min' => 'Qty must be greater than 0',
                             ])
-                            ->rule([
-                                fn(Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                            ->rules(fn(Get $get): array => [
+                                function (string $attribute, $value, Closure $fail) use ($get) {
                                     $cleanValue = is_numeric($value) ? (float) $value : (float) str_replace([',', ' '], '', $value);
 
                                     $poDetailId = $get('po_detail_id');
@@ -224,7 +225,7 @@ class PurchaseReceiptHeaderForm
                                             }
                                         }
                                     }
-                                }
+                                },
                             ])
                             ->required()
                             ->validationMessages([
@@ -232,14 +233,13 @@ class PurchaseReceiptHeaderForm
                                 'min' => 'Qty must be greater than 0',
                             ]),
                         TextInput::make('lot_number')
-                            ->required()
                             ->placeholder('Lot No')
                             ->maxLength(50),
                         TextInput::make('remark')
                             ->placeholder('Remark')
-                            ->nullable()
+                            ->nullable(),
                     ])
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 
