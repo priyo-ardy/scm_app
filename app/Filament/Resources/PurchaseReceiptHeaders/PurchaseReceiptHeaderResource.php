@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PurchaseReceiptHeaders;
 use App\Filament\Resources\PurchaseReceiptHeaders\Pages\CreatePurchaseReceiptHeader;
 use App\Filament\Resources\PurchaseReceiptHeaders\Pages\EditPurchaseReceiptHeader;
 use App\Filament\Resources\PurchaseReceiptHeaders\Pages\ListPurchaseReceiptHeaders;
+use App\Filament\Resources\PurchaseReceiptHeaders\Pages\ListTargetPurchaseReceipt;
 use App\Filament\Resources\PurchaseReceiptHeaders\Pages\ViewPurchaseReceiptHeader;
 use App\Filament\Resources\PurchaseReceiptHeaders\Schemas\PurchaseReceiptHeaderForm;
 use App\Filament\Resources\PurchaseReceiptHeaders\Schemas\PurchaseReceiptHeaderInfolist;
@@ -63,6 +64,7 @@ class PurchaseReceiptHeaderResource extends Resource
             'index' => ListPurchaseReceiptHeaders::route('/'),
             'create' => CreatePurchaseReceiptHeader::route('/create'),
             'view' => ViewPurchaseReceiptHeader::route('/{record}'),
+            // 'list' => ListTargetPurchaseReceipt::route('/list'),
             'edit' => EditPurchaseReceiptHeader::route('/{record}/edit'),
         ];
     }

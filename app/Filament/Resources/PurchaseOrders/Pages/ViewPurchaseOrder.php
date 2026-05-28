@@ -57,12 +57,12 @@ class ViewPurchaseOrder extends ViewRecord
                 ->url(fn($record) => route('print.po', $record))
                 ->openUrlInNewTab()
                 ->visible(fn($record) => $record->doc_status == 'approved'),
-            Action::make('generate')
-                ->label('Generate')
-                ->tooltip('Generate')
-                ->icon(Heroicon::OutlinedCog8Tooth)
-                ->color('primary')
-                ->visible(fn($record) => $record->doc_status == 'approved'),
+            // Action::make('generate')
+            //     ->label('Generate')
+            //     ->tooltip('Generate')
+            //     ->icon(Heroicon::OutlinedCog8Tooth)
+            //     ->color('primary')
+            //     ->visible(fn($record) => $record->doc_status == 'approved'),
             Action::make('de-approve')
                 ->label('De-Approve')
                 ->tooltip('De-Approve')
@@ -105,16 +105,16 @@ class ViewPurchaseOrder extends ViewRecord
                             ? PurchaseRequisitionResource::getUrl('view', ['record' => $sourceDocument])
                             : null;
                     }),
-                Action::make('target')
-                    ->label('Target Document')
-                    ->tooltip('Target document')
-                    ->url(function () {
-                        $targetDocument = PurchaseReceiptDetail::where('po_id', $this->record->id)->first();
+                // Action::make('target')
+                //     ->label('Target Document')
+                //     ->tooltip('Target document')
+                //     ->url(function () {
+                //         $targetDocument = PurchaseReceiptDetail::where('po_id', $this->record->id)->first();
 
-                        return $targetDocument
-                            ? PurchaseReceiptHeaderResource::getUrl('list', ['record' => $targetDocument])
-                            : null;
-                    }),
+                //         return $targetDocument
+                //             ? PurchaseReceiptHeaderResource::getUrl('list', ['record' => $targetDocument])
+                //             : null;
+                //     }),
             ])
                 ->label('Associated Query')
                 ->tooltip('Associated query')

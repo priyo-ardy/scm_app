@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -69,6 +70,23 @@ class PurchaseRequisitionHeader extends Model
         return $this->hasMany(PurchaseRequisitionDetail::class, 'purchase_requisition_header_id');
     }
 
+    public function purchaseOrder(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderHeader::class, 'purchase_requisition_id');
+    }
+
+    public function purchaseOrderDetails(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            PurchaseOrderDetail::class,
+            PurchaseRequisitionDetail::class,
+            'purchase_requisition_header_id',
+            'pr_detail_id',
+            'id',
+            'id'
+        );
+    }
+
     protected $casts = [
         'doc_date' => 'date',
         'required_date' => 'date',
@@ -85,12 +103,12 @@ class PurchaseRequisitionHeader extends Model
                             ->orWhere('name', 'like', "%{$search}%")
                             ->orWhere('specification', 'like', "%{$search}%");
                     })
-                        ->orWhereHas('unit', fn ($u) => $u->where('code', 'like', "%{$search}%"))
+                        ->orWhereHas('unit', fn($u) => $u->where('code', 'like', "%{$search}%"))
                         ->orWhere('qty', 'like', "%{$search}%")
                         ->orWhere('arrival_date', 'like', "%{$search}%")
                         ->orWhere('remark', 'like', "%{$search}%")
                         // Baris sakti: Kalau yang dicari adalah Kode Header, tampilkan semua detail
-                        ->orWhereHas('header', fn ($h) => $h->where('code', 'like', "%{$search}%"));
+                        ->orWhereHas('header', fn($h) => $h->where('code', 'like', "%{$search}%"));
                 });
             }
         }, 'details.material', 'details.units', 'details.supplier']);

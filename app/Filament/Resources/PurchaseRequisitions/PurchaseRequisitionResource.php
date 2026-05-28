@@ -6,6 +6,7 @@ use App\Filament\Resources\PurchaseRequisitions\Pages\CreatePurchaseRequisition;
 use App\Filament\Resources\PurchaseRequisitions\Pages\EditPurchaseRequisition;
 use App\Filament\Resources\PurchaseRequisitions\Pages\ListPurchaseRequisitions;
 use App\Filament\Resources\PurchaseRequisitions\Pages\ViewPurchaseRequisition;
+use App\Filament\Resources\PurchaseRequisitions\RelationManagers\PurchaseOrdersRelationManager;
 use App\Filament\Resources\PurchaseRequisitions\Schemas\PurchaseRequisitionForm;
 use App\Filament\Resources\PurchaseRequisitions\Schemas\PurchaseRequisitionInfolist;
 use App\Filament\Resources\PurchaseRequisitions\Tables\PurchaseRequisitionsTable;
@@ -51,7 +52,7 @@ class PurchaseRequisitionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PurchaseOrdersRelationManager::class
         ];
     }
 
