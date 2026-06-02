@@ -43,4 +43,9 @@ class PurchaseRequisitionDetail extends Model
     {
         return $this->belongsTo(Unit::class, 'unit_id');
     }
+
+    public function header(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseRequisitionHeader::class, 'purchase_requisition_header_id');
+    }
 }

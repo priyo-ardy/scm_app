@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PurchaseRequisitions\Pages;
 use App\Filament\Resources\PurchaseOrders\PurchaseOrderResource;
 use App\Filament\Resources\PurchaseRequisitions\PurchaseRequisitionResource;
 use App\Models\PurchaseOrderHeader;
+use App\Models\PurchaseRequisitionHeader;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
@@ -120,16 +121,117 @@ class ViewPurchaseRequisition extends ViewRecord
                 ->visible(fn($record) => $record->doc_status === 'approved'),
             ActionGroup::make([
                 DeleteAction::make()->label('Delete')->tooltip('Delete')->icon(Heroicon::OutlinedTrash)->visible(fn($record) => in_array($record->doc_status, ['draft', 'saved'])),
+                Action::make('first')
+                    ->label('First')
+                    ->icon(Heroicon::OutlinedChevronDoubleLeft)
+                    ->tooltip('Got to first data')
+                    ->color('gray')
+                    ->url(function () {
+                        $currentRecord = $this->record;
+
+                        if (! $currentRecord instanceof PurchaseRequisitionHeader) {
+                            return null;
+                        }
+
+                        $firstData = PurchaseRequisitionHeader::orderBy('id', 'asc')->first();
+
+                        return ($firstData && $firstData->id !== $currentRecord->id)
+                            ? PurchaseRequisitionResource::getUrl('view', ['record' => $firstData])
+                            : null;
+                    })
+                    ->disabled(function () {
+                        $currentRecord = $this->record;
+
+                        if (! $currentRecord instanceof PurchaseRequisitionHeader) {
+                            return true;
+                        }
+
+                        return ! PurchaseRequisitionHeader::where('id', '<', $currentRecord->id)->exists();
+                    }),
                 Action::make('prev')
                     ->label('Previous')
                     ->icon(Heroicon::OutlinedChevronLeft)
                     ->tooltip('Prevoius Data')
-                    ->color('gray'),
+                    ->color('gray')
+                    ->url(function () {
+                        $currentRecord = $this->record;
+
+                        if (! $currentRecord instanceof PurchaseRequisitionHeader) {
+                            return null;
+                        }
+
+                        $prevRecord = PurchaseRequisitionHeader::where('id', '<', $currentRecord->id)
+                            ->orderBy('id', 'desc')
+                            ->first();
+
+                        return $prevRecord
+                            ? PurchaseRequisitionResource::getUrl('view', ['record' => $prevRecord])
+                            : null;
+                    })
+                    ->disabled(function () {
+                        $currentRecord = $this->record;
+                        if (! $currentRecord instanceof PurchaseRequisitionHeader) {
+                            return true;
+                        }
+
+                        return ! PurchaseRequisitionHeader::where('id', '<', $currentRecord->id)->exists();
+                    }),
                 Action::make('next')
                     ->label('Next')
                     ->icon(Heroicon::OutlinedChevronRight)
                     ->tooltip('Next Data')
-                    ->color('gray'),
+                    ->color('gray')
+                    ->url(function () {
+                        $currentRecord = $this->record;
+
+                        if (! $currentRecord instanceof PurchaseRequisitionHeader) {
+                            return null;
+                        }
+
+                        $nextRecord = PurchaseRequisitionHeader::where('id', '>', $currentRecord->id)
+                            ->orderBy('id', 'asc')
+                            ->first();
+
+                        return $nextRecord
+                            ? PurchaseRequisitionResource::getUrl('view', ['record' => $nextRecord])
+                            : null;
+                    })
+                    ->disabled(function () {
+                        $currentRecord = $this->record;
+
+                        if (! $currentRecord instanceof PurchaseRequisitionHeader) {
+                            return true; // Kembalikan true agar disabled jika record tidak valid
+                        }
+
+                        return ! PurchaseRequisitionHeader::where('id', '>', $currentRecord->id)->exists();
+                    }),
+                Action::make('last')
+                    ->label('Last')
+                    ->icon(Heroicon::OutlinedChevronDoubleRight)
+                    ->tooltip('Go to last data')
+                    ->color('gray')
+                    ->url(function () {
+                        $currentRecord = $this->record;
+
+                        if (! $currentRecord instanceof PurchaseRequisitionHeader) {
+                            return null;
+                        }
+
+                        $firstData = PurchaseRequisitionHeader::orderBy('id', 'desc')->first();
+
+                        return ($firstData && $firstData->id !== $currentRecord->id)
+                            ? PurchaseRequisitionResource::getUrl('view', ['record' => $firstData])
+                            : null;
+                    })
+                    ->disabled(function () {
+                        $currentRecord = $this->record;
+
+                        if (! $currentRecord instanceof PurchaseRequisitionHeader) {
+                            return true;
+                        }
+
+                        return ! PurchaseRequisitionHeader::where('id', '>', $currentRecord->id)->exists();
+                    }),
             ])
                 ->hiddenLabel()
                 ->label('More actions')

@@ -2,15 +2,17 @@
 
 namespace App\Filament\Resources\PurchaseRequisitions\Tables;
 
+use App\Filament\Exports\PurchaseRequisitionExporter;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PurchaseRequisitionsTable
 {
@@ -18,97 +20,124 @@ class PurchaseRequisitionsTable
     {
         return $table
             ->columns([
-                TextColumn::make('company.slug')
-                    ->label('Company')
-                    ->wrap()
-                    ->sortable()
+                TextColumn::make('header.code')
+                    ->label('Document Code')
+                    ->searchable()
                     ->toggleable()
-                    ->searchable(),
-                TextColumn::make('code')
-                    ->label('Code')
-                    ->toggleable(),
-                TextColumn::make('doc_date')
+                    ->sortable(),
+                TextColumn::make('header.doc_date')
                     ->label('Date')
-                    ->date('Y-m-d')
+                    ->date('d/M/Y')
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('department.name')
+                TextColumn::make('header.department.name')
                     ->label('Requested Department')
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('requestor.name')
+                TextColumn::make('header.requestor.name')
                     ->label('Requestor')
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('doc_status')
-                    ->label('Document Status')
-                    ->formatStateUsing(fn ($state) => ucwords(strtolower(str_replace('_', '', $state))))
-                    ->sortable()
-                    ->toggleable(),
-                TextColumn::make('priority')
-                    ->label('Priority')
-                    ->formatStateUsing(fn ($state) => ucwords(strtolower(str_replace('_', ' ', $state))))
+                TextColumn::make('header.priority')
                     ->badge()
+                    ->label('Priority')
+                    ->searchable()
                     ->sortable()
-                    ->color(fn ($record) => match ($record->priority) {
-                        'low' => 'gray',
+                    ->formatStateUsing(fn($state) => ucwords(strtolower(str_replace('_', ' ', $state))))
+                    ->color(fn($record) => match ($record->header?->priority) {
+                        'draft' => 'gray',
                         'normal' => 'success',
                         'high' => 'warning',
-                        'urgent' => 'danger',
-                        default => 'secondary',
+                        'urgent' => 'danger'
                     })
+                    ->alignCenter()
                     ->toggleable(),
+                TextColumn::make('header.doc_status')
+                    ->label('Document Status')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn($record) => ucwords(strtolower(str_replace('_', ' ', $record->header?->doc_status))))
+                    ->alignCenter(),
+                TextColumn::make('header.is_closed')
+                    ->label('Closing Status')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn($record) => $record->header?->is_closed ? 'Closed' : 'Unclosed')
+                    ->alignCenter(),
                 TextColumn::make('reason')
                     ->label('Reason')
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('details.material.code')
+                TextColumn::make('material.code')
                     ->label('Material Code')
-                    ->listWithLineBreaks()
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('details.material.name')
-                    ->label('Material Name')
-                    ->listWithLineBreaks()
+                TextColumn::make('material.name')
+                    ->label('Material name')
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('details.material.specification')
+                TextColumn::make('material.specification')
                     ->label('Material Specification')
-                    ->listWithLineBreaks()
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('details.units.code')
+                TextColumn::make('units.code')
                     ->label('UoM')
-                    ->listWithLineBreaks()
+                    ->searchable()
                     ->sortable()
                     ->toggleable()
                     ->alignCenter(),
-                TextColumn::make('details.qty')
-                    ->label('UoM')
-                    ->formatStateUsing(fn ($state) => number_format($state, 4, ',', '.'))
-                    ->listWithLineBreaks()
-                    ->sortable()
-                    ->toggleable()
-                    ->alignRight(),
-                TextColumn::make('details.arrival_date')
-                    ->label('Arrival Date')
-                    ->date('Y-m-d')
-                    ->listWithLineBreaks()
+                TextColumn::make('qty')
+                    ->label('Qty')
+                    ->numeric(4)
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('details.supplier.name')
+                TextColumn::make('qty_remaining')
+                    ->label('Outstanding Qty')
+                    ->numeric(4)
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('supplier.name')
                     ->label('Suggested Supplier')
-                    ->listWithLineBreaks()
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('details.remark')
-                    ->label('Remark')
+                TextColumn::make('arrival_date')
+                    ->label('Requested Arrival Date')
+                    ->date('d/M/Y')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('is_closed')
+                    ->label('Closed By Row')
+                    ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->listWithLineBreaks(),
+                    ->formatStateUsing(fn($state) => $state ? 'Yes' : 'No')
+                    ->alignCenter(),
+                TextColumn::make('remark')
+                    ->label('Remark')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
             ])
+            ->recordUrl(function ($record) {
+                return route('filament.admin.resources.purchase-requisitions.view', [
+                    'record' => $record->purchase_requisition_header_id,
+                ]);
+            })
             ->filters([
-                TrashedFilter::make(),
+                // TrashedFilter::make(),
             ])
             ->recordActions([
                 // ViewAction::make(),
@@ -120,6 +149,19 @@ class PurchaseRequisitionsTable
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
+                Action::make('refresh')
+                    ->label('Refresh')
+                    ->icon(Heroicon::OutlinedArrowPath)
+                    ->action(fn() => null),
+                ExportAction::make('export')
+                    ->label('Export')
+                    ->icon(Heroicon::OutlinedArrowDownTray)
+                    ->exporter(PurchaseRequisitionExporter::class)
+                    ->modifyQueryUsing(function (Builder $query) {
+                        return $query
+                            ->join('vw_purchase_requisition', 'purchase_requisition_details.id', '=', 'vw_purchase_requisition.id')
+                            ->select('vw_purchase_requisition.*');
+                    }),
             ]);
     }
 }
