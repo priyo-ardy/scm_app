@@ -16,7 +16,7 @@
             <input
                 type="text"
                 wire:model.live.debounce.300ms="search"
-                placeholder="Search by PO number, material code, name, or specification..."
+                placeholder="Search by PR number, material code, name, or specification..."
                 x-on:focus="searchFocused = true"
                 x-on:blur="searchFocused = false"
                 class="fi-input block w-full pl-10 pr-10 py-2.5 text-sm border-gray-300 rounded-lg
@@ -94,7 +94,7 @@
             </thead>
 
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-900/40">
-                @forelse ($data as $po)
+                @forelse ($data as $pr)
                 <tr class="group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer">
 
                     {{-- Checkbox --}}
@@ -102,57 +102,58 @@
                         <input
                             type="checkbox"
                             wire:model="selected"
-                            value="{{ $po->id }}"
+                            value="{{ $pr->id }}"
                             class="fi-checkbox-input rounded border-gray-300 text-primary-600 shadow-sm
                                    focus:ring-primary-500 focus:ring-offset-0
                                    dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-primary-500
                                    transition duration-75">
                     </td>
 
-                    {{-- PR Number --}}
+                    {{-- PO Number --}}
                     <td class="px-4 py-3.5 whitespace-nowrap font-semibold text-gray-900 dark:text-gray-100">
-                        {{ $po->header?->code ?? '—' }}
+                        <!-- {{ $pr->header?->code ?? '—' }} -->
+                        {{ $pr->header?->code ?? 'Detail Ada, tapi Relasi Header Null' }}
                     </td>
 
                     {{-- Supplier --}}
-                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $po->detail?->supplier?->name }}">
-                        {{ $po->detail?->supplier?->name ?? '—' }}
+                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $pr->detail?->supplier?->name }}">
+                        {{ $pr->supplier?->name ?? '—' }}
                     </td>
 
                     {{-- Material Code --}}
-                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $po->material?->code }}">
-                        {{ $po->material?->code ?? '—' }}
+                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $pr->material?->code }}">
+                        {{ $pr->material?->code ?? '—' }}
                     </td>
 
                     {{-- Material Name --}}
-                    <td class=" px-4 py-3.5 whitespace-nowrap text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $po->material?->name }}">
-                        {{ $po->material?->name ?? '—' }}
+                    <td class=" px-4 py-3.5 whitespace-nowrap text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $pr->material?->name }}">
+                        {{ $pr->material?->name ?? '—' }}
                     </td>
 
                     {{-- Specification --}}
-                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-500 dark:text-gray-400 max-w-xs truncate" title="{{ $po->material?->specification }}">
-                        {{ $po->material?->specification ?? '—' }}
+                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-500 dark:text-gray-400 max-w-xs truncate" title="{{ $pr->material?->specification }}">
+                        {{ $pr->material?->specification ?? '—' }}
                     </td>
 
                     {{-- Units --}}
-                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-500 dark:text-gray-400 max-w-xs truncate" title="{{ $po->material?->specification }}">
-                        {{ $po->units?->code ?? '—' }}
+                    <td class="px-4 py-3.5 whitespace-nowrap text-gray-500 dark:text-gray-400 max-w-xs truncate" title="{{ $pr->material?->specification }}">
+                        {{ $pr->units?->code ?? '—' }}
                     </td>
 
                     {{-- Quantity --}}
                     <td class="px-4 py-3.5 text-right font-semibold text-gray-900 dark:text-gray-100 tabular-nums whitespace-nowrap">
-                        {{ number_format($po->qty) }}
+                        {{ number_format($pr->qty) }}
                     </td>
 
                     {{-- Remaining --}}
                     <td class="px-4 py-3.5 text-right whitespace-nowrap">
                         @php
-                        $badgeColors = ($po->qty_remaining ?? 0) > 0
+                        $badgeColors = ($pr->qty_remaining ?? 0) > 0
                         ? 'bg-success-50 dark:bg-success-400/10 text-success-600 dark:text-success-400 ring-1 ring-inset ring-success-600/20 dark:ring-success-400/30'
                         : 'bg-danger-50 dark:bg-danger-400/10 text-danger-600 dark:text-danger-400 ring-1 ring-inset ring-danger-600/20 dark:ring-danger-400/30';
                         @endphp
                         <span class="fi-badge inline-flex items-center justify-center min-w-[theme(spacing.6)] rounded-xl px-2 py-0.5 text-xs font-medium tabular-nums {{ $badgeColors }}">
-                            {{ number_format($po->qty_remaining, 0) ?? 0 }}
+                            {{ number_format($pr->qty_remaining, 0) ?? 0 }}
                         </span>
                     </td>
 
@@ -168,7 +169,7 @@
                                 @if($search)
                                 No results found for "<span class="font-semibold">{{ $search }}</span>"
                                 @else
-                                No purchase orders available
+                                No purchase requisition available
                                 @endif
                             </div>
                             @if($search)
@@ -211,14 +212,16 @@
             <button
                 type="button"
                 wire:click="dispatchSelected"
-                class="fi-btn inline-flex items-center justify-center font-semibold px-3 py-1.5 text-sm rounded-lg transition duration-75 bg-primary-600 text-white shadow-sm hover:bg-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400">
-                Ok
+                class="fi-btn inline-flex items-center justify-center gap-1.5 font-semibold px-3 py-1.5 text-sm rounded-lg transition duration-75 bg-primary-600 text-white shadow-sm hover:bg-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400">
+                <x-filament::icon icon="heroicon-o-check-circle" class="w-5 h-5" />
+                OK
             </button>
             {{-- Tombol Cancel Style Filament --}}
             <button
                 type="button"
                 x-on:click="$dispatch('close-modal')"
-                class="fi-btn inline-flex items-center justify-center font-semibold px-3 py-1.5 text-sm rounded-lg transition duration-75 bg-white text-gray-950 shadow-sm ring-1 ring-gray-950/10 hover:bg-gray-50 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:hover:bg-white/10">
+                class="fi-btn inline-flex items-center justify-center gap-1.5 font-semibold px-3 py-1.5 text-sm rounded-lg transition duration-75 bg-white text-gray-950 shadow-sm ring-1 ring-gray-950/10 hover:bg-gray-50 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:hover:bg-white/10">
+                <x-filament::icon icon="heroicon-o-x-mark" class="w-5 h-5" />
                 Cancel
             </button>
         </div>

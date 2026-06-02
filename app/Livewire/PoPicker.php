@@ -71,7 +71,7 @@ class PoPicker extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selected = $this->getQuery()->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+            $this->selected = $this->getQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
         } else {
             $this->selected = [];
         }
@@ -100,14 +100,14 @@ class PoPicker extends Component
                 $query->where(function ($q) {
                     $q->whereHas(
                         'detail',
-                        fn ($subQ) => $subQ->where('code', 'like', '%'.$this->search.'%')
-                            ->orWhereHas('supplier', fn ($sq) => $sq->where('name', 'like', '%'.$this->search.'%'))
+                        fn($subQ) => $subQ->where('code', 'like', '%' . $this->search . '%')
+                            ->orWhereHas('supplier', fn($sq) => $sq->where('name', 'like', '%' . $this->search . '%'))
                     )
                         ->orWhereHas(
                             'material',
-                            fn ($subQ) => $subQ->where('code', 'like', '%'.$this->search.'%')
-                                ->orWhere('name', 'like', '%'.$this->search.'%')
-                                ->orWhere('specification', 'like', '%'.$this->search.'%')
+                            fn($subQ) => $subQ->where('code', 'like', '%' . $this->search . '%')
+                                ->orWhere('name', 'like', '%' . $this->search . '%')
+                                ->orWhere('specification', 'like', '%' . $this->search . '%')
                         );
                 });
             })
