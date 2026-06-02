@@ -3,14 +3,24 @@
 namespace App\Filament\Resources\PurchaseRequisitions\Tables;
 
 use App\Filament\Exports\PurchaseRequisitionExporter;
+use App\Models\Department;
+use App\Models\Material;
+use App\Models\Unit;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\QueryBuilder\Constraints\DateConstraint;
+use Filament\QueryBuilder\Constraints\NumberConstraint;
+use Filament\QueryBuilder\Constraints\SelectConstraint;
+use Filament\QueryBuilder\Constraints\TextConstraint;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -137,8 +147,92 @@ class PurchaseRequisitionsTable
                 ]);
             })
             ->filters([
-                // TrashedFilter::make(),
-            ])
+                QueryBuilder::make()
+                    ->constraints([
+                        TextConstraint::make('header.code')
+                            ->label('Purchase Requisition Code'),
+                        TextConstraint::make('header.reason')
+                            ->label('Reason'),
+                        TextConstraint::make('remark')
+                            ->label('Remark'),
+                        DateConstraint::make('header.doc_date')
+                            ->label('Document Date'),
+                        DateConstraint::make('arrival_date')
+                            ->label('Arrival Date'),
+                        SelectConstraint::make('header.department_id')
+                            ->label('Requsted Department')
+                            ->options(fn() => Department::orderBy('name', 'asc')->pluck('name', 'id')->toArray())
+                            ->searchable()
+                            ->native(false),
+                        SelectConstraint::make('header.requester_id')
+                            ->label('Requestor')
+                            ->options(fn() => User::orderBy('name', 'asc')->pluck('name', 'id')->toArray())
+                            ->searchable()
+                            ->native(false),
+                        SelectConstraint::make('header.priority')
+                            ->label('Priority')
+                            ->options([
+                                'low' => 'Low',
+                                'normal' => 'Normal',
+                                'high' => 'High',
+                                'urgent' => 'Urgent'
+                            ])
+                            ->searchable()
+                            ->native(false),
+                        SelectConstraint::make('header.doc_status')
+                            ->label('Document Status')
+                            ->options([
+                                'draft' => 'Draft',
+                                'saved' => 'Saved',
+                                'waiting_approval' => 'Waiting Approval',
+                                'approved' => 'Approved',
+                                'hold' => 'Hold',
+                                'rejected' => 'Rejected',
+                                'closed' => 'Closed'
+                            ])
+                            ->searchable()
+                            ->native(false),
+                        SelectConstraint::make('is_closed')
+                            ->label('Closed Status')
+                            ->options([
+                                '0' => 'Unclosed',
+                                '1' => 'Closed'
+                            ])
+                            ->native(false),
+                        SelectConstraint::make('material_id')
+                            ->label('Material')
+                            ->options(fn() => Material::selectRaw("id, CONCAT(code, ' - (', name, ')') as display_name")->orderBy('code', 'asc')->pluck('display_name', 'id')->toArray())
+                            ->searchable()
+                            ->native(false),
+                        SelectConstraint::make('unit_id')
+                            ->label('UoM')
+                            ->options(fn() => Unit::orderBy('code', 'asc')->pluck('code', 'id')->toArray())
+                            ->searchable()
+                            ->native(false),
+                        SelectConstraint::make('is_closed')
+                            ->label('Closed by Row')
+                            ->options([
+                                '0' => 'No',
+                                '1' => 'Yes'
+                            ])
+                            ->searchable()
+                            ->native(false),
+                        NumberConstraint::make('qty')
+                            ->label('Requsted Qty'),
+                        NumberConstraint::make('qty_remaining')
+                            ->label('Outstanding Qty'),
+                    ])
+                    ->constraintPickerColumns(3)
+            ], layout: FiltersLayout::Modal)
+            ->filtersFormColumns(2)
+            ->filtersFormWidth('4xl')
+            ->persistFiltersInSession()
+            ->filtersTriggerAction(
+                fn($action) => $action
+                    ->button()
+                    ->label('Filter')
+                    ->icon(Heroicon::OutlinedFunnel)
+            )
             ->recordActions([
                 // ViewAction::make(),
                 // EditAction::make(),
