@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\RestorePurchaseRequisitionStatusJob;
 use App\Jobs\UpdatePurchaseRequisitionStatusJob;
 use App\Models\PurchaseOrderHeader;
 
@@ -49,5 +50,20 @@ class PurchaseOrderObserver
     public function forceDeleted(PurchaseOrderHeader $purchaseOrderHeader): void
     {
         //
+    }
+
+    public function deleting(PurchaseOrderHeader $purchaseOrder)
+    {
+        $poDetailsData = $purchaseOrder->details()
+            ->select('pr_detail_id', 'qty')
+            ->get()
+            ->toArray();
+
+        if (empty($poDetailsData)) {
+            RestorePurchaseRequisitionStatusJob::dispatch(
+                $poDetailsData,
+                $purchaseOrder->created_by
+            );
+        }
     }
 }

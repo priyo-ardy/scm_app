@@ -37,6 +37,7 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
         }
 
         DB::transaction(function () {
+            // Gunakan eager loading 'details' jika belum di-load untuk efisiensi
             $poDetails = $this->purchaseOrder->details;
 
             if ($poDetails->isEmpty()) {
@@ -50,15 +51,30 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
                     continue;
                 }
 
-                $prDetail = PurchaseRequisitionDetail::where('id', $poDetail->pr_detail_id)->lockForUpdate()->first();
+                $prDetail = PurchaseRequisitionDetail::where('id', $poDetail->pr_detail_id)
+                    ->lockForUpdate()
+                    ->first();
 
                 if ($prDetail) {
                     $affectedPrHeaderIds[] = $prDetail->purchase_requisition_header_id;
 
-                    $prDetail->decrement('qty_remaining', $poDetail->qty);
-                    if ($prDetail->qty_remaining <= 0) {
-                        $prDetail->update(['qty_ordered' => $poDetail->qty, 'item_status' => 'closed', 'is_closed' => true]);
+                    // ✅ OPTIMASI & perbaikan akumulasi qty_ordered
+                    $newQtyRemaining = max(0, $prDetail->qty_remaining - $poDetail->qty);
+                    $newQtyOrdered = $prDetail->qty_ordered + $poDetail->qty;
+
+                    $updateData = [
+                        'qty_remaining' => $newQtyRemaining,
+                        'qty_ordered'   => $newQtyOrdered, // Selalu bertambah secara akumulatif
+                    ];
+
+                    // Jika sisa qty sudah habis, ubah status jadi closed
+                    if ($newQtyRemaining <= 0) {
+                        $updateData['item_status'] = 'closed';
+                        $updateData['is_closed'] = true;
                     }
+
+                    // Cukup 1 kali query UPDATE ke database
+                    $prDetail->update($updateData);
                 }
             }
 
@@ -68,7 +84,6 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
                 $prHeader = PurchaseRequisitionHeader::find($prHeaderId);
 
                 if ($prHeader) {
-                    // Cek apakah masih ada detail yang statusnya bukan 'closed'
                     $hasOpenItems = $prHeader->details()
                         ->where(function ($query) {
                             $query->where('item_status', '!=', 'closed')
@@ -76,7 +91,6 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
                         })
                         ->exists();
 
-                    // Jika TIDAK ADA lagi item yang open, maka tutup headernya
                     if (! $hasOpenItems) {
                         $prHeader->update([
                             'doc_status' => 'closed',
@@ -103,7 +117,7 @@ class UpdatePurchaseRequisitionStatusJob implements ShouldQueue
                 ->actions([
                     Action::make('view')
                         ->label('See Purchase Order')
-                        ->url(fn () => "/purchase-orders/{$this->purchaseOrder->id}/view")
+                        ->url(fn() => "/purchase-orders/{$this->purchaseOrder->id}/view")
                         ->button(),
                 ])
                 ->sendToDatabase($recipient);

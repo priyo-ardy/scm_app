@@ -71,6 +71,11 @@ class PurchaseOrderDetail extends Model
         return $this->belongsTo(PurchaseOrderHeader::class, 'po_id');
     }
 
+    public function header(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseOrderHeader::class, 'po_id');
+    }
+
     protected static function booted()
     {
         static::created(function ($model) {});

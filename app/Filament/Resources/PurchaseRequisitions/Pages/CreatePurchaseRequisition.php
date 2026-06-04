@@ -27,6 +27,8 @@ class CreatePurchaseRequisition extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['requester_id'] = Auth::id();
+        $data['qty_remaining'] = $data['qty'] ?? 0;
+
 
         return $data;
     }

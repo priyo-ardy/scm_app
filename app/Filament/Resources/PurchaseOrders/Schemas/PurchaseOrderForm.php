@@ -89,78 +89,97 @@ class PurchaseOrderForm
                             ->native(false)
                             ->required()
                             ->columnSpan(2),
-                        Select::make('purchase_requisition_id')
-                            ->label('Purchase Requisition')
-                            ->relationship('purchaseRequisition', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('doc_status', 'approved')->where('is_closed', false)->orderBy('code', 'desc'))
+                        TextInput::make('exchange_rate')
+                            ->label('Exchange Rate')
+                            ->numeric()
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->live(onBlur: true)
+                            ->columnSpan(2)
+                            ->placeholder('Exchange Rate')
+                            ->required()
+                            ->default(1)
+                            ->extraInputAttributes(['style' => 'text-align: right']),
+                        Select::make('payment_term_id')
+                            ->label('Payment Term')
+                            ->relationship('paymentTerm', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
                             ->searchable()
-                            ->optionsLimit(5)
-                            ->preload(true)
-                            ->reactive()
-                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
-                                $currentSupplierId = $get('supplier_id');
-
-                                if (! $get('supplier_id')) {
-                                    $set('purchase_requisition_id', null);
-                                    throw ValidationException::withMessages([
-                                        'data.supplier_id' => 'Please choose supplier',
-                                        'data.purchase_requisition_id' => 'Please choose supplier first.',
-                                    ]);
-                                }
-
-                                if (! $state) {
-                                    $set('details', []);
-
-                                    return;
-                                }
-
-                                $pr = PurchaseRequisitionHeader::with('details')->find($state);
-
-                                if ($pr && $pr->is_closed == false) {
-                                    $filterDetails = $pr->details->filter(function ($detail) use ($currentSupplierId) {
-                                        if ($detail->item_status !== 'open') {
-                                            return false;
-                                        }
-
-                                        if (! empty($detail->supplier_id)) {
-                                            return $detail->supplier_id == $currentSupplierId;
-                                        }
-
-                                        return true;
-                                    });
-
-                                    $set('department_id', $pr->department_id);
-                                    $set('reason', $pr->reason);
-
-                                    $repeaterData = $filterDetails->map(function ($detail) {
-                                        $material = Material::find($detail->material_id);
-
-                                        return [
-                                            'pr_detail_id' => $detail->id,
-                                            'material_id' => $detail->material_id,
-                                            'material_name' => $material?->name,
-                                            'specification' => $material?->specification,
-                                            'unit_id' => $detail->unit_id,
-                                            'qty' => $detail->qty,
-                                            'unit_price' => 0,
-                                            'amount' => 0,
-                                            'discount_rate' => 0,
-                                            'discount_amount' => 0,
-                                            'price_after_discount' => 0,
-                                            'tax_rate' => 0,
-                                            'tax_amount' => 0,
-                                            'price_after_tax' => 0,
-                                            'total_amount' => 0,
-                                            'delivery_date' => $detail->arrival_date ?? now(),
-                                            'remark' => $detail->remark,
-                                        ];
-                                    })->toArray();
-
-                                    $set('details', $repeaterData);
-                                }
-                            })
+                            ->preload()
                             ->native(false)
-                            ->columnSpan(3)
-                            ->required(),
+                            ->required()
+                            ->columnSpan(3),
+                        // Select::make('purchase_requisition_id')
+                        //     ->label('Purchase Requisition')
+                        //     ->relationship('purchaseRequisition', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('doc_status', 'approved')->where('is_closed', false)->orderBy('code', 'desc'))
+                        //     ->searchable()
+                        //     ->optionsLimit(5)
+                        //     ->preload(true)
+                        //     ->reactive()
+                        //     ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
+                        //         $currentSupplierId = $get('supplier_id');
+
+                        //         if (! $get('supplier_id')) {
+                        //             $set('purchase_requisition_id', null);
+                        //             throw ValidationException::withMessages([
+                        //                 'data.supplier_id' => 'Please choose supplier',
+                        //                 'data.purchase_requisition_id' => 'Please choose supplier first.',
+                        //             ]);
+                        //         }
+
+                        //         if (! $state) {
+                        //             $set('details', []);
+
+                        //             return;
+                        //         }
+
+                        //         $pr = PurchaseRequisitionHeader::with('details')->find($state);
+
+                        //         if ($pr && $pr->is_closed == false) {
+                        //             $filterDetails = $pr->details->filter(function ($detail) use ($currentSupplierId) {
+                        //                 if ($detail->item_status !== 'open') {
+                        //                     return false;
+                        //                 }
+
+                        //                 if (! empty($detail->supplier_id)) {
+                        //                     return $detail->supplier_id == $currentSupplierId;
+                        //                 }
+
+                        //                 return true;
+                        //             });
+
+                        //             $set('department_id', $pr->department_id);
+                        //             $set('reason', $pr->reason);
+
+                        //             $repeaterData = $filterDetails->map(function ($detail) {
+                        //                 $material = Material::find($detail->material_id);
+
+                        //                 return [
+                        //                     'pr_detail_id' => $detail->id,
+                        //                     'material_id' => $detail->material_id,
+                        //                     'material_name' => $material?->name,
+                        //                     'specification' => $material?->specification,
+                        //                     'unit_id' => $detail->unit_id,
+                        //                     'qty' => $detail->qty,
+                        //                     'unit_price' => 0,
+                        //                     'amount' => 0,
+                        //                     'discount_rate' => 0,
+                        //                     'discount_amount' => 0,
+                        //                     'price_after_discount' => 0,
+                        //                     'tax_rate' => 0,
+                        //                     'tax_amount' => 0,
+                        //                     'price_after_tax' => 0,
+                        //                     'total_amount' => 0,
+                        //                     'delivery_date' => $detail->arrival_date ?? now(),
+                        //                     'remark' => $detail->remark,
+                        //                 ];
+                        //             })->toArray();
+
+                        //             $set('details', $repeaterData);
+                        //         }
+                        //     })
+                        //     ->native(false)
+                        //     ->columnSpan(3)
+                        //     ->required(),
                         Select::make('department_id')
                             ->label('Requested Department')
                             ->relationship('department', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
@@ -175,17 +194,6 @@ class PurchaseOrderForm
                             ->disabled()
                             ->default('draft')
                             ->readOnly(),
-                        TextInput::make('exchange_rate')
-                            ->label('Exchange Rate')
-                            ->numeric()
-                            ->mask(RawJs::make('$money($input)'))
-                            ->stripCharacters(',')
-                            ->live(onBlur: true)
-                            ->columnSpan(2)
-                            ->placeholder('Exchange Rate')
-                            ->required()
-                            ->default(1)
-                            ->extraInputAttributes(['style' => 'text-align: right']),
                         TextInput::make('printed_count')
                             ->label('Print Count')
                             ->default(0)
@@ -193,24 +201,18 @@ class PurchaseOrderForm
                             ->readOnly()
                             ->numeric()
                             ->extraInputAttributes(['style' => 'text-align: right']),
-                        Select::make('payment_term_id')
-                            ->label('Payment Term')
-                            ->relationship('paymentTerm', 'name', modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)->orderBy('name', 'asc'))
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->required()
-                            ->columnSpan(3),
-                        TextInput::make('reason')
+                        Textarea::make('reason')
                             ->label('Purchase Reason')
                             ->placeholder('Purchase reason')
-                            ->columnSpan(9)
-                            ->maxLength(255)
-                            ->nullable(),
+                            ->columnSpan(6)
+                            ->nullable()
+                            ->rows(3),
                         Textarea::make('shipping_address')
                             ->label('Shipping Address')
-                            ->columnSpanFull()
-                            ->rows(3),
+                            ->placeholder('Shipping Address')
+                            ->columnSpan(6)
+                            ->rows(3)
+                            ->nullable(),
                     ])
                     ->columns(12)
                     ->columnSpanFull(),
@@ -238,7 +240,7 @@ class PurchaseOrderForm
                     ->schema([
                         Hidden::make('pr_detail_id'),
                         Select::make('material_id')
-                            ->relationship('material', 'code')
+                            ->relationship('material', 'code', fn(Builder $query) => $query->where('is_active', true)->where('properties', 'service'))
                             ->searchable(['code', 'name'])
                             ->searchPrompt('Write material code/name')
                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
@@ -407,6 +409,7 @@ class PurchaseOrderForm
                         TextInput::make('remark')
                             ->placeholder('Write remark here ...'),
                     ])
+                    ->defaultItems(0)
                     ->columnSpanFull(),
             ]);
     }

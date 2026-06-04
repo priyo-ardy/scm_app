@@ -103,7 +103,7 @@ class PurchaseRequisitionForm
                     ->schema([
                         Select::make('material_id')
                             ->label('Material')
-                            ->relationship('material', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('status', '=', 'active', 'and')->orderBy('code', 'asc'))
+                            ->relationship('material', 'code', modifyQueryUsing: fn(Builder $query) => $query->where('status', 'active')->where('properties', 'service')->orderBy('code', 'asc'))
                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
                             ->searchable()
                             ->required()

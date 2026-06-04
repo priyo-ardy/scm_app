@@ -3,8 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\PurchaseRequisitionDetail;
-use App\Models\PurchaseRequisitionView;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,7 +13,9 @@ class PrPicker extends Component
     use WithPagination;
 
     public $selected = [];
+    public $selectAll = false;
     public $search = '';
+    public $supplier_id;
 
     public function updatedSearch()
     {
@@ -30,12 +32,23 @@ class PrPicker extends Component
         }
     }
 
+    public function updatedSelected()
+    {
+        $totalItems = $this->getQuery()->count();
+
+        $this->selectAll = count($this->selected) === $totalItems;
+    }
+
     private function getQuery()
     {
         return PurchaseRequisitionDetail::query()
             ->with(['header', 'supplier', 'material', 'units'])
             ->where('qty_remaining', '>', 0)
             ->where('is_closed', 0)
+            ->where(function (Builder $q) {
+                $q->where('supplier_id', $this->supplier_id)
+                    ->orWhereNull('supplier_id');
+            })
             // ->when($this->search)
             ->orderBy('created_at', 'desc');
     }

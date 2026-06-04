@@ -7,6 +7,7 @@ use App\Livewire\PrPicker;
 use App\Models\PurchaseRequisitionDetail;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Livewire;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
@@ -15,7 +16,6 @@ use Livewire\Attributes\On;
 class CreatePurchaseOrder extends CreateRecord
 {
     protected static string $resource = PurchaseOrderResource::class;
-
 
     protected function getHeaderActions(): array
     {
@@ -32,8 +32,15 @@ class CreatePurchaseOrder extends CreateRecord
                 ->color('primary')
                 ->icon(Heroicon::OutlinedCog8Tooth)
                 ->button()
+                ->visible(function ($livewire) {
+                    return !empty($livewire->data['supplier_id']);
+                })
                 ->schema([
-                    Livewire::make(PrPicker::class)
+                    Livewire::make(PrPicker::class, function ($livewire) {
+                        return [
+                            'supplier_id' => $livewire->data['supplier_id'] ?? null,
+                        ];
+                    })
                 ])
                 ->modalSubmitAction(false)
                 ->modalCancelAction(false)
@@ -67,16 +74,21 @@ class CreatePurchaseOrder extends CreateRecord
     #[On('pr-items-selected')]
     public function handleSelectedPrItems(array $selectedIds)
     {
-        $prDetails = PurchaseRequisitionDetail::with(['header', 'material', 'unit', 'supplier'])->find($selectedIds);
+        $prDetails = PurchaseRequisitionDetail::with(['header', 'material', 'units', 'supplier'])->find($selectedIds);
 
         if ($prDetails->isEmpty()) {
             return;
         }
 
-        $currentItems = $this->data ?? [];
+        $firstItem = $prDetails->first();
+        if ($firstItem && $firstItem->header) {
+            $this->data['department_id'] = $firstItem->header->department_id;
+        }
+
+        $currentItems = $this->data['details'] ?? [];
 
         foreach ($prDetails as $detail) {
-            $isDuplicate = collect($currentItems)->contains('pr_derail_id', $detail->id);
+            $isDuplicate = collect($currentItems)->contains('pr_detail_id', $detail->id);
 
             if ($isDuplicate) {
                 continue;
@@ -90,14 +102,19 @@ class CreatePurchaseOrder extends CreateRecord
                 'material_name' => $detail->material?->name,
                 'specification' => $detail->material?->specification,
                 'unit_id' => $detail->unit_id ?? $detail->material?->purchase_unit_id,
-                'qty_request' => $detail->qty,
-                'qty_outstanding' => $detail->qty_remaining,
+                'qty' => $detail->qty_remaining,
+                'arrival_date' => $detail->arrival_date,
                 'remark' => $detail->remark
             ];
         }
 
+        // 3. Masukkan kembali array yang sudah diperbarui ke dalam state form
         $this->data['details'] = $currentItems;
+
+        // 4. Re-hydrate form agar Filament merender ulang Repeater di UI
         $this->form->fill($this->data);
+
+        // 5. Tutup modal picker
         $this->dispatch('close-modal');
         $this->mountedActions = [];
     }
